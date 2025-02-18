@@ -1,13 +1,16 @@
 package org.example.coworking.model;
 
-public class CoworkingSpace {
+import lombok.Getter;
+
+@Getter
+public class Coworking {
     private final int id;
     private final double price;
     private final boolean isAvailable;
     private final CoworkingType coworkingType;
     private final Facility facility;
 
-    private CoworkingSpace(CoworkingSpaceBuilder coworkingSpaceBuilder) {
+    private Coworking(CoworkingSpaceBuilder coworkingSpaceBuilder) {
         this.id = coworkingSpaceBuilder.id;
         this.price = coworkingSpaceBuilder.price;
         this.isAvailable = coworkingSpaceBuilder.isAvailable;
@@ -34,8 +37,8 @@ public class CoworkingSpace {
             return this;
         }
 
-        public CoworkingSpace build() {
-            return new CoworkingSpace(this);
+        public Coworking build() {
+            return new Coworking(this);
         }
     }
 
