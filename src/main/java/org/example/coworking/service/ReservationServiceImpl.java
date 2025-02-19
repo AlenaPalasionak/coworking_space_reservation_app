@@ -23,4 +23,9 @@ public class ReservationServiceImpl implements ReservationService {
     public List<Reservation> getAllReservations() {
         return reservationDAO.getAllReservations();
     }
+
+    @Override
+    public List<Reservation> getReservationsByCustomer(int customerId) {
+        return reservationDAO.getReservationsByCustomer(customerId);
+    }
 }
