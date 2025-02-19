@@ -12,4 +12,5 @@ public interface CoworkingService {
     void removeSpace(int id);
 
     void updateSpace(Coworking coworking, int id);
+    Coworking getById(int id);
 }

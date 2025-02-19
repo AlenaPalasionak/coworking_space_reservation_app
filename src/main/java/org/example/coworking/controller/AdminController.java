@@ -11,20 +11,24 @@ public class AdminController extends AbstractUserController {
         super();
     }
 
-    public void addCoworkingSpace(Coworking space) {
+    public  void addCoworkingSpace(Coworking space) {
         coworkingService.addSpace(space);
     }
 
-    public void removeCoworkingSpace(int id) {
+    public  void removeCoworkingSpace(int id) {
         coworkingService.removeSpace(id);
     }
 
-    public List<Reservation> getAllReservations() {
+    public  List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
-    public void updateCoworkingSpace(Coworking space, int id) {
+    public  void updateCoworkingSpace(Coworking space, int id) {
         coworkingService.updateSpace(space, id);
+    }
+
+    public  Coworking getSpaceById(int id) {
+        return coworkingService.getById(id);
     }
 }
 

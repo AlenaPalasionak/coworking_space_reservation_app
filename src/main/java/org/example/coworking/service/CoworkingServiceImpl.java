@@ -28,4 +28,9 @@ public class CoworkingServiceImpl implements CoworkingService {
     public void updateSpace(Coworking coworking, int id) {
         coworkingDao.updateSpace(coworking, id);
     }
+
+    @Override
+    public Coworking getById(int id) {
+        return coworkingDao.getById(id);
+    }
 }

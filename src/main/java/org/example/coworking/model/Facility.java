@@ -22,12 +22,16 @@ public class Facility {
         return features.contains(feature);
     }
 
+    @Override
+    public String toString() {
+        return "Facility features: " + features;
+    }
+
     public static class FacilityBuilder {
         private final Set<Feature> features = EnumSet.noneOf(Feature.class);
 
-        public FacilityBuilder addFeature(Feature feature) {
+        public void addFeature(Feature feature) {
             features.add(feature);
-            return this;
         }
 
         public Facility build() {

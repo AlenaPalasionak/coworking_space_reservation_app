@@ -8,6 +8,8 @@ import lombok.Getter;
 public class Reservation {
     private int id;
     private Customer customer;
-    private Coworking space;
+    private int coworkingId;
     private ReservationPeriod period;
+    Coworking coworking;
+
 }

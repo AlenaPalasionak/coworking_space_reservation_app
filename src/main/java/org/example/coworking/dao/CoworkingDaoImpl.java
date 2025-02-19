@@ -32,4 +32,9 @@ public class CoworkingDaoImpl implements CoworkingDao {
                 .map(oldCoworking -> oldCoworking.getId() == newCoworking.getId() ? newCoworking : oldCoworking)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Coworking getById(int id) {
+        return coworkingSpaces.get(id);
+    }
 }
