@@ -10,4 +10,6 @@ public interface ReservationDAO {
     void cancelReservation(int id);
 
     List<Reservation> getAllReservations();
+
+    List<Reservation> getReservationsByCustomer(int customerId);
 }

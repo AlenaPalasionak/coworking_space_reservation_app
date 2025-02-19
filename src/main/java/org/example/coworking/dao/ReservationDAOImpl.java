@@ -25,4 +25,11 @@ public class ReservationDAOImpl implements ReservationDAO {
     public List<Reservation> getAllReservations() {
         return reservations;
     }
+
+    @Override
+    public List<Reservation> getReservationsByCustomer(int customerId) {
+        return reservations.stream()
+                .filter(reservation -> reservation.getCustomer().getId() == customerId)
+                .collect(Collectors.toList());
+    }
 }
