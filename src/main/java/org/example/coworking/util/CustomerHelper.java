@@ -13,18 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.coworking.util.Constant.CUSTOMER_MENU;
+
 public class CustomerHelper implements BaseHelper {
     static CustomerController customerController = new CustomerController();
     static AdminController adminController = new AdminController();
 
     @Override
     public String showMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write(""" 
-                Press 1 to browse available spaces.
-                Press 2 to Make a reservation.
-                Press 3 to view your reservations.
-                Press 4 to cancel a reservation.
-                """);
+        writer.write(CUSTOMER_MENU);
         writer.flush();
         return reader.readLine();
     }
@@ -34,28 +31,20 @@ public class CustomerHelper implements BaseHelper {
         Customer customer = null;
         boolean isLoggedIn = false;
         while (!isLoggedIn) {
-            writer.write("""
-                    Enter your customer name, please.
-                    """);
+            writer.write("Enter your customer name, please.\n");
             writer.flush();
             String customerName = reader.readLine().trim();
-            writer.write(customerName + ", " + """
-                    Enter your customer password, please.
-                    """);
+            writer.write(customerName + ", enter your customer password, please.\n");
             writer.flush();
             String customerPassword = reader.readLine().trim();
             if (PasswordValidator.isCustomerLoginDataValid(customerName, customerPassword)) {
                 isLoggedIn = true;
                 int customerId = IdGenerator.generateUserId();
                 customer = new Customer(customerId, customerName, customerPassword);
-                writer.write("""
-                        You have successfully logged in.
-                        """);
+                writer.write(" You have successfully logged in.\n");
                 writer.flush();
             } else {
-                writer.write("""
-                        Your login data are wrong. Press Enter to try again
-                        """);
+                writer.write("Your login data are wrong. Press Enter to try again\n");
                 writer.flush();
             }
         }
@@ -66,40 +55,26 @@ public class CustomerHelper implements BaseHelper {
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         int customerId = customer.getId();
         if (customerController.getAllCoworkingSpaces().isEmpty()) {
-            writer.write("""
-                    The are no free spaces to book
-                    """);
+            writer.write("The are no free spaces to book\n");
             writer.flush();
         } else {
-            writer.write("""
-                    Choose a Coworking and type its id to book it:
-                    """ + customerController.getAllCoworkingSpaces());
+            writer.write("Choose a Coworking and type its id to book it:\n" + customerController.getAllCoworkingSpaces());
 
             writer.flush();
             int coworkingId = Integer.parseInt(reader.readLine());
-            writer.write("""
-                    Type a year. Format: yyyy
-                    """);
+            writer.write("Type a year. Format: yyyy\n");
             writer.flush();
             int year = Integer.parseInt(reader.readLine());
-            writer.write("""
-                    Type a month. Format: m or mm
-                    """);
+            writer.write("Type a month. Format: m or mm\n");
             writer.flush();
             int month = Integer.parseInt(reader.readLine());
-            writer.write("""
-                    Type a day. Format: d or dd
-                    """);
+            writer.write("Type a day. Format: d or dd\n");
             writer.flush();
             int day = Integer.parseInt(reader.readLine());
-            writer.write("""
-                    Type start hour. Format: h or hh
-                    """);
+            writer.write("Type start hour. Format: h or hh\n");
             writer.flush();
             int startHour = Integer.parseInt(reader.readLine());
-            writer.write("""
-                    Type end hour. Format: h or hh
-                    """);
+            writer.write("Type end hour. Format: h or hh\n");
             writer.flush();
             int endHour = Integer.parseInt(reader.readLine());
             int minute = 0;
@@ -125,7 +100,7 @@ public class CustomerHelper implements BaseHelper {
     public List<Reservation> getAllReservations(BufferedWriter writer, User customer) throws IOException {
         List<Reservation> reservations = customerController.getReservationsByCustomer(customer.getId());
         if (reservations.isEmpty()) {
-            writer.write(customer.getName() + ", you haven't made any reservations yet");
+            writer.write(customer.getName() + ", you haven't made any reservations yet\n");
             writer.flush();
         }
         writer.write("Your reservation(s):\n" + reservations);
@@ -144,7 +119,7 @@ public class CustomerHelper implements BaseHelper {
         if (reservationById.isPresent()) {
             reservation = reservationById.get();
         } else {
-            writer.write("Reservation with Id " + reservationId + " is absent");
+            writer.write("Reservation with Id " + reservationId + " is absent\n");
             return;
         }
         int canceledCoworkingId = reservation.getCoworkingId();
@@ -161,7 +136,7 @@ public class CustomerHelper implements BaseHelper {
 
         adminController.updateCoworkingSpace(canceledCoworking, canceledCoworkingId);
         //
-        writer.write("Reservation with Id " + reservationId + " is canceled");
+        writer.write("Reservation with Id " + reservationId + " is canceled\n");
         writer.flush();
     }
 }

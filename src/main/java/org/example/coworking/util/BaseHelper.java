@@ -29,7 +29,7 @@ public interface BaseHelper {
     default List<Coworking> getAllCoworkingPlaces(BufferedWriter writer, User customer) throws IOException {
         List<Coworking> coworkingSpaces = adminController.getAllCoworkingSpaces();
         if (coworkingSpaces.isEmpty()) {
-            writer.write("Coworking List is empty");
+            writer.write("Coworking List is empty\n");
             writer.flush();
         }
         writer.write(customer.getName() + ", here is coworking List:\n" + coworkingSpaces);

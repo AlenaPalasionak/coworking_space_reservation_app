@@ -8,17 +8,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
+import static org.example.coworking.util.Constant.*;
+
 public class AdminHelper implements BaseHelper {
 
     private static final AdminController adminController = new AdminController();
 
     @Override
     public String showMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write(""" 
-                Press 1 to add a new coworking space.
-                Press 2 to remove a coworking space.
-                Press 3 to view all reservations.
-                """);
+        writer.write(ADMIN_MENU);
         writer.flush();
         return reader.readLine();
     }
@@ -28,28 +26,20 @@ public class AdminHelper implements BaseHelper {
         Admin admin = null;
         boolean isLoggedIn = false;
         while (!isLoggedIn) {
-            writer.write("""
-                    Enter your admin name, please.
-                    """);
+            writer.write("Enter your admin name, please.\n");
             writer.flush();
             String adminName = reader.readLine().trim();
-            writer.write(adminName + ", " + """
-                    Enter your admin password, please.
-                    """);
+            writer.write(adminName + ", Enter your admin password, please.\n");
             writer.flush();
             String adminPassword = reader.readLine().trim();
             if (PasswordValidator.isAdminLoginDataValid(adminName, adminPassword)) {
                 isLoggedIn = true;
                 int adminId = IdGenerator.generateUserId();
                 admin = new Admin(adminId, adminName, adminPassword);
-                writer.write("""
-                        You have successfully logged in.
-                        """);
+                writer.write("You have successfully logged in.\n");
                 writer.flush();
             } else {
-                writer.write("""
-                        Your login data are wrong. To try again
-                        """);
+                writer.write("Your login data are wrong. To try again\n");
                 writer.flush();
             }
         }
@@ -60,19 +50,12 @@ public class AdminHelper implements BaseHelper {
     public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
         Coworking space;
         int id = IdGenerator.generateCoworkingId();
-        writer.write("""
-                Enter the price in dollars per hour.
-                """);
+        writer.write("Enter the price in dollars per hour.\n");
         writer.flush();
 
         double price = Double.parseDouble(reader.readLine());
         boolean isAvailable = true;
-        writer.write("""
-                Choose the coworking type (press only one of the numbers):
-                Open space coworking - 0
-                Private Office - 1
-                Coworking+Co-living - 2
-                """);
+        writer.write(COWORKING_TYPE_MENU);
         writer.flush();
         CoworkingType coworkingType = null;
 
@@ -80,9 +63,7 @@ public class AdminHelper implements BaseHelper {
             try {
                 int coworkingTypeIndex = Integer.parseInt(reader.readLine());
                 if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
-                    writer.write("""
-                            You put a wrong symbol. Try again
-                            """);
+                    writer.write("You put a wrong symbol. Try again\n");
                     writer.flush();
                     continue;
                 }
@@ -92,15 +73,7 @@ public class AdminHelper implements BaseHelper {
             }
         }
         Facility.FacilityBuilder builder = new Facility.FacilityBuilder();
-        writer.write("""
-                Choose the facilities. Write numbers comma-separated on one line:
-                NO Facilities - just press Enter,
-                PARKING - 0,
-                WIFI - 1,
-                KITCHEN - 2,
-                PRINTER - 3,
-                CONDITIONING - 4
-                """);
+        writer.write(FACILITY_MENU);
         writer.flush();
 
         String facilitiesIndexesOnOneLine = reader.readLine();
@@ -137,21 +110,13 @@ public class AdminHelper implements BaseHelper {
     public void delete(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
         List<Coworking> spaces = adminController.getAllCoworkingSpaces();
         if (spaces.isEmpty()) {
-            writer.write("""
-                            There are no available spaces:
-                    """);
+            writer.write("There are no available spaces.\n");
             writer.flush();
         } else {
-            writer.write("""
-                    Available spaces:
-                    """ + adminController.getAllCoworkingSpaces());
+            writer.write("Available spaces:\n" + adminController.getAllCoworkingSpaces());
 
             writer.flush();
-            writer.write("""
-
-                    Type the id of the space you want to delete
-
-                    """);
+            writer.write("Type the id of the space you want to delete\n");
             writer.flush();
 
             int coworkingSpaceId = Integer.parseInt(reader.readLine().trim());

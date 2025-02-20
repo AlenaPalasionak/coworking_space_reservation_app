@@ -8,10 +8,10 @@ public class PasswordValidator {
     public static Map<String, String> customerNameAndPass = new HashMap<>();
 
     public static void loadLoginData() {
-        adminNameAndPass.put("ad1", "11");
-        adminNameAndPass.put("ad2", "22");
-        customerNameAndPass.put("cus1", "33");
-        customerNameAndPass.put("cus2", "44");
+        adminNameAndPass.put("a", "1");
+        adminNameAndPass.put("a2", "2");
+        customerNameAndPass.put("c", "3");
+        customerNameAndPass.put("c2", "4");
     }
 
     public static boolean isAdminLoginDataValid(String name, String passWord) {
