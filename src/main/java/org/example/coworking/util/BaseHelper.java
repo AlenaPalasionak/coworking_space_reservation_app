@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.example.coworking.util.CustomerHelper.adminController;
 
-public interface BaiseHelper {
+public interface BaseHelper {
 
     default boolean shouldExit(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write("""
@@ -23,11 +23,7 @@ public interface BaiseHelper {
                 """);
         writer.flush();
         String exitNotification2 = reader.readLine();
-        if (exitNotification2.equals("1")) {
-            return true;
-        } else {
-            return false;
-        }
+        return exitNotification2.equals("1");
     }
 
     default List<Coworking> getAllCoworkingPlaces(BufferedWriter writer, User customer) throws IOException {
@@ -36,7 +32,7 @@ public interface BaiseHelper {
             writer.write("Coworking List is empty");
             writer.flush();
         }
-        writer.write("Coworking List:\n" + coworkingSpaces);
+        writer.write(customer.getName() + ", here is coworking List:\n" + coworkingSpaces);
         writer.flush();
         return coworkingSpaces;
     }
@@ -50,6 +46,4 @@ public interface BaiseHelper {
     List<Reservation> getAllReservations(BufferedWriter writer, User customer) throws IOException;
 
     void delete(BufferedReader reader, BufferedWriter writer, User user) throws IOException;
-
-    void deleteAll(BufferedReader reader, BufferedWriter writer, User user) throws IOException;
 }

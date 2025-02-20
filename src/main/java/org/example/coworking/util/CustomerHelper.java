@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomerHelper implements BaiseHelper {
+public class CustomerHelper implements BaseHelper {
     static CustomerController customerController = new CustomerController();
     static AdminController adminController = new AdminController();
 
@@ -163,10 +163,5 @@ public class CustomerHelper implements BaiseHelper {
         //
         writer.write("Reservation with Id " + reservationId + " is canceled");
         writer.flush();
-    }
-
-    @Override
-    public void deleteAll(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
-//TODO
     }
 }

@@ -8,7 +8,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class AdminHelper implements BaiseHelper {
+public class AdminHelper implements BaseHelper {
 
     private static final AdminController adminController = new AdminController();
 
@@ -110,8 +110,8 @@ public class AdminHelper implements BaiseHelper {
             adminController.addCoworkingSpace(space);
         } else {
             String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
-            for (int i = 0; i < facilitiesIndexes.length; i++) {
-                int facilityIndex = Integer.parseInt(facilitiesIndexes[i].trim());
+            for (String facilitiesIndex : facilitiesIndexes) {
+                int facilityIndex = Integer.parseInt(facilitiesIndex.trim());
                 builder.addFeature(Facility.Feature.values()[facilityIndex]);
             }
             Facility facility = builder.build();
@@ -158,10 +158,5 @@ public class AdminHelper implements BaiseHelper {
             adminController.removeCoworkingSpace(coworkingSpaceId);
             writer.write(admin.getName() + ", you just removed a Space with id: " + coworkingSpaceId);
         }
-    }
-
-    @Override
-    public void deleteAll(BufferedReader reader, BufferedWriter writer, User user) throws IOException {
-//TODO
     }
 }

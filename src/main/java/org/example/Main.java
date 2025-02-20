@@ -1,22 +1,20 @@
 package org.example;
 
-import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
 import org.example.coworking.util.AdminHelper;
-import org.example.coworking.util.BaiseHelper;
+import org.example.coworking.util.BaseHelper;
 import org.example.coworking.util.CustomerHelper;
 import org.example.coworking.util.PasswordValidator;
 
 import java.io.*;
-import java.util.List;
 
 import static org.example.coworking.util.Constant.*;
 
 public class Main {
     static User admin;
     static User customer;
-    static BaiseHelper adminHelper = new AdminHelper();
-    static BaiseHelper customerHelper = new CustomerHelper();
+    static BaseHelper adminHelper = new AdminHelper();
+    static BaseHelper customerHelper = new CustomerHelper();
 
     public static void main(String[] args) {
         PasswordValidator.loadLoginData();
@@ -49,7 +47,7 @@ public class Main {
                                 }
                                 break;
                             case GET_ALL_RESERVATIONS:
-                                List<Reservation> reservations = adminHelper.getAllReservations(writer, admin);
+                                adminHelper.getAllReservations(writer, admin);
                                 if (adminHelper.shouldExit(reader, writer)) {
                                     return;
                                 }
