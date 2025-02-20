@@ -12,6 +12,7 @@ public class AdminControllerHelper {
 
     private static final AdminController adminController = new AdminController();
 
+
     public static String showAdminMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write(""" 
                                 
@@ -84,85 +85,100 @@ public class AdminControllerHelper {
                                 
                 """);
         writer.flush();
+        CoworkingType coworkingType = null;
 
-        CoworkingType coworkingType = CoworkingType.values()[Integer.parseInt(reader.readLine())];
-        Facility.FacilityBuilder builder = new Facility.FacilityBuilder();
-        writer.write("""
-                                                        
-                Choose the facilities. Write numbers comma-separated on one line:
-                NO Facilities - just press Enter,
-                PARKING - 0,
-                WIFI - 1,
-                KITCHEN - 2,
-                PRINTER - 3,
-                CONDITIONING - 4
-                                
-                """);
-        writer.flush();
-
-        String facilitiesIndexesOnOneLine = reader.readLine();
-        if (!StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
-            space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
-                    .build();
-            adminController.addCoworkingSpace(space);
-        } else {
-            String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
-            for (int i = 0; i < facilitiesIndexes.length; i++) {
-                int facilityIndex = Integer.parseInt(facilitiesIndexes[i].trim());
-                builder.addFeature(Facility.Feature.values()[facilityIndex]);
+        while (coworkingType == null) {
+            try {
+                int coworkingTypeIndex = Integer.parseInt(reader.readLine());
+                if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
+                    writer.write("""
+                            You put a wrong symbol. Try again
+                            """);
+                    writer.flush();
+                    continue;
+                }
+                coworkingType = CoworkingType.values()[coworkingTypeIndex];
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка: введите корректное число." + e.getMessage());
             }
-            Facility facility = builder.build();
-
-            space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
-                    .setFacility(facility)
-                    .build();
-
-            adminController.addCoworkingSpace(space);
         }
-        writer.write("""
-
-                You just added a new Space:
-                """ + adminController.getSpaceById(id) + """
-                                
-                """);
-    }
-
-    public static void removeCoworkingSpace(BufferedReader reader, BufferedWriter writer) throws IOException {
-        List<Coworking> spaces = adminController.getAllCoworkingSpaces();
-        if (spaces.isEmpty()) {
+            Facility.FacilityBuilder builder = new Facility.FacilityBuilder();
             writer.write("""
-                    There are no available spaces:
-                    """);
-            writer.flush();
-        } else {
-            writer.write("""
-                    Available spaces:
-                    """ + adminController.getAllCoworkingSpaces());
-
-            writer.flush();
-            writer.write("""
-                                    
-                    Type the id of the space you want to delete
+                                                            
+                    Choose the facilities. Write numbers comma-separated on one line:
+                    NO Facilities - just press Enter,
+                    PARKING - 0,
+                    WIFI - 1,
+                    KITCHEN - 2,
+                    PRINTER - 3,
+                    CONDITIONING - 4
                                     
                     """);
             writer.flush();
 
-            int spaceId = Integer.parseInt(reader.readLine().trim());
-            adminController.removeCoworkingSpace(spaceId);
-            writer.write("You just removed a Space with id: " + spaceId);
-        }
-    }
+            String facilitiesIndexesOnOneLine = reader.readLine();
+            if (!StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
+                space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
+                        .build();
+                adminController.addCoworkingSpace(space);
+            } else {
+                String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
+                for (int i = 0; i < facilitiesIndexes.length; i++) {
+                    int facilityIndex = Integer.parseInt(facilitiesIndexes[i].trim());
+                    builder.addFeature(Facility.Feature.values()[facilityIndex]);
+                }
+                Facility facility = builder.build();
 
-    public static List<Coworking> getAllCoworkingSpaces(BufferedReader reader, BufferedWriter writer) throws
-            IOException {
-        List<Coworking> coworkingSpaces = adminController.getAllCoworkingSpaces();
-        if (coworkingSpaces.isEmpty()) {
+                space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
+                        .setFacility(facility)
+                        .build();
+
+                adminController.addCoworkingSpace(space);
+            }
             writer.write("""
-                    You haven't made any reservations yet
+
+                    You just added a new Space:
+                    """ + adminController.getSpaceById(id) + """
+                                    
                     """);
-            writer.flush();
         }
 
-        return coworkingSpaces;
+        public static void removeCoworkingSpace (BufferedReader reader, BufferedWriter writer) throws IOException {
+            List<Coworking> spaces = adminController.getAllCoworkingSpaces();
+            if (spaces.isEmpty()) {
+                writer.write("""
+                        There are no available spaces:
+                        """);
+                writer.flush();
+            } else {
+                writer.write("""
+                        Available spaces:
+                        """ + adminController.getAllCoworkingSpaces());
+
+                writer.flush();
+                writer.write("""
+                                        
+                        Type the id of the space you want to delete
+                                        
+                        """);
+                writer.flush();
+
+                int spaceId = Integer.parseInt(reader.readLine().trim());
+                adminController.removeCoworkingSpace(spaceId);
+                writer.write("You just removed a Space with id: " + spaceId);
+            }
+        }
+
+        public static List<Coworking> getAllCoworkingSpaces (BufferedWriter writer) throws
+        IOException {
+            List<Coworking> coworkingSpaces = adminController.getAllCoworkingSpaces();
+            if (coworkingSpaces.isEmpty()) {
+                writer.write("""
+                        You haven't made any reservations yet
+                        """);
+                writer.flush();
+            }
+
+            return coworkingSpaces;
+        }
     }
-}

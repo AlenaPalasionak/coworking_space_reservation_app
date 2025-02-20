@@ -3,13 +3,16 @@ package org.example.coworking.service;
 import org.example.coworking.model.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationService {
     void addReservation(Reservation reservation);
 
-    void cancelReservation(int id);
+    void cancelReservation(int reservationId, int customerId, int coworkingId);
 
     List<Reservation> getAllReservations();
 
     List<Reservation> getReservationsByCustomer(int customerId);
+
+    Optional<Reservation> getReservationById(int reservationId);
 }

@@ -18,9 +18,9 @@ public class Facility {
         this.features = facilityBuilder.features;
     }
 
-    public boolean hasFeature(Feature feature) {
-        return features.contains(feature);
-    }
+//    public boolean hasFeature(Feature feature) {
+//        return features.contains(feature);
+//    }
 
     @Override
     public String toString() {

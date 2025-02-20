@@ -12,4 +12,13 @@ public class Reservation {
     private ReservationPeriod period;
     Coworking coworking;
 
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +
+                ", customer=" + customer +
+                ", coworkingId=" + coworkingId +
+                ", period=" + period +
+                '}';
+    }
 }

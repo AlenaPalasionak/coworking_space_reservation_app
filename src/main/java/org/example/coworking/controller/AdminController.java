@@ -4,31 +4,40 @@ import org.example.coworking.model.Coworking;
 import org.example.coworking.model.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
-public class AdminController extends AbstractUserController {
+public class AdminController extends UserController {
 
     public AdminController() {
         super();
     }
 
-    public  void addCoworkingSpace(Coworking space) {
+    public void addCoworkingSpace(Coworking space) {
         coworkingService.addSpace(space);
     }
 
-    public  void removeCoworkingSpace(int id) {
+    public void removeCoworkingSpace(int id) {
         coworkingService.removeSpace(id);
     }
 
-    public  List<Reservation> getAllReservations() {
+    public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
-    public  void updateCoworkingSpace(Coworking space, int id) {
-        coworkingService.updateSpace(space, id);
+    public void updateCoworkingSpace(Coworking newCoworking, int toReplaceCoworkingId) {
+        coworkingService.updateSpace(newCoworking, toReplaceCoworkingId);
     }
 
-    public  Coworking getSpaceById(int id) {
+    public Coworking getSpaceById(int id) {
         return coworkingService.getById(id);
+    }
+
+    public List<Coworking> getAllCoworkingSpaces() {
+        return coworkingService.getAllSpaces();
+    }
+
+    public Optional<Reservation> getReservationById(int reservationId) {
+        return reservationService.getReservationById(reservationId);
     }
 }
 

@@ -25,8 +25,8 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void updateSpace(Coworking coworking, int id) {
-        coworkingDao.updateSpace(coworking, id);
+    public void updateSpace(Coworking newCoworking, int toReplaceCoworkingId) {
+        coworkingDao.updateSpace(newCoworking, toReplaceCoworkingId);
     }
 
     @Override

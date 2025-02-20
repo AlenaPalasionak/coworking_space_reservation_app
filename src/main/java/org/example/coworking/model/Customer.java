@@ -1,7 +1,9 @@
 package org.example.coworking.model;
 
-import java.util.List;
+import lombok.ToString;
 
+import java.util.List;
+@ToString
 public class Customer extends User {
     List<Reservation> reservations;
 

@@ -4,10 +4,11 @@ import org.example.coworking.model.Reservation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ReservationDAOImpl implements ReservationDAO {
-    private List<Reservation> reservations = new ArrayList<>();
+    private static final List<Reservation> reservations = new ArrayList<>();
 
     @Override
     public void addReservation(Reservation reservation) {
@@ -15,10 +16,8 @@ public class ReservationDAOImpl implements ReservationDAO {
     }
 
     @Override
-    public void cancelReservation(int id) {
-        reservations = reservations.stream()
-                .filter(reservation -> reservation.getId() != id)
-                .collect(Collectors.toList());
+    public void cancelReservation(int reservationId, int customerId, int coworkingId) {
+        reservations.removeIf(r -> r.getId() == reservationId && r.getCustomer().getId() == customerId);
     }
 
     @Override
@@ -31,5 +30,14 @@ public class ReservationDAOImpl implements ReservationDAO {
         return reservations.stream()
                 .filter(reservation -> reservation.getCustomer().getId() == customerId)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Reservation> getReservationById(int reservationId) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getId() == reservationId) {
+                return Optional.of(reservation);
+            }
+        }
+        return Optional.empty(); // Возвращаем пустой Optional, если резервирование не найдено
     }
 }

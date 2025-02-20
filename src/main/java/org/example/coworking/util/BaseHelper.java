@@ -1,11 +1,8 @@
 package org.example.coworking.util;
 
-import org.example.coworking.model.Coworking;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class BaseHelper {
     public static boolean shouldExit(BufferedReader reader, BufferedWriter writer) throws IOException {

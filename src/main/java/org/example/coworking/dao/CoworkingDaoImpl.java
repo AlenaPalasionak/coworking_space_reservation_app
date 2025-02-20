@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CoworkingDaoImpl implements CoworkingDao {
-    private List<Coworking> coworkingSpaces = new ArrayList<>();
+    private static List<Coworking> coworkingSpaces = new ArrayList<>();
 
     @Override
     public void addSpace(Coworking space) {
@@ -27,7 +27,7 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public void updateSpace(Coworking newCoworking, int id) {
+    public void updateSpace(Coworking newCoworking, int toReplaceCoworkingId) {
         coworkingSpaces = coworkingSpaces.stream()
                 .map(oldCoworking -> oldCoworking.getId() == newCoworking.getId() ? newCoworking : oldCoworking)
                 .collect(Collectors.toList());
@@ -37,4 +37,6 @@ public class CoworkingDaoImpl implements CoworkingDao {
     public Coworking getById(int id) {
         return coworkingSpaces.get(id);
     }
+
+
 }

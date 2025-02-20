@@ -5,6 +5,7 @@ import org.example.coworking.dao.ReservationDAOImpl;
 import org.example.coworking.model.Reservation;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ReservationServiceImpl implements ReservationService {
     ReservationDAO reservationDAO = new ReservationDAOImpl();
@@ -15,8 +16,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void cancelReservation(int id) {
-        reservationDAO.cancelReservation(id);
+    public void cancelReservation(int reservationId, int customerId, int coworkingId) {
+        reservationDAO.cancelReservation(reservationId, customerId, coworkingId);
     }
 
     @Override
@@ -27,5 +28,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getReservationsByCustomer(int customerId) {
         return reservationDAO.getReservationsByCustomer(customerId);
+    }
+
+    @Override
+    public Optional<Reservation> getReservationById(int reservationId) {
+        return reservationDAO.getReservationById(reservationId);
     }
 }
