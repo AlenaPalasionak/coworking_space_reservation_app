@@ -2,10 +2,7 @@ package org.example.coworking.util;
 
 import org.example.coworking.controller.AdminController;
 import org.example.coworking.controller.CustomerController;
-import org.example.coworking.model.Coworking;
-import org.example.coworking.model.Customer;
-import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
+import org.example.coworking.model.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,52 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomerControllerHelper {
+public class CustomerHelper implements BaiseHelper {
     static CustomerController customerController = new CustomerController();
     static AdminController adminController = new AdminController();
 
-    public static void cancelReservation(BufferedReader reader, BufferedWriter writer, Customer customer) throws IOException {
-        writer.write("Your reservations:\n" + customerController.getReservationsByCustomer(customer.getId()) +
-                "\nType reservation Id you want to cancel");
-        writer.flush();
-        int reservationId = Integer.parseInt(reader.readLine());
-        Optional<Reservation> reservationById = adminController.getReservationById(reservationId);
-        Reservation reservation;
-        if (reservationById.isPresent()) {
-            reservation = reservationById.get();
-        } else {
-            writer.write("Reservation with Id " + reservationId + " is absent");
-            return;
-        }
-        int canceledCoworkingId = reservation.getCoworkingId();
-        customerController.cancelReservation(reservationId, customer.getId(), canceledCoworkingId);
-        Coworking canceledCoworking = adminController.getSpaceById(reservation.getCoworkingId());
-        List<ReservationPeriod> reservationPeriods = canceledCoworking.getReservationsPeriods();
-
-        ReservationPeriod cansceledReservationPeriod = reservation.getPeriod();
-        reservationPeriods = reservationPeriods.stream()
-                .filter(p -> !p.equals(cansceledReservationPeriod)).toList();
-        canceledCoworking.addReservationPeriods(reservationPeriods);
-
-        adminController.updateCoworkingSpace(canceledCoworking, canceledCoworkingId);
-        writer.write("Reservation with Id " + reservationId + " is canceled");
-        writer.flush();
-    }
-
-    public static String showCustomerMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
+    @Override
+    public String showMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write(""" 
-                                
                 Press 1 to browse available spaces.
                 Press 2 to Make a reservation.
                 Press 3 to view your reservations.
                 Press 4 to cancel a reservation.
-                                
                 """);
         writer.flush();
         return reader.readLine();
     }
 
-    public static Customer customerLogIn(BufferedReader reader, BufferedWriter writer) throws IOException {
+    @Override
+    public User logIn(BufferedReader reader, BufferedWriter writer) throws IOException {
         Customer customer = null;
         boolean isLoggedIn = false;
         while (!isLoggedIn) {
@@ -93,8 +62,8 @@ public class CustomerControllerHelper {
         return customer;
     }
 
-    public static void addReservation(BufferedReader reader, BufferedWriter writer, Customer customer) throws
-            IOException {
+    @Override
+    public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         int customerId = customer.getId();
         if (customerController.getAllCoworkingSpaces().isEmpty()) {
             writer.write("""
@@ -148,33 +117,56 @@ public class CustomerControllerHelper {
             reservationPeriods.add(period);
             reservedCoworking.addReservationPeriods(reservationPeriods);
         }
-        writer.write("You just made a reservation: " + customerController.getReservationsByCustomer(customerId));
+        writer.write("You just made a reservation:\n" + customerController.getReservationsByCustomer(customerId));
         writer.flush();
     }
 
-    public static List<Reservation> getCustomerReservations(BufferedWriter writer, Customer
-            customer) throws IOException {
+    @Override
+    public List<Reservation> getAllReservations(BufferedWriter writer, User customer) throws IOException {
         List<Reservation> reservations = customerController.getReservationsByCustomer(customer.getId());
         if (reservations.isEmpty()) {
-            writer.write("""
-                    You haven't made any reservations yet
-                    """);
+            writer.write(customer.getName() + ", you haven't made any reservations yet");
             writer.flush();
         }
-
+        writer.write("Your reservation(s):\n" + reservations);
+        writer.flush();
         return reservations;
     }
 
-    public static List<Coworking> getAllCoworkingSpaces(BufferedWriter writer) throws
-            IOException {
-        List<Coworking> coworkingSpaces = adminController.getAllCoworkingSpaces();
-        if (coworkingSpaces.isEmpty()) {
-            writer.write("""
-                    There are no available coworking spaces.
-                    """);
-            writer.flush();
+    @Override
+    public void delete(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
+        List<Reservation> reservationsByCustomer = customerController.getReservationsByCustomer(customer.getId());
+        writer.write("Your reservations:\n" + reservationsByCustomer + "\nType reservation Id you want to cancel");
+        writer.flush();
+        int reservationId = Integer.parseInt(reader.readLine());
+        Optional<Reservation> reservationById = adminController.getReservationById(reservationId);
+        Reservation reservation;
+        if (reservationById.isPresent()) {
+            reservation = reservationById.get();
+        } else {
+            writer.write("Reservation with Id " + reservationId + " is absent");
+            return;
         }
+        int canceledCoworkingId = reservation.getCoworkingId();
+        int customerId = customer.getId();
+        customerController.cancelReservation(reservationId, customerId, canceledCoworkingId);
+        Coworking canceledCoworking = adminController.getSpaceById(reservation.getCoworkingId());
+        List<ReservationPeriod> reservationPeriods = canceledCoworking.getReservationsPeriods();
 
-        return coworkingSpaces;
+        //FIXME check this part of code. Make it update coworkingPlace
+        ReservationPeriod cansceledReservationPeriod = reservation.getPeriod();
+        reservationPeriods = reservationPeriods.stream()
+                .filter(p -> !p.equals(cansceledReservationPeriod)).toList();
+        canceledCoworking.addReservationPeriods(reservationPeriods);
+
+        adminController.updateCoworkingSpace(canceledCoworking, canceledCoworkingId);
+        //
+        writer.write("Reservation with Id " + reservationId + " is canceled");
+        writer.flush();
+    }
+
+    @Override
+    public void deleteAll(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
+//TODO
     }
 }

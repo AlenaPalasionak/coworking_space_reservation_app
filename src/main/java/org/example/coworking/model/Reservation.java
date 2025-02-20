@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class Reservation {
     private int id;
-    private Customer customer;
+    private User customer;
     private int coworkingId;
     private ReservationPeriod period;
     Coworking coworking;
