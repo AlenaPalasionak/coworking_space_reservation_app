@@ -37,6 +37,4 @@ public class CoworkingDaoImpl implements CoworkingDao {
     public Coworking getById(int id) {
         return coworkingSpaces.get(id);
     }
-
-
 }

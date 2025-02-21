@@ -4,6 +4,12 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class Facility {
+    private final Set<Feature> features;
+
+    private Facility(FacilityBuilder facilityBuilder) {
+        this.features = facilityBuilder.features;
+    }
+
     public enum Feature {
         PARKING,
         WIFI,
@@ -11,16 +17,6 @@ public class Facility {
         PRINTER,
         CONDITIONING
     }
-
-    private final Set<Feature> features;
-
-    private Facility(FacilityBuilder facilityBuilder) {
-        this.features = facilityBuilder.features;
-    }
-
-//    public boolean hasFeature(Feature feature) {
-//        return features.contains(feature);
-//    }
 
     @Override
     public String toString() {

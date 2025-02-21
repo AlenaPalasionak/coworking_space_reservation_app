@@ -6,7 +6,7 @@ import org.example.coworking.model.Coworking;
 
 import java.util.List;
 
-public class CoworkingServiceImpl implements CoworkingService {
+public class CoworkingServiceImpl implements CoworkingServise {
     CoworkingDao coworkingDao = new CoworkingDaoImpl();
 
     @Override
@@ -25,8 +25,8 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void updateSpace(Coworking newCoworking, int toReplaceCoworkingId) {
-        coworkingDao.updateSpace(newCoworking, toReplaceCoworkingId);
+    public void updateSpace(Coworking newCoworkingVersion, int oldCoworkingVersionId) {
+        coworkingDao.updateSpace(newCoworkingVersion, oldCoworkingVersionId);
     }
 
     @Override

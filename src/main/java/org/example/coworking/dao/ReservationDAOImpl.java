@@ -1,6 +1,8 @@
 package org.example.coworking.dao;
 
+import org.example.coworking.model.Coworking;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,5 +41,15 @@ public class ReservationDAOImpl implements ReservationDAO {
             }
         }
         return Optional.empty(); // Возвращаем пустой Optional, если резервирование не найдено
+    }
+
+    @Override
+    public void addReservationPeriod(Coworking coworking, ReservationPeriod period) {
+        coworking.getReservationsPeriods().add(period);
+    }
+
+    @Override
+    public void removeReservationPeriod(Coworking coworking, ReservationPeriod period) {
+        coworking.getReservationsPeriods().remove(period);
     }
 }

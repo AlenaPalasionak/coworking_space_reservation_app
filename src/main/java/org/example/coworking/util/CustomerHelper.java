@@ -2,6 +2,7 @@ package org.example.coworking.util;
 
 import org.example.coworking.controller.AdminController;
 import org.example.coworking.controller.CustomerController;
+import org.example.coworking.dao.IdGenerator;
 import org.example.coworking.model.*;
 
 import java.io.BufferedReader;
@@ -9,7 +10,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,9 +92,7 @@ public class CustomerHelper implements BaseHelper {
                     , customer, coworkingId, period, coworkingToReserve);
             customerController.addReservation(reservation);
             Coworking reservedCoworking = adminController.getSpaceById(coworkingId);
-            List<ReservationPeriod> reservationPeriods = new ArrayList<>();
-            reservationPeriods.add(period);
-            reservedCoworking.addReservationPeriods(reservationPeriods);
+            customerController.addReservationPeriod(reservedCoworking, period);
         }
         writer.write("You just made a reservation:\n" + customerController.getReservationsByCustomer(customerId));
         writer.flush();
@@ -128,18 +126,11 @@ public class CustomerHelper implements BaseHelper {
         }
         int canceledCoworkingId = reservation.getCoworkingId();
         int customerId = customer.getId();
+        ReservationPeriod period = reservation.getPeriod();
         customerController.cancelReservation(reservationId, customerId, canceledCoworkingId);
         Coworking canceledCoworking = adminController.getSpaceById(reservation.getCoworkingId());
-        List<ReservationPeriod> reservationPeriods = canceledCoworking.getReservationsPeriods();
+        customerController.removeReservationPeriod(canceledCoworking, period);
 
-        //FIXME check this part of code. Make it update coworkingPlace
-        ReservationPeriod cansceledReservationPeriod = reservation.getPeriod();
-        reservationPeriods = reservationPeriods.stream()
-                .filter(p -> !p.equals(cansceledReservationPeriod)).toList();
-        canceledCoworking.addReservationPeriods(reservationPeriods);
-
-        adminController.updateCoworkingSpace(canceledCoworking, canceledCoworkingId);
-        //
         writer.write("Reservation with Id " + reservationId + " is canceled\n");
         writer.flush();
     }

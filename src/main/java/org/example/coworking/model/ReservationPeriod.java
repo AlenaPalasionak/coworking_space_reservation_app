@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @ToString
 @EqualsAndHashCode
 public class ReservationPeriod {
-    private LocalDate bookingDate;
+    private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
 }

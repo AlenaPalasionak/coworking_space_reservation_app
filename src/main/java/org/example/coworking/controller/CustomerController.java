@@ -2,6 +2,7 @@ package org.example.coworking.controller;
 
 import org.example.coworking.model.Coworking;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 
 import java.util.List;
 
@@ -25,5 +26,13 @@ public class CustomerController extends UserController {
 
     public List<Coworking> getAllCoworkingSpaces() {
         return coworkingService.getAllSpaces();
+    }
+
+    public void addReservationPeriod(Coworking coworking, ReservationPeriod period) {
+        reservationService.addReservationPeriod(coworking, period);
+    }
+
+    public void removeReservationPeriod(Coworking coworking, ReservationPeriod period) {
+        reservationService.removeReservationPeriod(coworking, period);
     }
 }

@@ -1,6 +1,7 @@
 package org.example.coworking.util;
 
 import org.example.coworking.controller.AdminController;
+import org.example.coworking.dao.IdGenerator;
 import org.example.coworking.model.*;
 
 import java.io.BufferedReader;
@@ -72,7 +73,6 @@ public class AdminHelper implements BaseHelper {
         writer.flush();
 
         double price = Double.parseDouble(reader.readLine());
-        boolean isAvailable = true;
         writer.write(COWORKING_TYPE_MENU);
         writer.flush();
         CoworkingType coworkingType = null;
@@ -94,25 +94,19 @@ public class AdminHelper implements BaseHelper {
         writer.write(FACILITY_MENU);
         writer.flush();
 
+        Facility facility = null;
         String facilitiesIndexesOnOneLine = reader.readLine();
-        if (!StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
-            space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
-                    .build();
-            adminController.addCoworkingSpace(space);
-        } else {
+        if (StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
             String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
             for (String facilitiesIndex : facilitiesIndexes) {
                 int facilityIndex = Integer.parseInt(facilitiesIndex.trim());
                 builder.addFeature(Facility.Feature.values()[facilityIndex]);
             }
-            Facility facility = builder.build();
-
-            space = new Coworking.CoworkingSpaceBuilder(id, price, isAvailable, coworkingType)
-                    .setFacility(facility)
-                    .build();
-
-            adminController.addCoworkingSpace(space);
+            facility = builder.build();
         }
+        space = new Coworking(id, price, coworkingType, facility);
+        adminController.addCoworkingSpace(space);
+
         writer.write(admin.getName() + ", you just added a new Space:\n" +
                 adminController.getSpaceById(id));
     }
