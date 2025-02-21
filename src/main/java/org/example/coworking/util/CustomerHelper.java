@@ -13,11 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.util.Constant.CUSTOMER_MENU;
-
 public class CustomerHelper implements BaseHelper {
     static CustomerController customerController = new CustomerController();
     static AdminController adminController = new AdminController();
+    public static final String CUSTOMER_MENU = """ 
+            Press 1 to browse available spaces.
+            Press 2 to Make a reservation.
+            Press 3 to view your reservations.
+            Press 4 to cancel a reservation.
+            """;
 
     @Override
     public String showMenu(BufferedReader reader, BufferedWriter writer) throws IOException {

@@ -8,11 +8,29 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
-import static org.example.coworking.util.Constant.*;
-
 public class AdminHelper implements BaseHelper {
 
     private static final AdminController adminController = new AdminController();
+    public static final String ADMIN_MENU = """ 
+            Press 1 to add a new coworking space.
+            Press 2 to remove a coworking space.
+            Press 3 to view all reservations.
+            """;
+    public static final String COWORKING_TYPE_MENU = """
+            Choose the coworking type (press only one of the numbers):
+            Open space coworking - 0
+            Private Office - 1
+            Coworking+Co-living - 2
+            """;
+    public static final String FACILITY_MENU = """
+            Choose the facilities. Write numbers comma-separated on one line:
+            NO Facilities - just press Enter,
+            PARKING - 0,
+            WIFI - 1,
+            KITCHEN - 2,
+            PRINTER - 3,
+            CONDITIONING - 4
+            """;
 
     @Override
     public String showMenu(BufferedReader reader, BufferedWriter writer) throws IOException {
