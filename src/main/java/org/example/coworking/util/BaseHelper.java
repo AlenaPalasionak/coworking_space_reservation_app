@@ -12,18 +12,43 @@ import java.util.List;
 import static org.example.coworking.util.CustomerHelper.adminController;
 
 public interface BaseHelper {
+    String WELCOME_MENU = """
+                                    
+            Welcome to the Coworking Space Reservation!
+            If you are an *admin* press 1
+            If you are a *customer* press 2
+            If you want to exit press 0
+                                
+            """;
 
-    default boolean shouldExit(BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write("""
-                                            
-                Cansel the program?
-                No - press 0
-                Yes - press 1
-                                                        
-                """);
-        writer.flush();
-        String exitNotification2 = reader.readLine();
-        return exitNotification2.equals("1");
+    static String getUserRoleIdentifier(BufferedReader reader, BufferedWriter writer) throws IOException {
+        String userRoleIdentifier;
+        while (true) {
+            writer.write(WELCOME_MENU);
+            writer.flush();
+            userRoleIdentifier = reader.readLine();
+            if (!(userRoleIdentifier.equals("0") || userRoleIdentifier.equals("1") || userRoleIdentifier.equals("2"))) {
+                writer.write("You entered the wrong symbol, try again:\n");
+            } else {
+                return userRoleIdentifier;
+            }
+        }
+    }
+
+    static String chooseNextStep(BufferedReader reader, BufferedWriter writer) throws IOException {
+        while (true) {
+            writer.write("""
+                                    
+                    Menu - press 1
+                    Log out - press 0
+                                
+                    """);
+            writer.flush();
+            String exitNotification = reader.readLine();
+            if (!(exitNotification.equals("0") || exitNotification.equals("1"))) {
+                writer.write("You entered the wrong symbol, try again:\n");
+            } else return exitNotification;
+        }
     }
 
     default List<Coworking> getAllCoworkingPlaces(BufferedWriter writer, User customer) throws IOException {

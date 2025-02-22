@@ -18,7 +18,7 @@ public interface ReservationDAO {
 
     Optional<Reservation> getReservationById(int reservationId);
 
-    public void addReservationPeriod(Coworking coworking, ReservationPeriod period);
+    void addReservationPeriod(Coworking coworking, ReservationPeriod period);
 
-    public void removeReservationPeriod(Coworking coworking, ReservationPeriod period);
+    void removeReservationPeriod(Coworking coworking, ReservationPeriod period);
 }

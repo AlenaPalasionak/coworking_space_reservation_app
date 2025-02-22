@@ -1,5 +1,8 @@
 package org.example.coworking.model;
 
+import lombok.Getter;
+
+@Getter
 public enum CoworkingType {
     OPEN_SPACE("Open space coworking"),
     PRIVATE_OFFICE( "Private Office"),
@@ -9,9 +12,5 @@ public enum CoworkingType {
 
     CoworkingType(String description) {
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }
