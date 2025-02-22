@@ -1,17 +1,15 @@
 package org.example.coworking.util;
 
-import org.example.coworking.controller.AdminController;
-import org.example.coworking.dao.IdGenerator;
 import org.example.coworking.model.*;
+import org.example.coworking.repository.IdGenerator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class AdminHelper implements BaseHelper {
+public class AdminHelper extends BaseHelperImpl {
 
-    private static final AdminController adminController = new AdminController();
     public static final String ADMIN_MENU = """ 
             Press 1 to add a new coworking space.
             Press 2 to remove a coworking space.
@@ -40,30 +38,6 @@ public class AdminHelper implements BaseHelper {
         return reader.readLine();
     }
 
-    @Override
-    public User logIn(BufferedReader reader, BufferedWriter writer) throws IOException {
-        Admin admin = null;
-        boolean isLoggedIn = false;
-        while (!isLoggedIn) {
-            writer.write("Enter your admin name, please.\n");
-            writer.flush();
-            String adminName = reader.readLine().trim();
-            writer.write(adminName + ", Enter your admin password, please.\n");
-            writer.flush();
-            String adminPassword = reader.readLine().trim();
-            if (PasswordValidator.isAdminLoginDataValid(adminName, adminPassword)) {
-                isLoggedIn = true;
-                int adminId = IdGenerator.generateUserId();
-                admin = new Admin(adminId, adminName, adminPassword);
-                writer.write("You have successfully logged in.\n");
-                writer.flush();
-            } else {
-                writer.write("Your login data are wrong. To try again\n");
-                writer.flush();
-            }
-        }
-        return admin;
-    }
 
     @Override
     public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
@@ -107,8 +81,7 @@ public class AdminHelper implements BaseHelper {
         space = new Coworking(id, price, coworkingType, facility);
         adminController.addCoworkingSpace(space);
 
-        writer.write(admin.getName() + ", you just added a new Space:\n" +
-                adminController.getSpaceById(id));
+        writer.write(admin.getName() + ", you just added a new Space:\n" + adminController.getSpaceById(id));
     }
 
     @Override
@@ -136,4 +109,5 @@ public class AdminHelper implements BaseHelper {
             writer.write(admin.getName() + ", you just removed a Space with id: " + coworkingSpaceId);
         }
     }
+
 }

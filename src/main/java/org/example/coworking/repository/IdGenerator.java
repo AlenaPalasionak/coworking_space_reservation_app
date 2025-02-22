@@ -1,4 +1,4 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 public class IdGenerator {
     private static int userId = 0;

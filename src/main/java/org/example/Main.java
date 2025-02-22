@@ -1,16 +1,16 @@
 package org.example;
 
-import org.example.coworking.model.User;
-import org.example.coworking.util.AdminHelper;
-import org.example.coworking.util.BaseHelper;
-import org.example.coworking.util.CustomerHelper;
-import org.example.coworking.util.PasswordValidator;
+import org.example.coworking.model.Admin;
+import org.example.coworking.model.Customer;
+import org.example.coworking.util.*;
 
 import java.io.*;
+import java.util.Optional;
 
 public class Main {
-    static User admin;
-    static User customer;
+    static Admin admin = new Admin();
+    static Customer customer = new Customer();
+    ;
     static BaseHelper adminHelper = new AdminHelper();
     static BaseHelper customerHelper = new CustomerHelper();
     public static final String EXIT = "0";
@@ -25,19 +25,19 @@ public class Main {
     public static final String DELETE_RESERVATION = "4";
 
     public static void main(String[] args) {
+
         PasswordValidator.loadLoginData();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
 
             while (true) {
                 boolean logOut = false;
                 String nextStep;
-                String userRoleIdentifier = BaseHelper.getUserRoleIdentifier(reader, writer);
-
+                String userRoleIdentifier = BaseHelperImpl.getUserRoleIdentifier(reader, writer);
                 if (userRoleIdentifier.equals(EXIT)) {
                     break;
                 } else if (userRoleIdentifier.equals(ADMIN)) {
-                    admin = adminHelper.logIn(reader, writer);
-
+                    Optional<Admin> adminOptional = BaseHelperImpl.logIn(reader, writer, Admin.class);
+                    Admin admin = adminOptional.get();
                     while (!logOut) {
                         String adminOptionChoice = adminHelper.showMenu(reader, writer);
                         switch (adminOptionChoice) {
@@ -51,19 +51,19 @@ public class Main {
                                 adminHelper.getAllReservations(writer, admin);
                                 break;
                         }
-                        nextStep = BaseHelper.chooseNextStep(reader, writer);
+                        nextStep = BaseHelperImpl.chooseNextStep(reader, writer);
                         if (nextStep.equals(EXIT)) {
                             logOut = true;
                         }
                     }
                 } else if (userRoleIdentifier.equals(CUSTOMER)) {
-                    customer = customerHelper.logIn(reader, writer);
-
-                    while (!logOut) { // Используем логический выход из цикла
+                    Optional<Customer> customerOptional = BaseHelperImpl.logIn(reader, writer, Customer.class);
+                    Customer customer = customerOptional.get();
+                    while (!logOut) {
                         String customerOptionChoice = customerHelper.showMenu(reader, writer);
                         switch (customerOptionChoice) {
                             case GET_AVAILABLE_COWORKING_SPACES:
-                                customerHelper.getAllCoworkingPlaces(writer, customer);
+                                BaseHelperImpl.getAllCoworkingPlaces(writer, customer);
                                 break;
                             case ADD_RESERVATION:
                                 customerHelper.add(reader, writer, customer);
@@ -75,7 +75,7 @@ public class Main {
                                 customerHelper.delete(reader, writer, customer);
                                 break;
                         }
-                        nextStep = BaseHelper.chooseNextStep(reader, writer);
+                        nextStep = BaseHelperImpl.chooseNextStep(reader, writer);
                         if (nextStep.equals(EXIT)) {
                             logOut = true;
                         }

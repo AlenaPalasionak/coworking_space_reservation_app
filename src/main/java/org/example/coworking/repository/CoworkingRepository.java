@@ -1,10 +1,10 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import org.example.coworking.model.Coworking;
 
 import java.util.List;
 
-public interface CoworkingDao {
+public interface CoworkingRepository {
     void addSpace(Coworking space);
 
     List<Coworking> getAllSpaces();

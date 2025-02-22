@@ -1,4 +1,4 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import org.example.coworking.model.Coworking;
 import org.example.coworking.model.Reservation;
@@ -7,7 +7,7 @@ import org.example.coworking.model.ReservationPeriod;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationDAO {
+public interface ReservationRepository {
     void addReservation(Reservation reservation);
 
     void cancelReservation(int reservationId, int customerId, int coworkingId);

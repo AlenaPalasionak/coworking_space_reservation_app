@@ -1,4 +1,4 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import org.example.coworking.model.Coworking;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CoworkingDaoImpl implements CoworkingDao {
+public class CoworkingRepositoryImpl implements CoworkingRepository {
     private static List<Coworking> coworkingSpaces = new ArrayList<>();
 
     @Override

@@ -1,4 +1,4 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import org.example.coworking.model.Coworking;
 import org.example.coworking.model.Reservation;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ReservationDAOImpl implements ReservationDAO {
+public class ReservationRepositoryImpl implements ReservationRepository {
     private static final List<Reservation> reservations = new ArrayList<>();
 
     @Override

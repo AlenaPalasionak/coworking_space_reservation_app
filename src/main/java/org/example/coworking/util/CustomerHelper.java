@@ -1,9 +1,10 @@
 package org.example.coworking.util;
 
-import org.example.coworking.controller.AdminController;
-import org.example.coworking.controller.CustomerController;
-import org.example.coworking.dao.IdGenerator;
-import org.example.coworking.model.*;
+import org.example.coworking.model.Coworking;
+import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
+import org.example.coworking.model.User;
+import org.example.coworking.repository.IdGenerator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,9 +14,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomerHelper implements BaseHelper {
-    static CustomerController customerController = new CustomerController();
-    static AdminController adminController = new AdminController();
+public class CustomerHelper extends BaseHelperImpl {
     public static final String CUSTOMER_MENU = """ 
             Press 1 to browse available spaces.
             Press 2 to Make a reservation.
@@ -28,31 +27,6 @@ public class CustomerHelper implements BaseHelper {
         writer.write(CUSTOMER_MENU);
         writer.flush();
         return reader.readLine();
-    }
-
-    @Override
-    public User logIn(BufferedReader reader, BufferedWriter writer) throws IOException {
-        Customer customer = null;
-        boolean isLoggedIn = false;
-        while (!isLoggedIn) {
-            writer.write("Enter your customer name, please.\n");
-            writer.flush();
-            String customerName = reader.readLine().trim();
-            writer.write(customerName + ", enter your customer password, please.\n");
-            writer.flush();
-            String customerPassword = reader.readLine().trim();
-            if (PasswordValidator.isCustomerLoginDataValid(customerName, customerPassword)) {
-                isLoggedIn = true;
-                int customerId = IdGenerator.generateUserId();
-                customer = new Customer(customerId, customerName, customerPassword);
-                writer.write(" You have successfully logged in.\n");
-                writer.flush();
-            } else {
-                writer.write("Your login data are wrong. Press Enter to try again\n");
-                writer.flush();
-            }
-        }
-        return customer;
     }
 
     @Override
@@ -82,14 +56,9 @@ public class CustomerHelper implements BaseHelper {
             writer.flush();
             int endHour = Integer.parseInt(reader.readLine());
             int minute = 0;
-            ReservationPeriod period = new ReservationPeriod(
-                    LocalDate.of(year, month, day),
-                    LocalTime.of(startHour, minute),
-                    LocalTime.of(endHour, minute)
-            );
+            ReservationPeriod period = new ReservationPeriod(LocalDate.of(year, month, day), LocalTime.of(startHour, minute), LocalTime.of(endHour, minute));
             Coworking coworkingToReserve = adminController.getSpaceById(coworkingId);
-            Reservation reservation = new Reservation(IdGenerator.generateReservationId()
-                    , customer, coworkingId, period, coworkingToReserve);
+            Reservation reservation = new Reservation(IdGenerator.generateReservationId(), customer, coworkingId, period, coworkingToReserve);
             customerController.addReservation(reservation);
             Coworking reservedCoworking = adminController.getSpaceById(coworkingId);
             customerController.addReservationPeriod(reservedCoworking, period);
@@ -134,4 +103,5 @@ public class CustomerHelper implements BaseHelper {
         writer.write("Reservation with Id " + reservationId + " is canceled\n");
         writer.flush();
     }
+
 }

@@ -1,13 +1,13 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.CoworkingDao;
-import org.example.coworking.dao.CoworkingDaoImpl;
+import org.example.coworking.repository.CoworkingRepository;
+import org.example.coworking.repository.CoworkingRepositoryImpl;
 import org.example.coworking.model.Coworking;
 
 import java.util.List;
 
 public class CoworkingServiceImpl implements CoworkingServise {
-    CoworkingDao coworkingDao = new CoworkingDaoImpl();
+    CoworkingRepository coworkingDao = new CoworkingRepositoryImpl();
 
     @Override
     public void addSpace(Coworking space) {
