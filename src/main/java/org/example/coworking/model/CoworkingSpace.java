@@ -7,16 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-public class Coworking {
-    private final int id;
+public class CoworkingSpace {
+    @Setter
+    private int id;
     private final double price;
     private final CoworkingType coworkingType;
     private final Facility facility;
     private final List<ReservationPeriod> reservationsPeriods;
 
-    public Coworking(int id, double price, CoworkingType coworkingType, Facility facility) {
-        this.id = id;
+    public CoworkingSpace(double price, CoworkingType coworkingType, Facility facility) {
         this.price = price;
         this.coworkingType = coworkingType;
         this.facility = facility;
@@ -25,7 +24,7 @@ public class Coworking {
 
     @Override
     public String toString() {
-        return " Coworking { " +
+        return " CoworkingSpace { " +
                 "id=" + id +
                 ", price=" + price +
                 ", coworkingType=" + coworkingType +

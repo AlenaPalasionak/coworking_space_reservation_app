@@ -1,0 +1,15 @@
+[
+  {
+    "type": "admin",
+    "id": 1,
+    "name": "a",
+    "password": "1"
+  },
+  {
+    "type": "customer",
+    "id": 2,
+    "name": "c",
+    "password": "3"
+
+  }
+]

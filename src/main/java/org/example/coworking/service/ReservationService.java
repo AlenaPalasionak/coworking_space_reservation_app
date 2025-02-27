@@ -1,24 +1,19 @@
 package org.example.coworking.service;
 
-import org.example.coworking.model.Coworking;
+import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
+import org.example.coworking.model.User;
+import org.example.coworking.service.exception.ForbiddenActionException;
+import org.example.coworking.service.exception.ReservationNotFoundException;
+import org.example.coworking.service.exception.TimeOverlapException;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ReservationService {
-    void addReservation(Reservation reservation);
-
-    void cancelReservation(int reservationId, int customerId, int coworkingId);
-
-    List<Reservation> getAllReservations();
-
-    List<Reservation> getReservationsByCustomer(int customerId);
-
-    Optional<Reservation> getReservationById(int reservationId);
-
-    public void addReservationPeriod(Coworking coworking, ReservationPeriod period);
-
-    public void removeReservationPeriod(Coworking coworking, ReservationPeriod period);
+    void add(User customer, CoworkingSpace coworking, ReservationPeriod period) throws TimeOverlapException;
+    void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException;
+    List<Reservation> getAllReservations(User user);
+    Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException;
 }

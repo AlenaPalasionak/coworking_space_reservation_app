@@ -1,4 +1,4 @@
-package org.example.coworking.util;
+package org.example.coworking.infrastructure.util;
 
 import java.util.regex.Pattern;
 

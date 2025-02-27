@@ -1,13 +1,11 @@
 package org.example.coworking.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
-
-import java.util.List;
-@ToString
+@Getter
+@AllArgsConstructor
+@ToString(callSuper = true)
 public class Customer extends User {
-    List<Reservation> reservations;
 
-    public Customer(int id, String name, String password) {
-        super(id, name, password);
-    }
 }

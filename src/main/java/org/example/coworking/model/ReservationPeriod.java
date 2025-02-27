@@ -5,15 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
 @ToString
 @EqualsAndHashCode
 public class ReservationPeriod {
-    private LocalDate date;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }

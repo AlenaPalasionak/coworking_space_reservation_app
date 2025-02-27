@@ -1,24 +1,21 @@
 package org.example.coworking.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@AllArgsConstructor
 @Getter
+@ToString
 public class Reservation {
+    @Setter
     private int id;
-    private User customer;
-    private int coworkingId;
-    private ReservationPeriod period;
-    Coworking coworking;
+    private final User customer;
+    private final ReservationPeriod period;
+    private final CoworkingSpace coworkingSpace;
 
-    @Override
-    public String toString() {
-        return "Reservation{" +
-                "id=" + id +
-                ", customer=" + customer +
-                ", coworkingId=" + coworkingId +
-                ", period=" + period +
-                '}';
+    public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        this.customer = customer;
+        this.period = period;
+        this.coworkingSpace = coworkingSpace;
     }
 }
