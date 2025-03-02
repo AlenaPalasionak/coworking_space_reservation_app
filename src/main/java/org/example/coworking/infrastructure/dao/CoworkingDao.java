@@ -10,5 +10,6 @@ public interface CoworkingDao {
     List<CoworkingSpace> getAllSpaces();
     void updateSpace(CoworkingSpace newCoworkingSpace);
     CoworkingSpace getById(int id);
-
+    void getCoworkingPlacesFromJson();
+    void saveToJSON();
 }

@@ -14,5 +14,7 @@ public interface ReservationDao {
     List<Reservation> getAllReservations();
 
     List<Reservation> getReservationsByCustomer(int customerId) ;
+    void getReservationsFromJson();
+    void saveToJSON();
 
 }

@@ -16,4 +16,6 @@ public interface ReservationService {
     void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException;
     List<Reservation> getAllReservations(User user);
     Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException;
+    void getReservationsFromJson();
+    void saveToJSON();
 }

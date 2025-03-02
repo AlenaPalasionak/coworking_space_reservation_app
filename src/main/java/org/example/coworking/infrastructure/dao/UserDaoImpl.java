@@ -1,8 +1,8 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.example.coworking.infrastructure.json_loader.JsonLoader;
+import org.example.coworking.infrastructure.json_loader.UserJsonLoader;
 import org.example.coworking.model.User;
-import org.example.coworking.infrastructure.util.json_loader.JsonLoader;
-import org.example.coworking.infrastructure.util.json_loader.UserJsonLoaderImpl;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class UserDaoImpl implements UserDao {
     private List<User> usersCache;
 
     public UserDaoImpl() {
-        this.userJsonLoader = new UserJsonLoaderImpl();
+        this.userJsonLoader = new UserJsonLoader();
     }
 
     public List<User> getUsersFromJson() {
@@ -27,7 +27,7 @@ public class UserDaoImpl implements UserDao {
         userJsonLoader.convertToJson(users);
     }
 
-    private void loadFromJson(){
+    private void loadFromJson() {
         usersCache = userJsonLoader.loadFromJson(User.class);
     }
 }

@@ -57,4 +57,14 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationDao.getReservationById(reservationId);
         }
     }
+
+    @Override
+    public void getReservationsFromJson() {
+        reservationDao.getReservationsFromJson();
+    }
+
+    @Override
+    public void saveToJSON() {
+        reservationDao.saveToJSON();
+    }
 }

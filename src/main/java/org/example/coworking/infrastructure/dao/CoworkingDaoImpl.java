@@ -1,12 +1,18 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.example.coworking.infrastructure.json_loader.CoworkingSpaceJsonLoader;
+import org.example.coworking.infrastructure.json_loader.JsonLoader;
 import org.example.coworking.model.CoworkingSpace;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CoworkingDaoImpl implements CoworkingDao {
-    private static final List<CoworkingSpace> coworkingSpacesCache = new ArrayList<>();
+    private static List<CoworkingSpace> coworkingSpacesCache;
+    private final JsonLoader coworkingSpaceJsonLoader;
+
+    public CoworkingDaoImpl() {
+        this.coworkingSpaceJsonLoader = new CoworkingSpaceJsonLoader();
+    }
 
     @Override
     public void add(CoworkingSpace coworkingSpace) {
@@ -38,5 +44,22 @@ public class CoworkingDaoImpl implements CoworkingDao {
     @Override
     public CoworkingSpace getById(int id) {
         return coworkingSpacesCache.get(id);
+    }
+
+    @Override
+    public void getCoworkingPlacesFromJson() {
+        if (coworkingSpacesCache == null) {
+            coworkingSpacesCache = getFromJson();
+        }
+    }
+
+    @Override
+    public void saveToJSON() {
+        coworkingSpaceJsonLoader.convertToJson(coworkingSpacesCache);
+    }
+
+    private List<CoworkingSpace> getFromJson() {
+        coworkingSpacesCache = coworkingSpaceJsonLoader.loadFromJson(CoworkingSpace.class);
+        return coworkingSpacesCache;
     }
 }

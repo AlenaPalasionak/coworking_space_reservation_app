@@ -15,6 +15,7 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CoworkingController {
@@ -45,21 +46,22 @@ public class CoworkingController {
     public void add(BufferedReader reader, BufferedWriter writer) throws IOException {
         double price = getPriceFromUser(reader, writer);
         CoworkingType coworkingType = getCoworkingTypeFromUser(reader, writer);
-        Facility facility = getFacilityFromUser(reader, writer);
+        List<Facility> facilities = getFacilityFromUser(reader, writer);
 
-        coworkingService.add(price, coworkingType, facility);
+        coworkingService.add(price, coworkingType, facilities);
 
         writer.write("You just added a new Space:\n");
         writer.flush();
     }
 
     public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
-            writer.write("Type a coworking id you want to delete:\n" + coworkingService.getAllSpaces());
-            writer.flush();
-            writer.write("Coworking List is empty\n");
-            writer.flush();
+        writer.write("Type a coworking id you want to delete:\n" + coworkingService.getAllSpaces());
+        writer.flush();
+        writer.write("Coworking List is empty\n");
+        writer.flush();
+        int coworkingId = 0;
         try {
-            int coworkingId = Integer.parseInt(reader.readLine());
+            coworkingId = Integer.parseInt(reader.readLine());
             coworkingService.delete(user, coworkingId);
             writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
             writer.flush();
@@ -67,7 +69,7 @@ public class CoworkingController {
             writer.write("You do not have permission to delete this coworking space.\n");
             writer.flush();
         } catch (CoworkingNotFoundException e) {
-            writer.write("There is no space with id." + user.getId() + "\n");
+            writer.write("There is no space with id" + coworkingId + "\n");
             writer.flush();
         }
     }
@@ -75,6 +77,14 @@ public class CoworkingController {
     public void getAllSpaces(BufferedWriter writer) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
         writer.write("Spaces list:\n" + spaces + "\n");
+    }
+
+    public void getCoworkingPlacesFromJson() {
+        coworkingService.getCoworkingPlacesFromJson();
+    }
+
+    public void saveToJSON() {
+        coworkingService.saveToJSON();
     }
 
     private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
@@ -105,20 +115,25 @@ public class CoworkingController {
         return coworkingType;
     }
 
-    private Facility getFacilityFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
+    private List<Facility> getFacilityFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write(FACILITY_MENU);
         writer.flush();
 
-        Facility.FacilityBuilder builder = new Facility.FacilityBuilder();
+        List<Facility> selectedFacilities = new ArrayList<>();
         String facilitiesIndexesOnOneLine = reader.readLine();
 
         if (StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
             String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
             for (String facilitiesIndex : facilitiesIndexes) {
                 int facilityIndex = Integer.parseInt(facilitiesIndex.trim());
-                builder.addFeature(Facility.Feature.values()[facilityIndex]);
+                if (facilityIndex >= 0 && facilityIndex < Facility.values().length) {
+                    selectedFacilities.add(Facility.values()[facilityIndex]);
+                } else {
+                    writer.write("You entered wrong number(s): " + facilitiesIndexesOnOneLine);
+                    writer.flush();
+                }
             }
         }
-        return builder.build();
+        return selectedFacilities;
     }
 }

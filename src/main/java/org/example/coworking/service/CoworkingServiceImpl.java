@@ -17,8 +17,8 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(double price, CoworkingType coworkingType, Facility facility) {
-        coworkingDao.add(new CoworkingSpace(price, coworkingType, facility));
+    public void add(double price, CoworkingType coworkingType, List<Facility> facilities ) {
+        coworkingDao.add(new CoworkingSpace(price, coworkingType, facilities));
     }
 
     @Override
@@ -34,7 +34,8 @@ public class CoworkingServiceImpl implements CoworkingService {
 
         coworkingDao.deleteById(coworkingId);
     }
-    public List<CoworkingSpace> getAllSpaces()  {
+
+    public List<CoworkingSpace> getAllSpaces() {
         return coworkingDao.getAllSpaces();
     }
 
@@ -44,5 +45,15 @@ public class CoworkingServiceImpl implements CoworkingService {
             throw new CoworkingNotFoundException("Coworking with id " + id + " not found");
         }
         return coworkingDao.getById(id);
+    }
+
+    @Override
+    public void getCoworkingPlacesFromJson() {
+        coworkingDao.getCoworkingPlacesFromJson();
+    }
+
+    @Override
+    public void saveToJSON() {
+        coworkingDao.saveToJSON();
     }
 }

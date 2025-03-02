@@ -1,4 +1,4 @@
-package org.example.coworking.infrastructure.util.json_loader;
+package org.example.coworking.infrastructure.json_loader;
 
 import java.util.List;
 

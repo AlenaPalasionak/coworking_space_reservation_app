@@ -33,7 +33,7 @@ public class ReservationController {
         boolean isFree = false;
         boolean isFound = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
-        writer.write("Coworking spaces list: " + coworkingSpaces);
+        writer.write("Coworking spaces list:\n" + coworkingSpaces + "\n");
         while (!isFree && !isFound) {
             int coworkingId = getCoworkingIdFromUser(reader, writer);
             LocalDateTime startTime = getDateTimeFromUser(reader, writer, "start");
@@ -93,6 +93,14 @@ public class ReservationController {
             writer.write("Reservation with Id " + reservationId + " is canceled\n");
             writer.flush();
         }
+    }
+
+    public void getReservationsFromJson() {
+        reservationService.getReservationsFromJson();
+    }
+
+    public void saveToJSON() {
+        reservationService.saveToJSON();
     }
 
     private int getCoworkingIdFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {

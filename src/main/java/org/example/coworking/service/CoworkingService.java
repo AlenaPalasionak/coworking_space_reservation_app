@@ -7,8 +7,10 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import java.util.List;
 
 public interface CoworkingService {
-    void add(double price, CoworkingType coworkingType, Facility facility);
+    void add(double price, CoworkingType coworkingType, List<Facility> facilities);
     void delete(User user, int coworkingId) throws ForbiddenActionException, CoworkingNotFoundException;
     List<CoworkingSpace> getAllSpaces();
     CoworkingSpace getById(int id) throws CoworkingNotFoundException;
+    void getCoworkingPlacesFromJson();
+    void saveToJSON();
 }
