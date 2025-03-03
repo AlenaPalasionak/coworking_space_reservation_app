@@ -8,7 +8,7 @@ public class OccupationTimeChecker {
     public static boolean isTimeOverlapping(ReservationPeriod newPeriod, CoworkingSpace coworkingSpace) throws TimeOverlapException {
         for (ReservationPeriod existingPeriod : coworkingSpace.getReservationsPeriods()) {
             if (isOverlapping(existingPeriod, newPeriod)) {
-                throw new TimeOverlapException("Reservation overlaps with an existing period: " + newPeriod);
+                throw new TimeOverlapException(newPeriod);
             }
         }
         return false;

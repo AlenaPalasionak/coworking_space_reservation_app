@@ -3,6 +3,7 @@ package org.example.coworking.infrastructure.controller;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.logger.Log;
+import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
@@ -31,12 +32,13 @@ public class ReservationController {
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
+        boolean isValid = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
         writer.write("Coworking spaces list:\n");
         writer.flush();
         coworkingSpaces.forEach(System.out::println);
 
-        while (!isFree && !isFound) {
+        while (!isFree && !isFound && !isValid) {
             int coworkingId = getCoworkingIdFromUser(reader, writer);
             LocalDateTime startTime = getDateTimeFromUser(reader, writer, "start");
             LocalDateTime endTime = getDateTimeFromUser(reader, writer, "end");
@@ -47,13 +49,16 @@ public class ReservationController {
             if (possibleCoworkingSpace.isPresent()) {
                 isFound = true;
                 try {
-
                     reservationService.add(customer, possibleCoworkingSpace.get(), period);
                     writer.write("You just made a reservation:\n");
                     writer.flush();
                     isFree = true;
                 } catch (TimeOverlapException e) {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
+                    Log.info(e.getMessage());
+                } catch (InvalidTimeReservationException e) {
+                    writer.write("You entered invalid date.\nTry again\n");
+                    Log.warning(e.getMessage());
                 }
             }
         }
@@ -61,7 +66,6 @@ public class ReservationController {
 
     public void getAllReservations(BufferedWriter writer, User customer) throws IOException {
         List<Reservation> reservations = reservationService.getAllReservations(customer);
-        //TODO add exception to service
         if (reservations.isEmpty()) {
             writer.write("Reservation list is empty\n");
             writer.flush();
