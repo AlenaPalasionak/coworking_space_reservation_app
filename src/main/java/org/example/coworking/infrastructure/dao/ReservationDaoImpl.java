@@ -32,7 +32,7 @@ public class ReservationDaoImpl implements ReservationDao {
             }
         } while (!isUniqueIdGenerated);
 
-        reservation.setId(IdGenerator.generateReservationId());
+        reservation.setId(generatedId);
         reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
         reservationsCache.add(reservation);
     }
@@ -56,9 +56,7 @@ public class ReservationDaoImpl implements ReservationDao {
         if (checkIfNotExist(reservationId)) {
             throw new ReservationNotFoundException(reservationId);
         } else {
-            possibleReservation = reservationsCache.stream()
-                    .filter(r -> r.getId() == reservationId)
-                    .findFirst();
+            possibleReservation = reservationsCache.stream().filter(r -> r.getId() == reservationId).findFirst();
         }
         return possibleReservation;
     }

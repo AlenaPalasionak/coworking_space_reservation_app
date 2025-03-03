@@ -1,5 +1,7 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.example.coworking.infrastructure.controller.exception.PriceFormatException;
+import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.infrastructure.util.StringHandler;
 import org.example.coworking.model.CoworkingSpace;
@@ -8,13 +10,13 @@ import org.example.coworking.model.Facility;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
-import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CoworkingController {
@@ -43,7 +45,16 @@ public class CoworkingController {
     }
 
     public void add(BufferedReader reader, BufferedWriter writer) throws IOException {
-        double price = getPriceFromUser(reader, writer);
+
+        double price = 0;
+        while (price == 0) {
+            try {
+                price = getPriceFromUser(reader, writer);
+            } catch (PriceFormatException e) {
+                Log.warning(e.getMessage());
+                writer.write(e.getMessage() + ". Try again. ");
+            }
+        }
         CoworkingType coworkingType = getCoworkingTypeFromUser(reader, writer);
         List<Facility> facilities = getFacilityFromUser(reader, writer);
 
@@ -55,27 +66,31 @@ public class CoworkingController {
 
     public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
+        boolean isDeleted = false;
         if (spaces.isEmpty()) {
             writer.write("Coworking List is empty\n");
             writer.flush();
         } else {
-            spaces.forEach(System.out::println);
-            int coworkingId;
-            writer.write("Type a coworking id you want to delete:\n");
-            writer.flush();
-            try {
-                coworkingId = Integer.parseInt(reader.readLine());
-                coworkingService.delete(user, coworkingId);
-                writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
+            while (!isDeleted) {
+                spaces.forEach(System.out::println);
+                int coworkingId;
+                writer.write("Type a coworking id you want to delete:\n");
                 writer.flush();
-            } catch (ForbiddenActionException e) {
-                Log.error(e.getMessage());
-                writer.write(e.getMessage() + "\n");
-                writer.flush();
-            } catch (CoworkingNotFoundException e) {
-                Log.info(e.getMessage());
-                writer.write(e.getMessage() + "\n");
-                writer.flush();
+                try {
+                    coworkingId = Integer.parseInt(reader.readLine());
+                    coworkingService.delete(user, coworkingId);
+                    writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
+                    writer.flush();
+                    isDeleted = true;
+                } catch (ForbiddenActionException e) {
+                    Log.error(e.getMessage());
+                    writer.write(e.getMessage() + "\n");
+                    writer.flush();
+                } catch (CoworkingNotFoundException e) {
+                    Log.info(e.getMessage());
+                    writer.write(e.getMessage() + "\n" + "Choose another Coworking \n");
+                    writer.flush();
+                }
             }
         }
     }
@@ -95,19 +110,24 @@ public class CoworkingController {
         coworkingService.saveToJSON();
     }
 
-    private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
+    private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws IOException, PriceFormatException {
         writer.write("Enter the price in dollars per hour.\n");
         writer.flush();
-        return Double.parseDouble(reader.readLine());
+        String price = reader.readLine();
+
+        if (price == null || price.trim().isEmpty() || !price.matches("\\d+(\\.\\d+)?")) {
+            throw new PriceFormatException(price);
+        }
+
+        return Double.parseDouble(price);
     }
 
     private CoworkingType getCoworkingTypeFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write(COWORKING_TYPE_MENU);
-        writer.flush();
-
         CoworkingType coworkingType = null;
         while (coworkingType == null) {
             try {
+                writer.write(COWORKING_TYPE_MENU);
+                writer.flush();
                 int coworkingTypeIndex = Integer.parseInt(reader.readLine());
                 if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
                     writer.write("You put a wrong symbol. Try again\n");
@@ -124,22 +144,28 @@ public class CoworkingController {
     }
 
     private List<Facility> getFacilityFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write(FACILITY_MENU);
-        writer.flush();
-
+        boolean areChosen = false;
         List<Facility> selectedFacilities = new ArrayList<>();
-        String facilitiesIndexesOnOneLine = reader.readLine();
+        while (!areChosen) {
+            writer.write(FACILITY_MENU);
+            writer.flush();
 
-        if (StringHandler.containsDigits(facilitiesIndexesOnOneLine)) {
-            String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
-            for (String facilitiesIndex : facilitiesIndexes) {
-                int facilityIndex = Integer.parseInt(facilitiesIndex.trim());
-                if (facilityIndex >= 0 && facilityIndex < Facility.values().length) {
-                    selectedFacilities.add(Facility.values()[facilityIndex]);
-                } else {
-                    writer.write("You entered wrong number(s): " + facilitiesIndexesOnOneLine);
-                    writer.flush();
+            String facilitiesIndexesOnOneLine = reader.readLine();
+
+            if (StringHandler.isFacilityStringFromUserValid(facilitiesIndexesOnOneLine)) {
+                String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
+                Arrays.sort(facilitiesIndexes);
+                facilitiesIndexes = Arrays.stream(facilitiesIndexes).distinct().toArray(String[]::new);
+                for (String facilitiesIndex : facilitiesIndexes) {
+                    int facilityIndex = Integer.parseInt(facilitiesIndex.trim());
+                    if (facilityIndex >= 0 && facilityIndex < Facility.values().length) {
+                        selectedFacilities.add(Facility.values()[facilityIndex]);
+                        areChosen = true;
+                    }
                 }
+            } else {
+                writer.write("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
+                writer.flush();
             }
         }
         return selectedFacilities;

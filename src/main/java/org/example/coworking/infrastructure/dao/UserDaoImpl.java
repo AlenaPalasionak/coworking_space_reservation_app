@@ -21,11 +21,6 @@ public class UserDaoImpl implements UserDao {
         return usersCache;
     }
 
-    @Override
-    public void convertToJson(List<User> users) {
-        userJsonLoader.convertToJson(users);
-    }
-
     private void loadFromJson() {
         usersCache = userJsonLoader.loadFromJson(User.class);
     }

@@ -53,7 +53,6 @@ public class Main {
     public static final String[] MAIN_MENU_POSSIBLE_CHOICES = {"1", "2", "0"};
     public static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
     public static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
-
     public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
 
     public static void main(String[] args) {

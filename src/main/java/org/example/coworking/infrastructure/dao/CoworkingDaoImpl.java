@@ -48,17 +48,6 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public void updateSpace(CoworkingSpace newCoworkingSpace) {
-        for (int i = 0; i < coworkingSpacesCache.size(); i++) {
-            CoworkingSpace oldCoworking = coworkingSpacesCache.get(i);
-            if (oldCoworking.getId() == newCoworkingSpace.getId()) {
-                coworkingSpacesCache.set(i, newCoworkingSpace);
-                break;
-            }
-        }
-    }
-
-    @Override
     public Optional<CoworkingSpace> getById(int coworkingId) throws CoworkingNotFoundException {
         Optional<CoworkingSpace> possibleCoworkingSpace;
         if (checkIfNotExist(coworkingId)) {

@@ -29,6 +29,3 @@ public class PropertyConfig {
         return PROPERTIES;
     }
 }
-
-
-

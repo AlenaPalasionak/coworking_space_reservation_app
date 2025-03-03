@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class StringHandler {
 
-    public static boolean containsDigits(String str) {
-        return Pattern.compile("\\d").matcher(str).find();
+    public static boolean isFacilityStringFromUserValid(String str) {
+        return Pattern.compile("^\\s*\\d+(\\s*,\\s*\\d+)*\\s*$").matcher(str).find();
     }
 }

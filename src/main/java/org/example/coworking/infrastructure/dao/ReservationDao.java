@@ -8,14 +8,10 @@ import java.util.Optional;
 
 public interface ReservationDao {
     void addReservation(Reservation reservation);
-
     void delete(Reservation reservation) throws ReservationNotFoundException;
     Optional<Reservation> getReservationById(int reservationId) throws ReservationNotFoundException;
-
     List<Reservation> getAllReservations();
-
-    List<Reservation> getReservationsByCustomer(int customerId) ;
+    List<Reservation> getReservationsByCustomer(int customerId);
     void getReservationsFromJson();
     void saveToJSON();
-
 }

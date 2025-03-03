@@ -16,6 +16,4 @@ public class UserServiceImpl implements UserService {
     public List<User> getUsersFromJson() {
         return userDao.getUsersFromJson();
     }
-
-
 }

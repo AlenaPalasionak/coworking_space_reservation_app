@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
 import org.example.coworking.service.UserService;
@@ -35,7 +36,8 @@ public class AuthorizationController {
             try {
                 possibleUser = authorizationService.authenticate(name, password, userType);
             } catch (UserNotFoundException e) {
-                writer.write("User with the name " + name + " doesn't exist.\nTry again\n");
+                Log.warning(e.getMessage());
+                writer.write(e.getMessage() + "\n" + "Try to log in again. \n");
                 writer.flush();
                 continue;
             }
@@ -53,6 +55,4 @@ public class AuthorizationController {
 
         return possibleUser;
     }
-
-
 }
