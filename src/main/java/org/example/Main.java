@@ -50,6 +50,11 @@ public class Main {
     public static final String ADMIN = "1";
     public static final String CUSTOMER = "2";
     public static final String LOG_OUT = "2";
+    public static final String[] MAIN_MENU_POSSIBLE_CHOICES = {"1", "2", "0"};
+    public static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
+    public static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
+
+    public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
 
     public static void main(String[] args) {
         coworkingController.getCoworkingPlacesFromJson();
@@ -61,7 +66,7 @@ public class Main {
                 Menu welcomeMenu = new MenuImpl(WELCOME_MENU);
                 welcomeMenu.showMenu(reader, writer);
 
-                String userRoleIdentifier = welcomeMenu.getUserChoice(reader);
+                String userRoleIdentifier = welcomeMenu.getUserChoice(reader, writer, MAIN_MENU_POSSIBLE_CHOICES);
                 if (userRoleIdentifier.equals(EXIT)) {
                     break;
                 } else if (userRoleIdentifier.equals(ADMIN)) {
@@ -72,7 +77,7 @@ public class Main {
                     while (!logOut) {
                         Menu adminMenu = new MenuImpl(ADMIN_MENU);
                         adminMenu.showMenu(reader, writer);
-                        String adminOptionChoice = adminMenu.getUserChoice(reader);
+                        String adminOptionChoice = adminMenu.getUserChoice(reader, writer, ADMIN_OPTION_POSSIBLE_CHOICES);
                         switch (adminOptionChoice) {
                             case "1":
                                 coworkingController.add(reader, writer);
@@ -86,7 +91,7 @@ public class Main {
                         }
                         Menu nextStepMenu = new MenuImpl(NEXT_STEP_MENU);
                         nextStepMenu.showMenu(reader, writer);
-                        nextStep = nextStepMenu.getUserChoice(reader);
+                        nextStep = nextStepMenu.getUserChoice(reader, writer, NEXT_STEP_POSSIBLE_CHOICES);
                         if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
                         } else if (nextStep.equals(EXIT)) {
@@ -103,7 +108,7 @@ public class Main {
                     while (!logOut) {
                         Menu customerMenu = new MenuImpl(CUSTOMER_MENU);
                         customerMenu.showMenu(reader, writer);
-                        String customerOptionChoice = customerMenu.getUserChoice(reader);
+                        String customerOptionChoice = customerMenu.getUserChoice(reader, writer, CUSTOMER_OPTION_POSSIBLE_CHOICES);
                         switch (customerOptionChoice) {
                             case "1":
                                 coworkingController.getAllSpaces(writer);
@@ -120,7 +125,7 @@ public class Main {
                         }
                         Menu nextStepMenu = new MenuImpl(NEXT_STEP_MENU);
                         nextStepMenu.showMenu(reader, writer);
-                        nextStep = nextStepMenu.getUserChoice(reader);
+                        nextStep = nextStepMenu.getUserChoice(reader, writer, NEXT_STEP_POSSIBLE_CHOICES);
                         if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
                         } else if (nextStep.equals(EXIT)) {

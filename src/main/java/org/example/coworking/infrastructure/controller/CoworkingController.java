@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.infrastructure.util.StringHandler;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.CoworkingType;
@@ -7,7 +8,7 @@ import org.example.coworking.model.Facility;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
-import org.example.coworking.service.exception.CoworkingNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
@@ -53,22 +54,29 @@ public class CoworkingController {
     }
 
     public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
-        writer.write("Type a coworking id you want to delete:\n" + coworkingService.getAllSpaces());
-        writer.flush();
-        writer.write("Coworking List is empty\n");
-        writer.flush();
-        int coworkingId = 0;
-        try {
-            coworkingId = Integer.parseInt(reader.readLine());
-            coworkingService.delete(user, coworkingId);
-            writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
+        List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
+        if (spaces.isEmpty()) {
+            writer.write("Coworking List is empty\n");
             writer.flush();
-        } catch (ForbiddenActionException e) {
-            writer.write("You do not have permission to delete this coworking space.\n");
+        } else {
+            spaces.forEach(System.out::println);
+            int coworkingId;
+            writer.write("Type a coworking id you want to delete:\n");
             writer.flush();
-        } catch (CoworkingNotFoundException e) {
-            writer.write("There is no space with id" + coworkingId + "\n");
-            writer.flush();
+            try {
+                coworkingId = Integer.parseInt(reader.readLine());
+                coworkingService.delete(user, coworkingId);
+                writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
+                writer.flush();
+            } catch (ForbiddenActionException e) {
+                Log.error(e.getMessage());
+                writer.write(e.getMessage() + "\n");
+                writer.flush();
+            } catch (CoworkingNotFoundException e) {
+                Log.info(e.getMessage());
+                writer.write(e.getMessage() + "\n");
+                writer.flush();
+            }
         }
     }
 

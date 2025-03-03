@@ -21,8 +21,8 @@ public class PropertyConfig {
                 reader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
                 PROPERTIES.load(reader);
             } catch (IOException e) {
-                Log.info("** PropertyConfig **  Exception while getting properties object" + e);
-                throw new RuntimeException("Exception while getting properties object from file: " + fileName + "PROPERTIES: " + PROPERTIES);
+                Log.error("Exception while getting properties object from file: " + fileName + "\n" + e.getStackTrace());
+                throw new RuntimeException(e.getMessage());
             }
         }
 

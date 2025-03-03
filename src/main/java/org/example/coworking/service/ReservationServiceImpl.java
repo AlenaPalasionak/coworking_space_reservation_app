@@ -2,10 +2,10 @@ package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.CoworkingDao;
 import org.example.coworking.infrastructure.dao.ReservationDao;
+import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.util.OccupationTimeChecker;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
-import org.example.coworking.service.exception.ReservationNotFoundException;
 import org.example.coworking.service.exception.TimeOverlapException;
 
 import java.util.List;
@@ -29,11 +29,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException {
+    public void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException("User " + user.getName() + " has no rights to delete this reservation");
+            throw new ForbiddenActionException(user.getClass());
         }
     }
 
@@ -48,12 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException {
-        Optional<Reservation> possibleReservation = reservationDao.getReservationById(reservationId);
-        if (possibleReservation.isEmpty()) {
-            throw new ReservationNotFoundException("There are no reservations with id: " + reservationId);
-        } else {
-            return reservationDao.getReservationById(reservationId);
-        }
+        return reservationDao.getReservationById(reservationId);
     }
 
     @Override

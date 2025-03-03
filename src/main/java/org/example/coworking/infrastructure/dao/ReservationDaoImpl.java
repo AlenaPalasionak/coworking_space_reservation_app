@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.json_loader.JsonLoader;
 import org.example.coworking.model.Reservation;
 
@@ -31,17 +32,18 @@ public class ReservationDaoImpl implements ReservationDao {
             }
         } while (!isUniqueIdGenerated);
 
-
         reservation.setId(IdGenerator.generateReservationId());
-            reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
-            reservationsCache.add(reservation);
-        }
-
+        reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
+        reservationsCache.add(reservation);
+    }
 
     @Override
-    public void delete(Reservation reservation) {
-        reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
+    public void delete(Reservation reservation) throws ReservationNotFoundException {
+        if (checkIfNotExist(reservation.getId())) {
+            throw new ReservationNotFoundException(reservation.getId());
+        }
         reservationsCache.remove(reservation);
+        reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
     }
 
     @Override
@@ -49,13 +51,16 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
-    public Optional<Reservation> getReservationById(int reservationId) {
-        for (Reservation reservation : reservationsCache) {
-            if (reservation.getId() == reservationId) {
-                return Optional.of(reservation);
-            }
+    public Optional<Reservation> getReservationById(int reservationId) throws ReservationNotFoundException {
+        Optional<Reservation> possibleReservation;
+        if (checkIfNotExist(reservationId)) {
+            throw new ReservationNotFoundException(reservationId);
+        } else {
+            possibleReservation = reservationsCache.stream()
+                    .filter(r -> r.getId() == reservationId)
+                    .findFirst();
         }
-        return Optional.empty();
+        return possibleReservation;
     }
 
     @Override
@@ -73,6 +78,10 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void saveToJSON() {
         reservationLoader.convertToJson(reservationsCache);
+    }
+
+    private boolean checkIfNotExist(int id) {
+        return reservationsCache.stream().noneMatch(c -> c.getId() == id);
     }
 
     private List<Reservation> getFromJson() {

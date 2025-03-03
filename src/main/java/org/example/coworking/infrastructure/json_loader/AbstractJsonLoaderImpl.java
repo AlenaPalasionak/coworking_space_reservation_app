@@ -31,8 +31,8 @@ public abstract class AbstractJsonLoaderImpl implements JsonLoader {
             try {
                 list = objectMapper.readValue(jsonFile, javaType);
             } catch (IOException e) {
-                Log.error("*Can not parse JSON into POJO.\n" + e.getMessage());
-                throw new RuntimeException(e);
+                Log.error("Can not read JSON into POJO: " + beanType.getName() + "\n" + e.getStackTrace());
+                throw new RuntimeException(e.getMessage());
             }
         }
         return list != null ? list : Collections.emptyList();
@@ -46,7 +46,7 @@ public abstract class AbstractJsonLoaderImpl implements JsonLoader {
             try {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), objects);
             } catch (IOException e) {
-                Log.error(" Unable to write data to the file. " + filePath + e.getMessage());
+                Log.error(" Unable to write data to the file. " + filePath + "\n" + e.getStackTrace());
                 throw new RuntimeException(e.getMessage());
             }
         }
