@@ -1,9 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.CoworkingDao;
-import org.example.coworking.infrastructure.dao.CoworkingDaoImpl;
 import org.example.coworking.infrastructure.dao.ReservationDao;
-import org.example.coworking.infrastructure.dao.ReservationDaoImpl;
 import org.example.coworking.infrastructure.util.OccupationTimeChecker;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
@@ -17,9 +15,9 @@ public class ReservationServiceImpl implements ReservationService {
     ReservationDao reservationDao;
     CoworkingDao coworkingDao;
 
-    public ReservationServiceImpl() {
-        this.reservationDao = new ReservationDaoImpl();
-        this.coworkingDao = new CoworkingDaoImpl();
+    public ReservationServiceImpl(ReservationDao reservationDao, CoworkingDao coworkingDao) {
+        this.reservationDao = reservationDao;
+        this.coworkingDao = coworkingDao;
     }
 
     @Override

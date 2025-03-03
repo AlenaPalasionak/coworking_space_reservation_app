@@ -2,9 +2,7 @@ package org.example.coworking.infrastructure.controller;
 
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
-import org.example.coworking.service.AuthorizationServiceImpl;
 import org.example.coworking.service.UserService;
-import org.example.coworking.service.UserServiceImpl;
 import org.example.coworking.service.exception.UserNotFoundException;
 
 import java.io.BufferedReader;
@@ -16,9 +14,9 @@ public class AuthorizationController {
     protected AuthorizationService authorizationService;
     protected UserService userService;
 
-    public AuthorizationController() {
-        this.authorizationService = new AuthorizationServiceImpl();
-        this.userService = new UserServiceImpl();
+    public AuthorizationController(AuthorizationService authorizationService, UserService userService) {
+        this.authorizationService = authorizationService;
+        this.userService = userService;
     }
 
     public Optional<User> authenticate(BufferedReader reader, BufferedWriter writer, Class<? extends User> userType) throws IOException {

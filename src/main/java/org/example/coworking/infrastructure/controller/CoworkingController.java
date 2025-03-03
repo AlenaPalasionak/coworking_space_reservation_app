@@ -6,9 +6,7 @@ import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
-import org.example.coworking.service.CoworkingServiceImpl;
 import org.example.coworking.service.ReservationService;
-import org.example.coworking.service.ReservationServiceImpl;
 import org.example.coworking.service.exception.CoworkingNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
@@ -38,9 +36,9 @@ public class CoworkingController {
             CONDITIONING - 4
             """;
 
-    public CoworkingController() {
-        this.coworkingService = new CoworkingServiceImpl();
-        this.reservationService = new ReservationServiceImpl();
+    public CoworkingController(CoworkingService coworkingService, ReservationService reservationService) {
+        this.coworkingService = coworkingService;
+        this.reservationService = reservationService;
     }
 
     public void add(BufferedReader reader, BufferedWriter writer) throws IOException {
@@ -76,7 +74,9 @@ public class CoworkingController {
 
     public void getAllSpaces(BufferedWriter writer) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
-        writer.write("Spaces list:\n" + spaces + "\n");
+        writer.write("Spaces list:\n");
+        writer.flush();
+        spaces.forEach(System.out::println);
     }
 
     public void getCoworkingPlacesFromJson() {

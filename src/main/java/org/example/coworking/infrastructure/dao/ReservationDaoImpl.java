@@ -1,7 +1,6 @@
 package org.example.coworking.infrastructure.dao;
 
 import org.example.coworking.infrastructure.json_loader.JsonLoader;
-import org.example.coworking.infrastructure.json_loader.ReservationLoader;
 import org.example.coworking.model.Reservation;
 
 import java.util.List;
@@ -12,16 +11,32 @@ public class ReservationDaoImpl implements ReservationDao {
     private static List<Reservation> reservationsCache;
     private final JsonLoader reservationLoader;
 
-    public ReservationDaoImpl() {
-        this.reservationLoader = new ReservationLoader();
+    public ReservationDaoImpl(JsonLoader reservationLoader) {
+        this.reservationLoader = reservationLoader;
     }
 
     @Override
     public void addReservation(Reservation reservation) {
+        boolean isUniqueIdGenerated;
+        int generatedId;
+        do {
+            generatedId = IdGenerator.generateReservationId();
+            isUniqueIdGenerated = true;
+
+            for (Reservation reservationFromCache : reservationsCache) {
+                if (reservationFromCache.getId() == generatedId) {
+                    isUniqueIdGenerated = false;
+                    break;
+                }
+            }
+        } while (!isUniqueIdGenerated);
+
+
         reservation.setId(IdGenerator.generateReservationId());
-        reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
-        reservationsCache.add(reservation);
-    }
+            reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
+            reservationsCache.add(reservation);
+        }
+
 
     @Override
     public void delete(Reservation reservation) {

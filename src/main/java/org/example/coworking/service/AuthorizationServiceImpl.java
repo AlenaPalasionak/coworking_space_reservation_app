@@ -9,8 +9,8 @@ import java.util.Optional;
 public class AuthorizationServiceImpl implements AuthorizationService {
     UserService userService;
 
-    public AuthorizationServiceImpl() {
-        this.userService = new UserServiceImpl();
+    public AuthorizationServiceImpl(UserService userService) {
+        this.userService = userService;
     }
 
     @Override

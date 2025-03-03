@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.coworking.infrastructure.factory.AppFactory;
 import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
 import org.example.coworking.infrastructure.controller.ReservationController;
@@ -14,9 +15,9 @@ import java.util.Optional;
 
 public class Main {
     static User user;
-    static ReservationController reservationController = new ReservationController();
-    static AuthorizationController authorizationController = new AuthorizationController();
-    static CoworkingController coworkingController = new CoworkingController();
+    static ReservationController reservationController = AppFactory.createReservationController();
+    static AuthorizationController authorizationController = AppFactory.createAuthorizationController();
+    static CoworkingController coworkingController = AppFactory.createCoworkingController();
 
     public static final String WELCOME_MENU = """
             Welcome to the Coworking Space Reservation!
@@ -53,8 +54,7 @@ public class Main {
     public static void main(String[] args) {
         coworkingController.getCoworkingPlacesFromJson();
         reservationController.getReservationsFromJson();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
             while (true) {
                 boolean logOut = false;
                 String nextStep;

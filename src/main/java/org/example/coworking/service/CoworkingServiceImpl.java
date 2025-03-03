@@ -1,7 +1,6 @@
 package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.CoworkingDao;
-import org.example.coworking.infrastructure.dao.CoworkingDaoImpl;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.CoworkingNotFoundException;
@@ -12,8 +11,8 @@ import java.util.List;
 public class CoworkingServiceImpl implements CoworkingService {
     CoworkingDao coworkingDao;
 
-    public CoworkingServiceImpl() {
-        this.coworkingDao = new CoworkingDaoImpl();
+    public CoworkingServiceImpl(CoworkingDao coworkingDao) {
+        this.coworkingDao = coworkingDao;
     }
 
     @Override

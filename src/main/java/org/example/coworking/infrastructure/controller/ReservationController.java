@@ -5,9 +5,7 @@ import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
-import org.example.coworking.service.CoworkingServiceImpl;
 import org.example.coworking.service.ReservationService;
-import org.example.coworking.service.ReservationServiceImpl;
 import org.example.coworking.service.exception.CoworkingNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationNotFoundException;
@@ -24,16 +22,19 @@ public class ReservationController {
     CoworkingService coworkingService;
     ReservationService reservationService;
 
-    public ReservationController() {
-        this.coworkingService = new CoworkingServiceImpl();
-        this.reservationService = new ReservationServiceImpl();
+    public ReservationController(CoworkingService coworkingService, ReservationService reservationService) {
+        this.coworkingService = coworkingService;
+        this.reservationService = reservationService;
     }
 
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
-        writer.write("Coworking spaces list:\n" + coworkingSpaces + "\n");
+        writer.write("Coworking spaces list:\n");
+        writer.flush();
+        coworkingSpaces.forEach(System.out::println);
+
         while (!isFree && !isFound) {
             int coworkingId = getCoworkingIdFromUser(reader, writer);
             LocalDateTime startTime = getDateTimeFromUser(reader, writer, "start");
@@ -64,8 +65,9 @@ public class ReservationController {
             writer.write("Reservation list is empty\n");
             writer.flush();
         } else {
-            writer.write("Your reservation(s):\n" + reservations);
+            writer.write("Your reservation(s):\n");
             writer.flush();
+            reservations.forEach(System.out::println);
         }
     }
 

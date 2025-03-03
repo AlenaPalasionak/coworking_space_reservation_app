@@ -10,18 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 
-public class Config {
+public class PropertyConfig {
     private static final Properties PROPERTIES = new Properties();
 
     public static Properties getProperties() {
         Reader reader;
         if (PROPERTIES.isEmpty()) {
             String fileName = "file.properties";
-            try (InputStream inputStream = Config.class.getClassLoader().getResourceAsStream(fileName)) {
+            try (InputStream inputStream = PropertyConfig.class.getClassLoader().getResourceAsStream(fileName)) {
                 reader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
                 PROPERTIES.load(reader);
             } catch (IOException e) {
-                Log.info("** Config **  Exception while getting properties object" + e);
+                Log.info("** PropertyConfig **  Exception while getting properties object" + e);
                 throw new RuntimeException("Exception while getting properties object from file: " + fileName + "PROPERTIES: " + PROPERTIES);
             }
         }
