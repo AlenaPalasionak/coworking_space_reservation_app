@@ -1,11 +1,11 @@
 package org.example.coworking.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@EqualsAndHashCode
 @ToString
+@NoArgsConstructor(force = true)
 public class Reservation {
     @Setter
     private int id;

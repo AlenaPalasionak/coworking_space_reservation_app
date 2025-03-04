@@ -1,16 +1,16 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
+import org.example.coworking.infrastructure.logger.Log;
+import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
-import org.example.coworking.service.CoworkingServiceImpl;
 import org.example.coworking.service.ReservationService;
-import org.example.coworking.service.ReservationServiceImpl;
-import org.example.coworking.service.exception.CoworkingNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
-import org.example.coworking.service.exception.ReservationNotFoundException;
 import org.example.coworking.service.exception.TimeOverlapException;
 
 import java.io.BufferedReader;
@@ -24,34 +24,41 @@ public class ReservationController {
     CoworkingService coworkingService;
     ReservationService reservationService;
 
-    public ReservationController() {
-        this.coworkingService = new CoworkingServiceImpl();
-        this.reservationService = new ReservationServiceImpl();
+    public ReservationController(CoworkingService coworkingService, ReservationService reservationService) {
+        this.coworkingService = coworkingService;
+        this.reservationService = reservationService;
     }
 
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
+        boolean isValid = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
-        writer.write("Coworking spaces list: " + coworkingSpaces);
-        while (!isFree && !isFound) {
+        writer.write("Coworking spaces list:\n");
+        writer.flush();
+        coworkingSpaces.forEach(System.out::println);
+
+        while (!isFree && !isFound && !isValid) {
             int coworkingId = getCoworkingIdFromUser(reader, writer);
             LocalDateTime startTime = getDateTimeFromUser(reader, writer, "start");
             LocalDateTime endTime = getDateTimeFromUser(reader, writer, "end");
 
             ReservationPeriod period = new ReservationPeriod(startTime, endTime);
 
-            CoworkingSpace coworkingSpace = getCoworkingSpaceFromUser(writer, coworkingId);
-            if (coworkingSpace != null) {
+            Optional<CoworkingSpace> possibleCoworkingSpace = getCoworkingSpaceFromUser(writer, coworkingId);
+            if (possibleCoworkingSpace.isPresent()) {
                 isFound = true;
-
                 try {
-                    reservationService.add(customer, coworkingSpace, period);
+                    reservationService.add(customer, possibleCoworkingSpace.get(), period);
                     writer.write("You just made a reservation:\n");
                     writer.flush();
                     isFree = true;
                 } catch (TimeOverlapException e) {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
+                    Log.info(e.getMessage());
+                } catch (InvalidTimeReservationException e) {
+                    writer.write("You entered invalid date.\nTry again\n");
+                    Log.warning(e.getMessage());
                 }
             }
         }
@@ -59,19 +66,22 @@ public class ReservationController {
 
     public void getAllReservations(BufferedWriter writer, User customer) throws IOException {
         List<Reservation> reservations = reservationService.getAllReservations(customer);
-        //TODO add exception to service
         if (reservations.isEmpty()) {
             writer.write("Reservation list is empty\n");
             writer.flush();
         } else {
-            writer.write("Your reservation(s):\n" + reservations);
+            writer.write("Your reservation(s):\n");
             writer.flush();
+            reservations.forEach(System.out::println);
         }
     }
 
     public void delete(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         List<Reservation> reservationsByCustomer = reservationService.getAllReservations(customer);
-        writer.write("Your reservations:\n" + reservationsByCustomer + "\nType reservation Id you want to cancel");
+        writer.write("Your reservations:\n");
+        writer.flush();
+        reservationsByCustomer.forEach(System.out::println);
+        writer.write("\nType reservation Id you want to cancel");
         writer.flush();
 
         int reservationId = Integer.parseInt(reader.readLine());
@@ -88,11 +98,25 @@ public class ReservationController {
             try {
                 reservationService.delete(reservation, customer, coworkingSpace);
             } catch (ForbiddenActionException e) {
-                throw new RuntimeException(e);
+                Log.error(e.getMessage());
+                writer.write(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
+                writer.flush();
+            } catch (ReservationNotFoundException e) {
+                Log.info(e.getMessage());
+                writer.write(e.getMessage() + "\n");
+                writer.flush();
             }
             writer.write("Reservation with Id " + reservationId + " is canceled\n");
             writer.flush();
         }
+    }
+
+    public void getReservationsFromJson() {
+        reservationService.getReservationsFromJson();
+    }
+
+    public void saveToJSON() {
+        reservationService.saveToJSON();
     }
 
     private int getCoworkingIdFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
@@ -125,12 +149,14 @@ public class ReservationController {
         return LocalDateTime.of(year, month, day, hour, minute);
     }
 
-    private CoworkingSpace getCoworkingSpaceFromUser(BufferedWriter writer, int coworkingId) throws IOException {
+    private Optional<CoworkingSpace> getCoworkingSpaceFromUser(BufferedWriter writer, int coworkingId) throws IOException {
         try {
-            return coworkingService.getById(coworkingId);
+            return coworkingService.getCoworkingByCoworkingId(coworkingId);
         } catch (CoworkingNotFoundException e) {
-            writer.write("There is no space with id:" + coworkingId);
-            return null;
+            Log.info(e.getMessage());
+            writer.write(e.getMessage());
+            writer.flush();
+            return Optional.empty();
         }
     }
 }

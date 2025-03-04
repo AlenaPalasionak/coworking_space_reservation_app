@@ -1,7 +1,9 @@
 package org.example.coworking.service.exception;
 
-public class TimeOverlapException extends ServiceException{
-    public TimeOverlapException(String message) {
-        super(message);
+import org.example.coworking.model.ReservationPeriod;
+
+public class TimeOverlapException extends Exception {
+    public TimeOverlapException(ReservationPeriod newPeriod) {
+        super("Reservation overlaps with an existing period: " + newPeriod);
     }
 }

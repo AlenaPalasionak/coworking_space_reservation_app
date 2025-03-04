@@ -1,8 +1,12 @@
 package org.example.coworking.service.exception;
 
-public class ForbiddenActionException extends ServiceException {
+import org.example.coworking.model.User;
 
-    public ForbiddenActionException(String message) {
-        super(message);
+public class ForbiddenActionException extends Exception {
+    protected Class<? extends User> user;
+
+    public ForbiddenActionException(Class<? extends User> user) {
+        super("Action is forbidden for the user: " + user.getSimpleName() + ". \n");
+        this.user = user;
     }
 }
