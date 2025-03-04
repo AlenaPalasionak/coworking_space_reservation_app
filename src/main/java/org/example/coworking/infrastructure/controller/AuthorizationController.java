@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class AuthorizationController {
+    private static final Logger logger = Log.getLogger(AuthorizationController.class);
     protected AuthorizationService authorizationService;
     protected UserService userService;
 
@@ -36,7 +38,7 @@ public class AuthorizationController {
             try {
                 possibleUser = authorizationService.authenticate(name, password, userType);
             } catch (UserNotFoundException e) {
-                Log.warning(e.getMessage());
+                logger.warn(e.getMessage());
                 writer.write(e.getMessage() + "\n" + "Try to log in again. \n");
                 writer.flush();
                 continue;

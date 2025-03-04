@@ -1,18 +1,22 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.json_loader.JsonLoader;
+import org.example.coworking.infrastructure.json_loader.Loader;
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Reservation;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ReservationDaoImpl implements ReservationDao {
+    private static final Logger logger = Log.getLogger(ReservationDaoImpl.class);
     private static List<Reservation> reservationsCache;
-    private final JsonLoader reservationLoader;
+    private final Loader reservationLoader;
 
-    public ReservationDaoImpl(JsonLoader reservationLoader) {
+    public ReservationDaoImpl(Loader reservationLoader) {
         this.reservationLoader = reservationLoader;
     }
 
@@ -67,23 +71,28 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public void getReservationsFromJson() {
+    public void load() {
         if (reservationsCache == null) {
-            reservationsCache = getFromJson();
+            reservationsCache = getFromStorage();
         }
     }
 
     @Override
-    public void saveToJSON() {
-        reservationLoader.convertToJson(reservationsCache);
+    public void save() {
+        reservationLoader.save(reservationsCache);
     }
 
     private boolean checkIfNotExist(int id) {
         return reservationsCache.stream().noneMatch(c -> c.getId() == id);
     }
 
-    private List<Reservation> getFromJson() {
-        reservationsCache = reservationLoader.loadFromJson(Reservation.class);
+    private List<Reservation> getFromStorage() {
+        try {
+            reservationsCache = reservationLoader.load(Reservation.class);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
         return reservationsCache;
     }
 }

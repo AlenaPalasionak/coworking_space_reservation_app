@@ -4,20 +4,20 @@ import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
 import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.dao.*;
-import org.example.coworking.infrastructure.json_loader.CoworkingSpaceJsonLoader;
-import org.example.coworking.infrastructure.json_loader.JsonLoader;
-import org.example.coworking.infrastructure.json_loader.ReservationJsonLoader;
-import org.example.coworking.infrastructure.json_loader.UserJsonLoader;
+import org.example.coworking.infrastructure.json_loader.CoworkingSpaceLoader;
+import org.example.coworking.infrastructure.json_loader.Loader;
+import org.example.coworking.infrastructure.json_loader.ReservationLoader;
+import org.example.coworking.infrastructure.json_loader.UserLoader;
 import org.example.coworking.service.*;
 
 public class AppFactory {
-    private static final JsonLoader userJsonLoader = new UserJsonLoader();
-    private static final JsonLoader coworkingJsonLoader = new CoworkingSpaceJsonLoader();
-    private static final JsonLoader reservationJsonLoader = new ReservationJsonLoader();
+    private static final Loader USER_LOADER = new UserLoader();
+    private static final Loader COWORKING_LOADER = new CoworkingSpaceLoader();
+    private static final Loader RESERVATION_LOADER = new ReservationLoader();
 
-    private static final UserDao userDao = new UserDaoImpl(userJsonLoader);
-    private static final CoworkingDao coworkingDao = new CoworkingDaoImpl(coworkingJsonLoader);
-    private static final ReservationDao reservationDao = new ReservationDaoImpl(reservationJsonLoader);
+    private static final UserDao userDao = new UserDaoImpl(USER_LOADER);
+    private static final CoworkingDao coworkingDao = new CoworkingDaoImpl(COWORKING_LOADER);
+    private static final ReservationDao reservationDao = new ReservationDaoImpl(RESERVATION_LOADER);
 
     private static final UserService userService = new UserServiceImpl(userDao);
     private static final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);

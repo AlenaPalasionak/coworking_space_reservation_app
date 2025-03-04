@@ -1,6 +1,6 @@
 package org.example.coworking.infrastructure.util;
 
-import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

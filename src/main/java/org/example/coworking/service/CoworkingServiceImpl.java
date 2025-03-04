@@ -38,12 +38,12 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void getCoworkingPlacesFromJson() {
-        coworkingDao.getCoworkingPlacesFromJson();
+    public void load() {
+        coworkingDao.load();
     }
 
     @Override
-    public void saveToJSON() {
-        coworkingDao.saveToJSON();
+    public void save() {
+        coworkingDao.save();
     }
 }

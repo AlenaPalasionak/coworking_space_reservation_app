@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.controller.exception.PriceFormatException;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.logger.Log;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CoworkingController {
+    private static final Logger logger = Log.getLogger(CoworkingController.class);
 
     CoworkingService coworkingService;
     ReservationService reservationService;
@@ -51,7 +53,7 @@ public class CoworkingController {
             try {
                 price = getPriceFromUser(reader, writer);
             } catch (PriceFormatException e) {
-                Log.warning(e.getMessage());
+                logger.warn(e.getMessage());
                 writer.write(e.getMessage() + ". Try again. ");
             }
         }
@@ -67,27 +69,36 @@ public class CoworkingController {
     public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
         boolean isDeleted = false;
+        boolean rightFormat = false;
         if (spaces.isEmpty()) {
             writer.write("Coworking List is empty\n");
             writer.flush();
         } else {
             while (!isDeleted) {
                 spaces.forEach(System.out::println);
-                int coworkingId;
                 writer.write("Type a coworking id you want to delete:\n");
                 writer.flush();
                 try {
-                    coworkingId = Integer.parseInt(reader.readLine());
+                    String coworkingIdStr = reader.readLine();
+
+                    while (!StringHandler.containsOnlyNumbers(coworkingIdStr)) {
+                        writer.write("Wrong symbol. Try again.\nType a coworking id you want to delete:\n");
+                        writer.flush();
+                        coworkingIdStr = reader.readLine(); // Повторно запрашиваем ввод
+                    }
+
+                    int coworkingId = Integer.parseInt(coworkingIdStr);
+
                     coworkingService.delete(user, coworkingId);
                     writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
                     writer.flush();
                     isDeleted = true;
                 } catch (ForbiddenActionException e) {
-                    Log.error(e.getMessage());
+                    logger.error(e.getMessage());
                     writer.write(e.getMessage() + "\n");
                     writer.flush();
                 } catch (CoworkingNotFoundException e) {
-                    Log.info(e.getMessage());
+                    logger.info(e.getMessage());
                     writer.write(e.getMessage() + "\n" + "Choose another Coworking \n");
                     writer.flush();
                 }
@@ -102,12 +113,12 @@ public class CoworkingController {
         spaces.forEach(System.out::println);
     }
 
-    public void getCoworkingPlacesFromJson() {
-        coworkingService.getCoworkingPlacesFromJson();
+    public void load() {
+        coworkingService.load();
     }
 
-    public void saveToJSON() {
-        coworkingService.saveToJSON();
+    public void save() {
+        coworkingService.save();
     }
 
     private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws IOException, PriceFormatException {
@@ -151,8 +162,9 @@ public class CoworkingController {
             writer.flush();
 
             String facilitiesIndexesOnOneLine = reader.readLine();
-
-            if (StringHandler.isFacilityStringFromUserValid(facilitiesIndexesOnOneLine)) {
+            if (facilitiesIndexesOnOneLine.matches("")) {
+                areChosen = true;
+            } else if (StringHandler.isFacilityStringFromUserValid(facilitiesIndexesOnOneLine)) {
                 String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
                 Arrays.sort(facilitiesIndexes);
                 facilitiesIndexes = Arrays.stream(facilitiesIndexes).distinct().toArray(String[]::new);

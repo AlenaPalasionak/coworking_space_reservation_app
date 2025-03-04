@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface UserDao {
 
-    List<User> getUsersFromJson();
+    List<User> load();
 
 }

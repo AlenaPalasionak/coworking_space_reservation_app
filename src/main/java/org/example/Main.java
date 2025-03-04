@@ -56,8 +56,8 @@ public class Main {
     public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
 
     public static void main(String[] args) {
-        coworkingController.getCoworkingPlacesFromJson();
-        reservationController.getReservationsFromJson();
+        coworkingController.load();
+        reservationController.load();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
             while (true) {
                 boolean logOut = false;
@@ -94,8 +94,8 @@ public class Main {
                         if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
                         } else if (nextStep.equals(EXIT)) {
-                            coworkingController.saveToJSON();
-                            reservationController.saveToJSON();
+                            coworkingController.save();
+                            reservationController.save();
                             System.exit(0);
                         }
                     }
@@ -128,8 +128,8 @@ public class Main {
                         if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
                         } else if (nextStep.equals(EXIT)) {
-                            coworkingController.saveToJSON();
-                            reservationController.saveToJSON();
+                            coworkingController.save();
+                            reservationController.save();
                             System.exit(0);
                         }
                     }

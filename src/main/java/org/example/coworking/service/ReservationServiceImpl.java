@@ -3,7 +3,7 @@ package org.example.coworking.service;
 import org.example.coworking.infrastructure.dao.CoworkingDao;
 import org.example.coworking.infrastructure.dao.ReservationDao;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 import org.example.coworking.infrastructure.util.OccupationTimeChecker;
 import org.example.coworking.infrastructure.util.ReservationTimeValidator;
 import org.example.coworking.model.*;
@@ -55,12 +55,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void getReservationsFromJson() {
-        reservationDao.getReservationsFromJson();
+    public void load() {
+        reservationDao.load();
     }
 
     @Override
-    public void saveToJSON() {
-        reservationDao.saveToJSON();
+    public void save() {
+        reservationDao.save();
     }
 }

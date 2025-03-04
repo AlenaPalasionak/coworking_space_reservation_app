@@ -12,6 +12,6 @@ public interface ReservationDao {
     Optional<Reservation> getReservationById(int reservationId) throws ReservationNotFoundException;
     List<Reservation> getAllReservations();
     List<Reservation> getReservationsByCustomer(int customerId);
-    void getReservationsFromJson();
-    void saveToJSON();
+    void load();
+    void save();
 }

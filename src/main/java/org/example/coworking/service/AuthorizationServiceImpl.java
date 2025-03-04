@@ -16,7 +16,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public Optional<User> authenticate(String name, String password, Class<? extends User> role) throws UserNotFoundException {
 
-        List<User> users = userService.getUsersFromJson();
+        List<User> users = userService.load();
 
         Optional<User> possibleUser = users.stream().filter(user -> user.getName().equals(name)).filter(user -> user.getPassword().equals(password)).filter(user -> role.isInstance(user)).findFirst();
 

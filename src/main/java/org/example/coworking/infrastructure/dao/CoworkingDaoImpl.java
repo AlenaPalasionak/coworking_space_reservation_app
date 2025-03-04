@@ -1,18 +1,22 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.infrastructure.json_loader.JsonLoader;
+import org.example.coworking.infrastructure.json_loader.Loader;
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.CoworkingSpace;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 public class CoworkingDaoImpl implements CoworkingDao {
+    private static final Logger logger = Log.getLogger(CoworkingDaoImpl.class);
     private static List<CoworkingSpace> coworkingSpacesCache;
-    private final JsonLoader coworkingSpaceJsonLoader;
+    private final Loader coworkingSpaceLoader;
 
-    public CoworkingDaoImpl(JsonLoader coworkingSpaceJsonLoader) {
-        this.coworkingSpaceJsonLoader = coworkingSpaceJsonLoader;
+    public CoworkingDaoImpl(Loader coworkingSpaceLoader) {
+        this.coworkingSpaceLoader = coworkingSpaceLoader;
     }
 
     @Override
@@ -61,23 +65,28 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public void getCoworkingPlacesFromJson() {
+    public void load() {
         if (coworkingSpacesCache == null) {
-            coworkingSpacesCache = getFromJson();
+            coworkingSpacesCache = getFromStorage();
         }
     }
 
     @Override
-    public void saveToJSON() {
-        coworkingSpaceJsonLoader.convertToJson(coworkingSpacesCache);
+    public void save() {
+        coworkingSpaceLoader.save(coworkingSpacesCache);
     }
 
     private boolean checkIfNotExist(int id) {
         return coworkingSpacesCache.stream().noneMatch(c -> c.getId() == id);
     }
 
-    private List<CoworkingSpace> getFromJson() {
-        coworkingSpacesCache = coworkingSpaceJsonLoader.loadFromJson(CoworkingSpace.class);
+    private List<CoworkingSpace> getFromStorage() {
+        try {
+            coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
         return coworkingSpacesCache;
     }
 }

@@ -1,9 +1,10 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.logger.Log;
-import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ReservationController {
+    private static final Logger logger = Log.getLogger(ReservationController.class);
     CoworkingService coworkingService;
     ReservationService reservationService;
 
@@ -55,10 +57,10 @@ public class ReservationController {
                     isFree = true;
                 } catch (TimeOverlapException e) {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
-                    Log.info(e.getMessage());
+                    logger.warn(e.getMessage());
                 } catch (InvalidTimeReservationException e) {
                     writer.write("You entered invalid date.\nTry again\n");
-                    Log.warning(e.getMessage());
+                    logger.warn(e.getMessage());
                 }
             }
         }
@@ -98,11 +100,11 @@ public class ReservationController {
             try {
                 reservationService.delete(reservation, customer, coworkingSpace);
             } catch (ForbiddenActionException e) {
-                Log.error(e.getMessage());
+                logger.warn(e.getMessage());
                 writer.write(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
                 writer.flush();
             } catch (ReservationNotFoundException e) {
-                Log.info(e.getMessage());
+                logger.warn(e.getMessage());
                 writer.write(e.getMessage() + "\n");
                 writer.flush();
             }
@@ -111,12 +113,12 @@ public class ReservationController {
         }
     }
 
-    public void getReservationsFromJson() {
-        reservationService.getReservationsFromJson();
+    public void load() {
+        reservationService.load();
     }
 
-    public void saveToJSON() {
-        reservationService.saveToJSON();
+    public void save() {
+        reservationService.save();
     }
 
     private int getCoworkingIdFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
@@ -153,7 +155,7 @@ public class ReservationController {
         try {
             return coworkingService.getCoworkingByCoworkingId(coworkingId);
         } catch (CoworkingNotFoundException e) {
-            Log.info(e.getMessage());
+            logger.warn(e.getMessage());
             writer.write(e.getMessage());
             writer.flush();
             return Optional.empty();

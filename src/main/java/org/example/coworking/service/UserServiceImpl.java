@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsersFromJson() {
-        return userDao.getUsersFromJson();
+    public List<User> load() {
+        return userDao.load();
     }
 }

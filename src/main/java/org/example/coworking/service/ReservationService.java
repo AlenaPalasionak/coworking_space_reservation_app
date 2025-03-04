@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.service.InvalidTimeReservationException;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
@@ -17,6 +17,6 @@ public interface ReservationService {
     void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException;
     List<Reservation> getAllReservations(User user);
     Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException;
-    void getReservationsFromJson();
-    void saveToJSON();
+    void load();
+    void save();
 }

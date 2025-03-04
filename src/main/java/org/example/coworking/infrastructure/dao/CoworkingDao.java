@@ -11,6 +11,6 @@ public interface CoworkingDao {
     void deleteById(int id) throws CoworkingNotFoundException;
     List<CoworkingSpace> getAllSpaces();
     Optional<CoworkingSpace> getById(int id) throws CoworkingNotFoundException;
-    void getCoworkingPlacesFromJson();
-    void saveToJSON();
+    void load();
+    void save();
 }

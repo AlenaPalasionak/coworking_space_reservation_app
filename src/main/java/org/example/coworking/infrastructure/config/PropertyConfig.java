@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.config;
 
+import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.logger.Log;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Properties;
 
 public class PropertyConfig {
     private static final Properties PROPERTIES = new Properties();
+    private static final Logger logger = Log.getLogger(PropertyConfig.class);
 
     public static Properties getProperties() {
         Reader reader;
@@ -21,7 +23,7 @@ public class PropertyConfig {
                 reader = new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
                 PROPERTIES.load(reader);
             } catch (IOException e) {
-                Log.error("Exception while getting properties object from file: " + fileName + "\n" + e.getStackTrace());
+                logger.error("Exception while getting properties object from file: " + fileName + "\n" + e.getStackTrace());
                 throw new RuntimeException(e.getMessage());
             }
         }

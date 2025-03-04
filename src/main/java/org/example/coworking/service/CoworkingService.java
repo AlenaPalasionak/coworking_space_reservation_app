@@ -15,6 +15,6 @@ public interface CoworkingService {
     void delete(User user, int coworkingId) throws ForbiddenActionException, CoworkingNotFoundException;
     List<CoworkingSpace> getAllSpaces();
     Optional<CoworkingSpace> getCoworkingByCoworkingId(int id) throws CoworkingNotFoundException;
-    void getCoworkingPlacesFromJson();
-    void saveToJSON();
+    void load();
+    void save();
 }
