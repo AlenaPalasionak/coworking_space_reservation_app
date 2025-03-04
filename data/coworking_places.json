@@ -1,0 +1,10 @@
+[ {
+  "id" : 0,
+  "price" : 111.0,
+  "coworkingType" : "Private Office",
+  "facilities" : [ "WIFI" ],
+  "reservationsPeriods" : [ {
+    "startTime" : "2025-11-11 11:11",
+    "endTime" : "2026-11-11 11:11"
+  } ]
+} ]

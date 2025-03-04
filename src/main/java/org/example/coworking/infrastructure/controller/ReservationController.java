@@ -34,13 +34,12 @@ public class ReservationController {
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
-        boolean isValid = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
         writer.write("Coworking spaces list:\n");
         writer.flush();
         coworkingSpaces.forEach(System.out::println);
 
-        while (!isFree && !isFound && !isValid) {
+        while (!isFree && !isFound) {
             int coworkingId = getCoworkingIdFromUser(reader, writer);
             LocalDateTime startTime = getDateTimeFromUser(reader, writer, "start");
             LocalDateTime endTime = getDateTimeFromUser(reader, writer, "end");
@@ -55,6 +54,7 @@ public class ReservationController {
                     writer.write("You just made a reservation:\n");
                     writer.flush();
                     isFree = true;
+
                 } catch (TimeOverlapException e) {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
                     logger.warn(e.getMessage());
@@ -124,6 +124,7 @@ public class ReservationController {
     private int getCoworkingIdFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write("Choose a CoworkingSpace and type its id to book it:\n");
         writer.flush();
+        String coworkingId = reader.readLine();
         return Integer.parseInt(reader.readLine());
     }
 
