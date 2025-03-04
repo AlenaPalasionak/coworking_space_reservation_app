@@ -69,7 +69,6 @@ public class CoworkingController {
     public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
         boolean isDeleted = false;
-        boolean rightFormat = false;
         if (spaces.isEmpty()) {
             writer.write("Coworking List is empty\n");
             writer.flush();

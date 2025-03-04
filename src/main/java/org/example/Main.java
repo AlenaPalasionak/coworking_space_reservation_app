@@ -54,6 +54,13 @@ public class Main {
     public static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
     public static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
     public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
+    public static final String ADD_COWORKING_SPACE = "1";
+    public static final String DELETE_COWORKING_SPACE = "2";
+    public static final String GET_ALL_RESERVATIONS = "3";
+    public static final String GET_AVAILABLE_COWORKING_SPACES = "1";
+    public static final String ADD_RESERVATION = "2";
+    public static final String GET_RESERVATIONS = "3";
+    public static final String DELETE_RESERVATION = "4";
 
     public static void main(String[] args) {
         coworkingController.load();
@@ -78,13 +85,13 @@ public class Main {
                         adminMenu.showMenu(reader, writer);
                         String adminOptionChoice = adminMenu.getUserChoice(reader, writer, ADMIN_OPTION_POSSIBLE_CHOICES);
                         switch (adminOptionChoice) {
-                            case "1":
+                            case ADD_COWORKING_SPACE:
                                 coworkingController.add(reader, writer);
                                 break;
-                            case "2":
+                            case DELETE_COWORKING_SPACE:
                                 coworkingController.delete(user, reader, writer);
                                 break;
-                            case "3":
+                            case GET_ALL_RESERVATIONS:
                                 reservationController.getAllReservations(writer, user);
                                 break;
                         }
@@ -109,16 +116,16 @@ public class Main {
                         customerMenu.showMenu(reader, writer);
                         String customerOptionChoice = customerMenu.getUserChoice(reader, writer, CUSTOMER_OPTION_POSSIBLE_CHOICES);
                         switch (customerOptionChoice) {
-                            case "1":
+                            case GET_AVAILABLE_COWORKING_SPACES:
                                 coworkingController.getAllSpaces(writer);
                                 break;
-                            case "2":
+                            case ADD_RESERVATION:
                                 reservationController.add(reader, writer, user);
                                 break;
-                            case "3":
+                            case GET_RESERVATIONS:
                                 reservationController.getAllReservations(writer, user);
                                 break;
-                            case "4":
+                            case DELETE_RESERVATION:
                                 reservationController.delete(reader, writer, user);
                                 break;
                         }
