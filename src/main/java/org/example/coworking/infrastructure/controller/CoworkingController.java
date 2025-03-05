@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class CoworkingController {
     private static final Logger logger = Log.getLogger(CoworkingController.class);
@@ -46,7 +47,7 @@ public class CoworkingController {
         this.reservationService = reservationService;
     }
 
-    public void add(BufferedReader reader, BufferedWriter writer) throws IOException {
+    public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
 
         double price = 0;
         while (price == 0) {
@@ -60,14 +61,14 @@ public class CoworkingController {
         CoworkingType coworkingType = getCoworkingTypeFromUser(reader, writer);
         List<Facility> facilities = getFacilityFromUser(reader, writer);
 
-        coworkingService.add(price, coworkingType, facilities);
+        coworkingService.add(admin, price, coworkingType, facilities);
 
         writer.write("You just added a new Space:\n");
         writer.flush();
     }
 
-    public void delete(User user, BufferedReader reader, BufferedWriter writer) throws IOException {
-        List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
+    public void delete( BufferedReader reader, BufferedWriter writer, User user) throws IOException {
+        List<CoworkingSpace> spaces = coworkingService.getAll(user);
         boolean isDeleted = false;
         if (spaces.isEmpty()) {
             writer.write("Coworking List is empty\n");
@@ -87,26 +88,31 @@ public class CoworkingController {
                     }
 
                     int coworkingId = Integer.parseInt(coworkingIdStr);
+                    Optional<CoworkingSpace> possibleCoworking;
 
-                    coworkingService.delete(user, coworkingId);
-                    writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
-                    writer.flush();
-                    isDeleted = true;
-                } catch (ForbiddenActionException e) {
-                    logger.error(e.getMessage());
-                    writer.write(e.getMessage() + "\n");
-                    writer.flush();
+                    possibleCoworking = coworkingService.getById(coworkingId);
+                    if (possibleCoworking.isPresent()) {
+                        CoworkingSpace coworkingSpace = possibleCoworking.get();
+                        coworkingService.delete(user, coworkingSpace);
+                        writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
+                        writer.flush();
+                        isDeleted = true;
+                    }
                 } catch (CoworkingNotFoundException e) {
                     logger.info(e.getMessage());
                     writer.write(e.getMessage() + "\n" + "Choose another Coworking \n");
+                    writer.flush();
+                } catch (ForbiddenActionException e) {
+                    logger.error(e.getMessage());
+                    writer.write(e.getMessage() + "\n");
                     writer.flush();
                 }
             }
         }
     }
 
-    public void getAllSpaces(BufferedWriter writer) throws IOException {
-        List<CoworkingSpace> spaces = coworkingService.getAllSpaces();
+    public void getAllSpaces(BufferedWriter writer, User user) throws IOException {
+        List<CoworkingSpace> spaces = coworkingService.getAll(user);
         writer.write("Spaces list:\n");
         writer.flush();
         spaces.forEach(System.out::println);
@@ -120,7 +126,8 @@ public class CoworkingController {
         coworkingService.save();
     }
 
-    private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws IOException, PriceFormatException {
+    private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws
+            IOException, PriceFormatException {
         writer.write("Enter the price in dollars per hour.\n");
         writer.flush();
         String price = reader.readLine();

@@ -1,39 +1,46 @@
 package org.example.coworking.service;
 
-import org.example.coworking.infrastructure.dao.CoworkingDao;
+import org.example.coworking.infrastructure.dao.ModelDao;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CoworkingServiceImpl implements CoworkingService {
-    CoworkingDao coworkingDao;
+    ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao;
 
-    public CoworkingServiceImpl(CoworkingDao coworkingDao) {
+    public CoworkingServiceImpl(ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao) {
         this.coworkingDao = coworkingDao;
     }
 
     @Override
-    public void add(double price, CoworkingType coworkingType, List<Facility> facilities) {
-        coworkingDao.add(new CoworkingSpace(price, coworkingType, facilities));
+    public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
+        coworkingDao.add(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 
     @Override
-    public void delete(User user, int coworkingId) throws ForbiddenActionException, CoworkingNotFoundException {
+    public void delete(User user, CoworkingSpace coworkingSpace) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
             throw new ForbiddenActionException(user.getClass());
-        } else coworkingDao.deleteById(coworkingId);
+        } else coworkingDao.delete(coworkingSpace);
     }
 
     @Override
-    public List<CoworkingSpace> getAllSpaces() {
-        return coworkingDao.getAllSpaces();
+    public List<CoworkingSpace> getAll(User user) {
+        if (user != null && user.getClass() == Admin.class) {
+            return coworkingDao.getAll().stream()
+                    .filter(coworking -> coworking.getAdmin().getId() == user.getId())
+                    .collect(Collectors.toList());
+        } else {
+            return coworkingDao.getAll();
+        }
     }
 
     @Override
-    public Optional<CoworkingSpace> getCoworkingByCoworkingId(int coworkingId) throws CoworkingNotFoundException {
+    public Optional<CoworkingSpace> getById(int coworkingId) throws CoworkingNotFoundException {
         return coworkingDao.getById(coworkingId);
     }
 

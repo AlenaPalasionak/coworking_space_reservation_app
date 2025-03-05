@@ -11,10 +11,10 @@ import java.util.List;
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = Log.getLogger(UserDaoImpl.class);
 
-    private final Loader userLoader;
+    private final Loader<User> userLoader;
     private List<User> usersCache;
 
-    public UserDaoImpl(Loader userLoader) {
+    public UserDaoImpl(Loader<User> userLoader) {
         this.userLoader = userLoader;
     }
 

@@ -39,12 +39,8 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public List<CoworkingSpace> getAllSpaces() {
-        return coworkingSpacesCache;
-    }
-
-    @Override
-    public void deleteById(int coworkingId) throws CoworkingNotFoundException {
+    public void delete(CoworkingSpace coworkingSpace) throws CoworkingNotFoundException {
+        int coworkingId = coworkingSpace.getId();
         if (checkIfNotExist(coworkingId)) {
             throw new CoworkingNotFoundException(coworkingId);
         }
@@ -62,6 +58,11 @@ public class CoworkingDaoImpl implements CoworkingDao {
                     .findFirst();
         }
         return possibleCoworkingSpace;
+    }
+
+    @Override
+    public List<CoworkingSpace> getAll() {
+        return coworkingSpacesCache;
     }
 
     @Override

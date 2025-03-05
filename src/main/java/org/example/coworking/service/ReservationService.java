@@ -15,8 +15,9 @@ import java.util.Optional;
 public interface ReservationService {
     void add(User customer, CoworkingSpace coworking, ReservationPeriod period) throws TimeOverlapException, InvalidTimeReservationException;
     void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException;
-    List<Reservation> getAllReservations(User user);
-    Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException;
+    List<Reservation> getAll(User user);
     void load();
     void save();
+    Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException;
+
 }

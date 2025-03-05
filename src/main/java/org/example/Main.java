@@ -86,10 +86,10 @@ public class Main {
                         String adminOptionChoice = adminMenu.getUserChoice(reader, writer, ADMIN_OPTION_POSSIBLE_CHOICES);
                         switch (adminOptionChoice) {
                             case ADD_COWORKING_SPACE:
-                                coworkingController.add(reader, writer);
+                                coworkingController.add(reader, writer, user);
                                 break;
                             case DELETE_COWORKING_SPACE:
-                                coworkingController.delete(user, reader, writer);
+                                coworkingController.delete(reader, writer, user);
                                 break;
                             case GET_ALL_RESERVATIONS:
                                 reservationController.getAllReservations(writer, user);
@@ -107,17 +107,19 @@ public class Main {
                         }
                     }
                 } else if (userRoleIdentifier.equals(CUSTOMER)) {
-                    Optional<User> possibleCustomer = authorizationController.authenticate(reader, writer, Customer.class);
+                    Optional<User> possibleCustomer = authorizationController.authenticate
+                            (reader, writer, Customer.class);
                     if (possibleCustomer.isPresent()) {
                         user = possibleCustomer.get();
                     }
                     while (!logOut) {
                         Menu customerMenu = new MenuImpl(CUSTOMER_MENU);
                         customerMenu.showMenu(reader, writer);
-                        String customerOptionChoice = customerMenu.getUserChoice(reader, writer, CUSTOMER_OPTION_POSSIBLE_CHOICES);
+                        String customerOptionChoice = customerMenu.getUserChoice
+                                (reader, writer, CUSTOMER_OPTION_POSSIBLE_CHOICES);
                         switch (customerOptionChoice) {
                             case GET_AVAILABLE_COWORKING_SPACES:
-                                coworkingController.getAllSpaces(writer);
+                                coworkingController.getAllSpaces(writer, user);
                                 break;
                             case ADD_RESERVATION:
                                 reservationController.add(reader, writer, user);

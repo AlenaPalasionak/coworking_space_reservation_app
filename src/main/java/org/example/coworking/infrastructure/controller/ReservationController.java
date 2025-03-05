@@ -34,7 +34,7 @@ public class ReservationController {
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllSpaces();
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAll(customer);
         writer.write("Coworking spaces list:\n");
         writer.flush();
         coworkingSpaces.forEach(System.out::println);
@@ -67,7 +67,7 @@ public class ReservationController {
     }
 
     public void getAllReservations(BufferedWriter writer, User customer) throws IOException {
-        List<Reservation> reservations = reservationService.getAllReservations(customer);
+        List<Reservation> reservations = reservationService.getAll(customer);
         if (reservations.isEmpty()) {
             writer.write("Reservation list is empty\n");
             writer.flush();
@@ -79,7 +79,7 @@ public class ReservationController {
     }
 
     public void delete(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
-        List<Reservation> reservationsByCustomer = reservationService.getAllReservations(customer);
+        List<Reservation> reservationsByCustomer = reservationService.getAll(customer);
         writer.write("Your reservations:\n");
         writer.flush();
         reservationsByCustomer.forEach(System.out::println);
@@ -124,7 +124,6 @@ public class ReservationController {
     private int getCoworkingIdFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
         writer.write("Choose a CoworkingSpace and type its id to book it:\n");
         writer.flush();
-        String coworkingId = reader.readLine();
         return Integer.parseInt(reader.readLine());
     }
 
@@ -154,7 +153,7 @@ public class ReservationController {
 
     private Optional<CoworkingSpace> getCoworkingSpaceFromUser(BufferedWriter writer, int coworkingId) throws IOException {
         try {
-            return coworkingService.getCoworkingByCoworkingId(coworkingId);
+            return coworkingService.getById(coworkingId);
         } catch (CoworkingNotFoundException e) {
             logger.warn(e.getMessage());
             writer.write(e.getMessage());

@@ -9,19 +9,18 @@ import org.example.coworking.model.Reservation;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ReservationDaoImpl implements ReservationDao {
     private static final Logger logger = Log.getLogger(ReservationDaoImpl.class);
     private static List<Reservation> reservationsCache;
-    private final Loader reservationLoader;
+    private final Loader<Reservation> reservationLoader;
 
-    public ReservationDaoImpl(Loader reservationLoader) {
+    public ReservationDaoImpl(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
     }
 
     @Override
-    public void addReservation(Reservation reservation) {
+    public void add(Reservation reservation) {
         boolean isUniqueIdGenerated;
         int generatedId;
         do {
@@ -50,24 +49,20 @@ public class ReservationDaoImpl implements ReservationDao {
         reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
     }
 
-    @Override
-    public List<Reservation> getAllReservations() {
-        return reservationsCache;
-    }
-
-    public Optional<Reservation> getReservationById(int reservationId) throws ReservationNotFoundException {
+    public Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException {
         Optional<Reservation> possibleReservation;
         if (checkIfNotExist(reservationId)) {
             throw new ReservationNotFoundException(reservationId);
         } else {
-            possibleReservation = reservationsCache.stream().filter(r -> r.getId() == reservationId).findFirst();
+            possibleReservation = reservationsCache.stream().filter(r -> r.getId() == reservationId)
+                    .findFirst();
         }
         return possibleReservation;
     }
 
     @Override
-    public List<Reservation> getReservationsByCustomer(int customerId) {
-        return reservationsCache.stream().filter(reservation -> reservation.getCustomer().getId() == customerId).collect(Collectors.toList());
+    public List<Reservation> getAll() {
+        return reservationsCache;
     }
 
     @Override
@@ -83,7 +78,8 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     private boolean checkIfNotExist(int id) {
-        return reservationsCache.stream().noneMatch(c -> c.getId() == id);
+        return reservationsCache.stream()
+                .noneMatch(c -> c.getId() == id);
     }
 
     private List<Reservation> getFromStorage() {

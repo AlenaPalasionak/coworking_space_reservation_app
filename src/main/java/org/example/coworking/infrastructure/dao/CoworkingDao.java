@@ -6,11 +6,11 @@ import org.example.coworking.model.CoworkingSpace;
 import java.util.List;
 import java.util.Optional;
 
-public interface CoworkingDao {
+public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFoundException> {
     void add(CoworkingSpace coworkingSpace);
-    void deleteById(int id) throws CoworkingNotFoundException;
-    List<CoworkingSpace> getAllSpaces();
+    void delete(CoworkingSpace coworking) throws CoworkingNotFoundException;
     Optional<CoworkingSpace> getById(int id) throws CoworkingNotFoundException;
+    List<CoworkingSpace> getAll();
     void load();
     void save();
 }
