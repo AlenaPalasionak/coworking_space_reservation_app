@@ -45,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAll(User user) {
+    public List<Reservation> getAllByUser(User user) {
         if (user != null && user.getClass() == Customer.class) {
             return reservationDao.getAll().stream()
                     .filter(reservation -> reservation.getCustomer().getId() == user.getId())
@@ -56,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException {
+    public Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException {
         return reservationDao.getById(reservationId);
     }
 

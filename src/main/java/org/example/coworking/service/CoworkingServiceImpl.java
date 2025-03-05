@@ -29,7 +29,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public List<CoworkingSpace> getAll(User user) {
+    public List<CoworkingSpace> getAllByUser(User user) {
         if (user != null && user.getClass() == Admin.class) {
             return coworkingDao.getAll().stream()
                     .filter(coworking -> coworking.getAdmin().getId() == user.getId())

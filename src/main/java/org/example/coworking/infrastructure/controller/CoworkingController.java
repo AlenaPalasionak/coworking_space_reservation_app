@@ -68,7 +68,7 @@ public class CoworkingController {
     }
 
     public void delete( BufferedReader reader, BufferedWriter writer, User user) throws IOException {
-        List<CoworkingSpace> spaces = coworkingService.getAll(user);
+        List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         boolean isDeleted = false;
         if (spaces.isEmpty()) {
             writer.write("Coworking List is empty\n");
@@ -112,7 +112,7 @@ public class CoworkingController {
     }
 
     public void getAllSpaces(BufferedWriter writer, User user) throws IOException {
-        List<CoworkingSpace> spaces = coworkingService.getAll(user);
+        List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         writer.write("Spaces list:\n");
         writer.flush();
         spaces.forEach(System.out::println);

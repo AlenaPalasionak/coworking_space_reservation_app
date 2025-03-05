@@ -34,7 +34,7 @@ public class ReservationController {
     public void add(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
         boolean isFree = false;
         boolean isFound = false;
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAll(customer);
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(customer);
         writer.write("Coworking spaces list:\n");
         writer.flush();
         coworkingSpaces.forEach(System.out::println);
@@ -67,7 +67,7 @@ public class ReservationController {
     }
 
     public void getAllReservations(BufferedWriter writer, User customer) throws IOException {
-        List<Reservation> reservations = reservationService.getAll(customer);
+        List<Reservation> reservations = reservationService.getAllByUser(customer);
         if (reservations.isEmpty()) {
             writer.write("Reservation list is empty\n");
             writer.flush();
@@ -79,7 +79,7 @@ public class ReservationController {
     }
 
     public void delete(BufferedReader reader, BufferedWriter writer, User customer) throws IOException {
-        List<Reservation> reservationsByCustomer = reservationService.getAll(customer);
+        List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
         writer.write("Your reservations:\n");
         writer.flush();
         reservationsByCustomer.forEach(System.out::println);
@@ -89,7 +89,7 @@ public class ReservationController {
         int reservationId = Integer.parseInt(reader.readLine());
         Optional<Reservation> possibleReservation = Optional.empty();
         try {
-            possibleReservation = reservationService.getReservationByReservationId(reservationId);
+            possibleReservation = reservationService.getById(reservationId);
         } catch (ReservationNotFoundException e) {
             writer.write("Reservation with Id " + reservationId + " is absent\n");
         }
