@@ -1,4 +1,4 @@
-package org.example.coworking.infrastructure.json_loader;
+package org.example.coworking.infrastructure.loader;
 
 import java.io.FileNotFoundException;
 import java.util.List;

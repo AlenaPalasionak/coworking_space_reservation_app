@@ -4,10 +4,10 @@ import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
 import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.dao.*;
-import org.example.coworking.infrastructure.json_loader.CoworkingSpaceLoader;
-import org.example.coworking.infrastructure.json_loader.Loader;
-import org.example.coworking.infrastructure.json_loader.ReservationLoader;
-import org.example.coworking.infrastructure.json_loader.UserLoader;
+import org.example.coworking.infrastructure.loader.CoworkingSpaceLoader;
+import org.example.coworking.infrastructure.loader.Loader;
+import org.example.coworking.infrastructure.loader.ReservationLoader;
+import org.example.coworking.infrastructure.loader.UserLoader;
 import org.example.coworking.service.*;
 
 public class AppFactory {

@@ -1,4 +1,4 @@
-package org.example.coworking.infrastructure.json_loader;
+package org.example.coworking.infrastructure.loader;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

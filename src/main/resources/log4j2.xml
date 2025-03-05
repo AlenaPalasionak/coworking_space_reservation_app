@@ -19,7 +19,7 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Logger>
-        <Logger name="org.example.coworking.infrastructure.json_loader" level="DEBUG" additivity="false">
+        <Logger name="org.example.coworking.infrastructure.loader" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="FileAppender"/>
         </Logger>

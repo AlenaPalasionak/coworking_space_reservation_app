@@ -2,7 +2,7 @@ package org.example.coworking.infrastructure.dao;
 
 import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.json_loader.Loader;
+import org.example.coworking.infrastructure.loader.Loader;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Reservation;
 
