@@ -13,9 +13,9 @@ import java.util.Optional;
 public class CoworkingDaoImpl implements CoworkingDao {
     private static final Logger logger = Log.getLogger(CoworkingDaoImpl.class);
     private static List<CoworkingSpace> coworkingSpacesCache;
-    private final Loader coworkingSpaceLoader;
+    private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
-    public CoworkingDaoImpl(Loader coworkingSpaceLoader) {
+    public CoworkingDaoImpl(Loader<CoworkingSpace> coworkingSpaceLoader) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
     }
 

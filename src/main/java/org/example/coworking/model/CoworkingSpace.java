@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 @Getter
 @EqualsAndHashCode
@@ -27,13 +27,13 @@ public class CoworkingSpace {
     private final List<Facility> facilities;
 
     @JsonProperty("reservationsPeriods")
-    private final List<ReservationPeriod> reservationsPeriods;
+    private final TreeSet<ReservationPeriod> reservationsPeriods;
 
     public CoworkingSpace(double price, CoworkingType coworkingType, List<Facility> facilities) {
         this.price = price;
         this.coworkingType = coworkingType;
         this.facilities = facilities;
-        this.reservationsPeriods = new ArrayList<>();
+        this.reservationsPeriods = new TreeSet<>();
     }
 
     @Override
