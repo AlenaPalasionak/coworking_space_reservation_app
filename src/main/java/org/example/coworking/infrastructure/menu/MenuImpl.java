@@ -32,7 +32,7 @@ public class MenuImpl implements Menu {
 
             if (!matchOneOfPossibleChoices) {
                 writer.write("Wrong number: " + userChoice + "\nTry again\n");
-                writer.flush(); // Сбрасываем буфер, чтобы сообщение отобразилось
+                writer.flush();
             }
         }
 

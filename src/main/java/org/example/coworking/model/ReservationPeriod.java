@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReservationPeriod {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm") // Указание формата даты для сериализации
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm") // Указание формата даты для сериализации
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endTime;
 }

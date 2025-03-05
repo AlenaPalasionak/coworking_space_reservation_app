@@ -83,7 +83,7 @@ public class CoworkingController {
                     while (!StringHandler.containsOnlyNumbers(coworkingIdStr)) {
                         writer.write("Wrong symbol. Try again.\nType a coworking id you want to delete:\n");
                         writer.flush();
-                        coworkingIdStr = reader.readLine(); // Повторно запрашиваем ввод
+                        coworkingIdStr = reader.readLine();
                     }
 
                     int coworkingId = Integer.parseInt(coworkingIdStr);

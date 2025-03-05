@@ -48,10 +48,6 @@ public abstract class AbstractLoaderImpl implements Loader {
     }
 
     public <T> void save(List<T> objects) {
-        if (objects.isEmpty()) {
-            logger.warn("List " + objects + "is empty");
-        } else {
-
             try {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), objects);
             } catch (IOException e) {
@@ -60,4 +56,3 @@ public abstract class AbstractLoaderImpl implements Loader {
             }
         }
     }
-}
