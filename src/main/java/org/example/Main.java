@@ -14,10 +14,10 @@ import java.io.*;
 import java.util.Optional;
 
 public class Main {
-    static User user;
-    static ReservationController reservationController = AppFactory.createReservationController();
-    static AuthorizationController authorizationController = AppFactory.createAuthorizationController();
-    static CoworkingController coworkingController = AppFactory.createCoworkingController();
+    public static User user;
+    public static ReservationController reservationController = AppFactory.createReservationController();
+    public static AuthorizationController authorizationController = AppFactory.createAuthorizationController();
+    public static CoworkingController coworkingController = AppFactory.createCoworkingController();
 
     public static final String WELCOME_MENU = """
             Welcome to the Coworking Space Reservation!
