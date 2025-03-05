@@ -9,23 +9,20 @@ import java.util.Optional;
 public class AuthorizationServiceImpl implements AuthorizationService {
     UserService userService;
 
-    public AuthorizationServiceImpl() {
-        this.userService = new UserServiceImpl();
+    public AuthorizationServiceImpl(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public Optional<User> authenticate(String name, String password, Class<? extends User> role) throws UserNotFoundException {
 
-        List<User> users = userService.getUsersFromJson();
+        List<User> users = userService.load();
 
-        Optional<User> possibleUser = users.stream()
-                .filter(user -> user.getName().equals(name))
-                .filter(user -> user.getPassword().equals(password))
-                .filter(user -> role.isInstance(user)).findFirst();
+        Optional<User> possibleUser = users.stream().filter(user -> user.getName().equals(name)).filter(user ->
+                user.getPassword().equals(password)).filter(user -> role.isInstance(user)).findFirst();
 
         if (possibleUser.isEmpty()) {
-            throw new UserNotFoundException("User with name " + name + " and role " +
-                    role.getSimpleName() + " not found");
+            throw new UserNotFoundException(name);
         }
 
         return possibleUser;

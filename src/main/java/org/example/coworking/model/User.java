@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
-@NoArgsConstructor // Конструктор без параметров для десериализации
+@NoArgsConstructor
 @ToString
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type") // Указывает, что тип будет определяться по полю "type"
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Admin.class, name = "admin"),
         @JsonSubTypes.Type(value = Customer.class, name = "customer")

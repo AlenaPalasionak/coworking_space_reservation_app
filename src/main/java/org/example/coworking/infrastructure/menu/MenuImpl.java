@@ -16,7 +16,26 @@ public class MenuImpl implements Menu {
         writer.flush();
     }
 
-    public String getUserChoice(BufferedReader reader) throws IOException {
-        return reader.readLine();
+    public String getUserChoice(BufferedReader reader, BufferedWriter writer, String[] possibleChoices) throws IOException {
+        String userChoice = "wrong choice";
+        boolean matchOneOfPossibleChoices = false;
+
+        while (!matchOneOfPossibleChoices) {
+            userChoice = reader.readLine();
+
+            for (String possibleChoice : possibleChoices) {
+                if (possibleChoice.equals(userChoice)) {
+                    matchOneOfPossibleChoices = true;
+                    break;
+                }
+            }
+
+            if (!matchOneOfPossibleChoices) {
+                writer.write("Wrong number: " + userChoice + "\nTry again\n");
+                writer.flush();
+            }
+        }
+
+        return userChoice;
     }
 }

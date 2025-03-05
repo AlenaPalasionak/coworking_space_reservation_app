@@ -1,33 +1,36 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.apache.logging.log4j.Logger;
+import org.example.coworking.infrastructure.loader.Loader;
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
-import org.example.coworking.infrastructure.util.json_loader.JsonLoader;
-import org.example.coworking.infrastructure.util.json_loader.UserJsonLoaderImpl;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public class UserDaoImpl implements UserDao {
+    private static final Logger logger = Log.getLogger(UserDaoImpl.class);
 
-    private final JsonLoader userJsonLoader;
+    private final Loader userLoader;
     private List<User> usersCache;
 
-    public UserDaoImpl() {
-        this.userJsonLoader = new UserJsonLoaderImpl();
+    public UserDaoImpl(Loader userLoader) {
+        this.userLoader = userLoader;
     }
 
-    public List<User> getUsersFromJson() {
+    public List<User> load() {
         if (usersCache == null) {
-            loadFromJson();
+            loadFromStorage();
         }
         return usersCache;
     }
 
-    @Override
-    public void convertToJson(List<User> users) {
-        userJsonLoader.convertToJson(users);
-    }
-
-    private void loadFromJson(){
-        usersCache = userJsonLoader.loadFromJson(User.class);
+    private void loadFromStorage() {
+        try {
+            usersCache = userLoader.load(User.class);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

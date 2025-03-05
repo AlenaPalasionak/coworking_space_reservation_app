@@ -6,7 +6,5 @@ import java.io.IOException;
 
 public interface Menu {
     void showMenu(BufferedReader reader, BufferedWriter writer) throws IOException;
-    String getUserChoice(BufferedReader reader) throws IOException;
-
-
+    String getUserChoice(BufferedReader reader, BufferedWriter writer, String[] possibleChoices) throws IOException;
 }

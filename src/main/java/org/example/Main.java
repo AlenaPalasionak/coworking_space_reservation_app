@@ -1,6 +1,9 @@
 package org.example;
 
-import org.example.coworking.infrastructure.controller.*;
+import org.example.coworking.infrastructure.factory.AppFactory;
+import org.example.coworking.infrastructure.controller.AuthorizationController;
+import org.example.coworking.infrastructure.controller.CoworkingController;
+import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.menu.Menu;
 import org.example.coworking.infrastructure.menu.MenuImpl;
 import org.example.coworking.model.Admin;
@@ -11,39 +14,46 @@ import java.io.*;
 import java.util.Optional;
 
 public class Main {
-    static User user;
-    static ReservationController reservationController = new ReservationController();
-    static AuthorizationController authorizationController = new AuthorizationController();
-    static CoworkingController coworkingController = new CoworkingController();
+    public static User user;
+    public static ReservationController reservationController = AppFactory.createReservationController();
+    public static AuthorizationController authorizationController = AppFactory.createAuthorizationController();
+    public static CoworkingController coworkingController = AppFactory.createCoworkingController();
+
     public static final String WELCOME_MENU = """
-                                    
             Welcome to the Coworking Space Reservation!
             If you are an *admin* press 1
             If you are a *customer* press 2
             If you want to exit press 0
-                                
             """;
-    public static final String ADMIN_MENU = """ 
-            Press 1 to add a new coworkingSpace space.
-            Press 2 to remove a coworkingSpace space.
+
+    public static final String ADMIN_MENU = """
+            Press 1 to add a new coworking space.
+            Press 2 to remove a coworking space.
             Press 3 to view all reservations.
             """;
-    public static final String CUSTOMER_MENU = """ 
+
+    public static final String CUSTOMER_MENU = """
             Press 1 to browse available spaces.
-            Press 2 to Make a reservation.
+            Press 2 to make a reservation.
             Press 3 to view your reservations.
             Press 4 to cancel a reservation.
             """;
 
     public static final String NEXT_STEP_MENU = """
-            Cansel the program?
+            Log out?
             No - press 1
-            Yes - press 0
+            Yes - press 2
+            Cancel the program - press 0
             """;
 
     public static final String EXIT = "0";
     public static final String ADMIN = "1";
     public static final String CUSTOMER = "2";
+    public static final String LOG_OUT = "2";
+    public static final String[] MAIN_MENU_POSSIBLE_CHOICES = {"1", "2", "0"};
+    public static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
+    public static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
+    public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
     public static final String ADD_COWORKING_SPACE = "1";
     public static final String DELETE_COWORKING_SPACE = "2";
     public static final String GET_ALL_RESERVATIONS = "3";
@@ -53,7 +63,8 @@ public class Main {
     public static final String DELETE_RESERVATION = "4";
 
     public static void main(String[] args) {
-
+        coworkingController.load();
+        reservationController.load();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
             while (true) {
                 boolean logOut = false;
@@ -61,7 +72,7 @@ public class Main {
                 Menu welcomeMenu = new MenuImpl(WELCOME_MENU);
                 welcomeMenu.showMenu(reader, writer);
 
-                String userRoleIdentifier = welcomeMenu.getUserChoice(reader);
+                String userRoleIdentifier = welcomeMenu.getUserChoice(reader, writer, MAIN_MENU_POSSIBLE_CHOICES);
                 if (userRoleIdentifier.equals(EXIT)) {
                     break;
                 } else if (userRoleIdentifier.equals(ADMIN)) {
@@ -72,7 +83,7 @@ public class Main {
                     while (!logOut) {
                         Menu adminMenu = new MenuImpl(ADMIN_MENU);
                         adminMenu.showMenu(reader, writer);
-                        String adminOptionChoice = adminMenu.getUserChoice(reader);
+                        String adminOptionChoice = adminMenu.getUserChoice(reader, writer, ADMIN_OPTION_POSSIBLE_CHOICES);
                         switch (adminOptionChoice) {
                             case ADD_COWORKING_SPACE:
                                 coworkingController.add(reader, writer);
@@ -86,9 +97,13 @@ public class Main {
                         }
                         Menu nextStepMenu = new MenuImpl(NEXT_STEP_MENU);
                         nextStepMenu.showMenu(reader, writer);
-                        nextStep = nextStepMenu.getUserChoice(reader);
-                        if (nextStep.equals(EXIT)) {
+                        nextStep = nextStepMenu.getUserChoice(reader, writer, NEXT_STEP_POSSIBLE_CHOICES);
+                        if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
+                        } else if (nextStep.equals(EXIT)) {
+                            coworkingController.save();
+                            reservationController.save();
+                            System.exit(0);
                         }
                     }
                 } else if (userRoleIdentifier.equals(CUSTOMER)) {
@@ -99,7 +114,7 @@ public class Main {
                     while (!logOut) {
                         Menu customerMenu = new MenuImpl(CUSTOMER_MENU);
                         customerMenu.showMenu(reader, writer);
-                        String customerOptionChoice = customerMenu.getUserChoice(reader);
+                        String customerOptionChoice = customerMenu.getUserChoice(reader, writer, CUSTOMER_OPTION_POSSIBLE_CHOICES);
                         switch (customerOptionChoice) {
                             case GET_AVAILABLE_COWORKING_SPACES:
                                 coworkingController.getAllSpaces(writer);
@@ -116,9 +131,13 @@ public class Main {
                         }
                         Menu nextStepMenu = new MenuImpl(NEXT_STEP_MENU);
                         nextStepMenu.showMenu(reader, writer);
-                        nextStep = nextStepMenu.getUserChoice(reader);
-                        if (nextStep.equals(EXIT)) {
+                        nextStep = nextStepMenu.getUserChoice(reader, writer, NEXT_STEP_POSSIBLE_CHOICES);
+                        if (nextStep.equals(LOG_OUT)) {
                             logOut = true;
+                        } else if (nextStep.equals(EXIT)) {
+                            coworkingController.save();
+                            reservationController.save();
+                            System.exit(0);
                         }
                     }
                 }

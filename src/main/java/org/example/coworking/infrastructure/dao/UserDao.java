@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface UserDao {
 
-     List<User> getUsersFromJson();
-     void convertToJson(List<User> users);
+    List<User> load();
+
 }

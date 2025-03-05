@@ -4,7 +4,10 @@ import java.util.regex.Pattern;
 
 public class StringHandler {
 
-    public static boolean containsDigits(String str) {
-        return Pattern.compile("\\d").matcher(str).find();
+    public static boolean isFacilityStringFromUserValid(String input) {
+        return Pattern.compile("^\\s*\\d+(\\s*,\\s*\\d+)*\\s*$").matcher(input).find();
+    }
+    public static boolean containsOnlyNumbers(String input) {
+        return input.matches("\\d+");
     }
 }
