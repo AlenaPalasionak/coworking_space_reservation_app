@@ -36,7 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    public void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException {
+    public void delete(User user, Reservation reservation) throws ForbiddenActionException, ReservationNotFoundException {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);
         } else {

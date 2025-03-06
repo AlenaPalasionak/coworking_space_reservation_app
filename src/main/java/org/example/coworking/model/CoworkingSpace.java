@@ -5,10 +5,10 @@ import lombok.*;
 
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Getter
 @EqualsAndHashCode
-@ToString
 @NoArgsConstructor(force = true)
 public class CoworkingSpace {
 
@@ -36,5 +36,20 @@ public class CoworkingSpace {
         this.coworkingType = coworkingType;
         this.facilities = facilities;
         this.reservationsPeriods = new TreeSet<>();
+    }
+
+    @Override
+    public String toString() {
+        assert reservationsPeriods != null;
+        return "CoworkingSpace{" +
+                "id=" + id +
+                ", admin=" + admin +
+                ", price=" + price + "\n" +
+                ", coworkingType=" + coworkingType +
+                ", facilities=" + facilities + "\n" +
+                ", reservationsPeriods=\n" + reservationsPeriods.stream()
+                .map(ReservationPeriod::toString)
+                .collect(Collectors.joining("\n")) + "\n" +
+                '}';
     }
 }

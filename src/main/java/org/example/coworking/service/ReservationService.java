@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationService {
-    void add(User customer, CoworkingSpace coworking, ReservationPeriod period) throws TimeOverlapException, InvalidTimeReservationException;
-    void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException;
+    void add(User customer, CoworkingSpace coworkingSpace, ReservationPeriod period) throws TimeOverlapException, InvalidTimeReservationException;
+    void delete(User user, Reservation reservation) throws ForbiddenActionException, ReservationNotFoundException;
     List<Reservation> getAllByUser(User user);
     Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException;
     void load();

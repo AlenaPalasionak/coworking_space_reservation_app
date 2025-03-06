@@ -10,6 +10,4 @@ public interface ModelDao<T, E extends Exception> {
     List<T> getAll();
     void load();
     void save();
-
-
 }

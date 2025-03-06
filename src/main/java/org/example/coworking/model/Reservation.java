@@ -4,7 +4,6 @@ import lombok.*;
 
 @Getter
 @EqualsAndHashCode
-@ToString
 @NoArgsConstructor(force = true)
 public class Reservation {
     @Setter
@@ -17,5 +16,15 @@ public class Reservation {
         this.customer = customer;
         this.period = period;
         this.coworkingSpace = coworkingSpace;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id=" + id +"\n"+
+                ", customer=" + customer +"\n"+
+                ", period=" + period +"\n"+
+                ", coworkingSpace=" + coworkingSpace +"\n"+
+                '}';
     }
 }

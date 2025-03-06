@@ -98,10 +98,9 @@ public class ReservationController {
             }
             if (possibleReservation.isPresent()) {
                 Reservation reservation = possibleReservation.get();
-                CoworkingSpace coworkingSpace = reservation.getCoworkingSpace();
 
                 try {
-                    reservationService.delete(reservation, customer, coworkingSpace);
+                    reservationService.delete(customer, reservation);
                 } catch (ForbiddenActionException e) {
                     logger.warn(e.getMessage());
                     writer.write(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
