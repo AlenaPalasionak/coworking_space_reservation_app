@@ -54,7 +54,6 @@ public class ReservationController {
                     writer.write("You just made a reservation:\n");
                     writer.flush();
                     isFree = true;
-
                 } catch (TimeOverlapException e) {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
                     logger.warn(e.getMessage());
@@ -82,34 +81,39 @@ public class ReservationController {
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
         writer.write("Your reservations:\n");
         writer.flush();
-        reservationsByCustomer.forEach(System.out::println);
-        writer.write("\nType reservation Id you want to cancel");
-        writer.flush();
+        if (reservationsByCustomer.isEmpty()) {
+            writer.write("Reservation list is empty:\n");
+            writer.flush();
+        } else {
+            reservationsByCustomer.forEach(System.out::println);
+            writer.write("\nType reservation Id you want to cancel");
+            writer.flush();
 
-        int reservationId = Integer.parseInt(reader.readLine());
-        Optional<Reservation> possibleReservation = Optional.empty();
-        try {
-            possibleReservation = reservationService.getById(reservationId);
-        } catch (ReservationNotFoundException e) {
-            writer.write("Reservation with Id " + reservationId + " is absent\n");
-        }
-        if (possibleReservation.isPresent()) {
-            Reservation reservation = possibleReservation.get();
-            CoworkingSpace coworkingSpace = reservation.getCoworkingSpace();
-
+            int reservationId = Integer.parseInt(reader.readLine());
+            Optional<Reservation> possibleReservation = Optional.empty();
             try {
-                reservationService.delete(reservation, customer, coworkingSpace);
-            } catch (ForbiddenActionException e) {
-                logger.warn(e.getMessage());
-                writer.write(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
-                writer.flush();
+                possibleReservation = reservationService.getById(reservationId);
             } catch (ReservationNotFoundException e) {
-                logger.warn(e.getMessage());
-                writer.write(e.getMessage() + "\n");
+                writer.write("Reservation with Id " + reservationId + " is absent\n");
+            }
+            if (possibleReservation.isPresent()) {
+                Reservation reservation = possibleReservation.get();
+                CoworkingSpace coworkingSpace = reservation.getCoworkingSpace();
+
+                try {
+                    reservationService.delete(reservation, customer, coworkingSpace);
+                } catch (ForbiddenActionException e) {
+                    logger.warn(e.getMessage());
+                    writer.write(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
+                    writer.flush();
+                } catch (ReservationNotFoundException e) {
+                    logger.warn(e.getMessage());
+                    writer.write(e.getMessage() + "\n");
+                    writer.flush();
+                }
+                writer.write("Reservation with Id " + reservationId + " is canceled\n");
                 writer.flush();
             }
-            writer.write("Reservation with Id " + reservationId + " is canceled\n");
-            writer.flush();
         }
     }
 

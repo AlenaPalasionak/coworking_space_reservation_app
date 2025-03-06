@@ -1,47 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<Configuration status="WARN">
+    <Properties>
+        <Property name="commonPattern">%d{dd.MM HH:mm:ss} [%t] %-5level %logger{1} -  %msg%n%throwable</Property>
+    </Properties>
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n</Pattern>
-            </PatternLayout>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+                <PatternLayout pattern="${commonPattern}"/>
         </Console>
 
-        <File name="FileAppender" fileName="logs/app.log">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n</Pattern>
-            </PatternLayout>
+        <File name="FileAppender" fileName="logs/app.log" append="false">
+            <PatternLayout pattern="${commonPattern}"/>
         </File>
     </Appenders>
 
     <Loggers>
-        <Logger name="org.example.coworking.dao" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-        <Logger name="org.example.coworking.infrastructure.loader" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
+        <Logger name="ConsoleLogger" level="info" additivity="true">
+            <AppenderRef ref="ConsoleAppender"/>
         </Logger>
 
-        <Logger name="org.example.coworking.service" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
+        <Root level="info">
             <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Logger name="org.example.coworking.infrastructure.controller" level="WARN" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Logger name="org.example.main" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Root level="ERROR">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
         </Root>
     </Loggers>
 </Configuration>

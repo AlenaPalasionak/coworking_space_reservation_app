@@ -34,7 +34,7 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
             throw new FileNotFoundException(message);
         }
         if (jsonFile.length() == 0) {
-            logger.warn("JSON file " + jsonFile + " with the path " + filePath + " is empty");
+            logger.warn("JSON file " + jsonFile + " is empty");
         } else {
             try {
                 list = objectMapper.readValue(jsonFile, javaType);
