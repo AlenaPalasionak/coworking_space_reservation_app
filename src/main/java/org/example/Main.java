@@ -1,9 +1,12 @@
 package org.example;
 
+import org.apache.logging.log4j.Logger;
+import org.example.coworking.infrastructure.config.PropertyConfig;
 import org.example.coworking.infrastructure.factory.AppFactory;
 import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
 import org.example.coworking.infrastructure.controller.ReservationController;
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.infrastructure.menu.Menu;
 import org.example.coworking.infrastructure.menu.MenuImpl;
 import org.example.coworking.model.Admin;
@@ -14,10 +17,13 @@ import java.io.*;
 import java.util.Optional;
 
 public class Main {
+
+    private static final Logger logger = Log.getLogger(PropertyConfig.class);
+
     public static User user;
-    public static ReservationController reservationController = AppFactory.createReservationController();
-    public static AuthorizationController authorizationController = AppFactory.createAuthorizationController();
-    public static CoworkingController coworkingController = AppFactory.createCoworkingController();
+    public static final ReservationController reservationController = AppFactory.createReservationController();
+    public static final AuthorizationController authorizationController = AppFactory.createAuthorizationController();
+    public static final CoworkingController coworkingController = AppFactory.createCoworkingController();
 
     public static final String WELCOME_MENU = """
             Welcome to the Coworking Space Reservation!
@@ -50,10 +56,10 @@ public class Main {
     public static final String ADMIN = "1";
     public static final String CUSTOMER = "2";
     public static final String LOG_OUT = "2";
-    public static final String[] MAIN_MENU_POSSIBLE_CHOICES = {"1", "2", "0"};
-    public static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
-    public static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
-    public static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
+    protected static final String[] MAIN_MENU_POSSIBLE_CHOICES = {"1", "2", "0"};
+    protected static final String[] ADMIN_OPTION_POSSIBLE_CHOICES = {"1", "2", "3"};
+    protected static final String[] NEXT_STEP_POSSIBLE_CHOICES = {"1", "2", "0"};
+    protected static final String[] CUSTOMER_OPTION_POSSIBLE_CHOICES = {"1", "2", "3", "4"};
     public static final String ADD_COWORKING_SPACE = "1";
     public static final String DELETE_COWORKING_SPACE = "2";
     public static final String GET_ALL_RESERVATIONS = "3";
@@ -144,8 +150,9 @@ public class Main {
                     }
                 }
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            logger.error("Error while reading or writing from console. " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
