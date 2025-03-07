@@ -1,6 +1,6 @@
 package org.example.coworking.service;
 
-import org.example.coworking.infrastructure.dao.ModelDao;
+import org.example.coworking.infrastructure.dao.CoworkingDao;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CoworkingServiceImpl implements CoworkingService {
-    ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao;
+    private final CoworkingDao coworkingDao;
 
-    public CoworkingServiceImpl(ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao) {
+    public CoworkingServiceImpl(CoworkingDao coworkingDao) {
         this.coworkingDao = coworkingDao;
     }
 

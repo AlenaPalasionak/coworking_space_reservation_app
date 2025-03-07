@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
-    <Properties>
-        <Property name="commonPattern">%d{dd.MM HH:mm:ss} [%t] %-5level %logger{1} -  %msg%n%throwable</Property>
-    </Properties>
+
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
-                <PatternLayout pattern="${commonPattern}"/>
+            <PatternLayout pattern="%d{dd.MM HH:mm} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
 
         <File name="FileAppender" fileName="logs/app.log" append="false">
-            <PatternLayout pattern="${commonPattern}"/>
+            <PatternLayout pattern="%5level *** %C{1}.%M:%L - %msg%n ***"/>
         </File>
     </Appenders>
 
@@ -18,9 +16,8 @@
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
 
-        <Root level="info">
+        <Root level="warn">
             <AppenderRef ref="FileAppender"/>
-            <AppenderRef ref="ConsoleAppender"/>
         </Root>
     </Loggers>
 </Configuration>

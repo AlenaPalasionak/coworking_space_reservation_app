@@ -1,7 +1,6 @@
 package org.example.coworking.service;
 
-import org.example.coworking.infrastructure.dao.ModelDao;
-import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
+import org.example.coworking.infrastructure.dao.ReservationDao;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.util.OccupationTimeChecker;
 import org.example.coworking.infrastructure.util.ReservationTimeValidator;
@@ -15,13 +14,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
-    ModelDao<Reservation, ReservationNotFoundException> reservationDao;
-    ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationServiceImpl(ModelDao<Reservation, ReservationNotFoundException> reservationDao
-            , ModelDao<CoworkingSpace, CoworkingNotFoundException> coworkingDao) {
+    public ReservationServiceImpl(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-        this.coworkingDao = coworkingDao;
+
     }
 
     @Override

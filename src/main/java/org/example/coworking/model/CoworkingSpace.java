@@ -40,16 +40,15 @@ public class CoworkingSpace {
 
     @Override
     public String toString() {
-        assert reservationsPeriods != null;
         return "CoworkingSpace{" +
                 "id=" + id +
                 ", admin=" + admin +
                 ", price=" + price + "\n" +
                 ", coworkingType=" + coworkingType +
                 ", facilities=" + facilities + "\n" +
-                ", reservationsPeriods=\n" + reservationsPeriods.stream()
-                .map(ReservationPeriod::toString)
-                .collect(Collectors.joining("\n")) + "\n" +
+                (reservationsPeriods != null ? reservationsPeriods.stream()
+                        .map(ReservationPeriod::toString)
+                        .collect(Collectors.joining("\n")) : "No reservations available") + "\n" +
                 '}';
     }
 }

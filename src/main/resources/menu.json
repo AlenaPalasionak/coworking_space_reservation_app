@@ -1,0 +1,39 @@
+[
+  {
+    "menuName": "Admin Menu",
+    "menuText": "Press 1 to add a new coworking space.\nPress 2 to remove a coworking space.\nPress 3 to view all reservations.\n",
+    "possibleChoices": [
+      "1",
+      "2",
+      "3"
+    ]
+  },
+  {
+    "menuName": "Customer Menu",
+    "menuText": "Press 1 to browse available spaces.\nPress 2 to make a reservation.\nPress 3 to view your reservations.\nPress 4 to cancel a reservation.\n",
+    "possibleChoices": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ]
+  },
+  {
+    "menuName": "Next Step Menu",
+    "menuText": "Log out?\nNo - press 1\nYes - press 2\nCancel the program - press 0\n",
+    "possibleChoices": [
+      "1",
+      "2",
+      "0"
+    ]
+  },
+  {
+    "menuName": "Welcome Menu",
+    "menuText": "Welcome to the Coworking Space Reservation!\nIf you are an *admin* press 1\nIf you are a *customer* press 2\nIf you want to exit press 0\n",
+    "possibleChoices": [
+      "1",
+      "2",
+      "0"
+    ]
+  }
+]
