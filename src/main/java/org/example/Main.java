@@ -27,9 +27,11 @@ public class Main {
         AuthorizationController authorizationController = appFactory.createAuthorizationController();
         CoworkingController coworkingController = appFactory.createCoworkingController();
         MenuController menuController = appFactory.createMenuController();
+
         coworkingController.load();
         reservationController.load();
         menuController.getMenusFromStorage();
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
             label:

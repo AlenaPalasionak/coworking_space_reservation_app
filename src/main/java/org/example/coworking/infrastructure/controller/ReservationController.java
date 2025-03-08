@@ -23,8 +23,8 @@ import java.util.Optional;
 
 public class ReservationController {
     private static final Logger logger = Log.getLogger(ReservationController.class);
-    CoworkingService coworkingService;
-    ReservationService reservationService;
+    private final CoworkingService coworkingService;
+    private final ReservationService reservationService;
 
     public ReservationController(CoworkingService coworkingService, ReservationService reservationService) {
         this.coworkingService = coworkingService;

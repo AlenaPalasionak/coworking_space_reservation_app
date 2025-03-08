@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Menu {
-    protected String menuName;
-    protected String menuText;
-    protected String [] possibleChoices;
+    private String menuName;
+    private String menuText;
+    private String [] possibleChoices;
 
 }

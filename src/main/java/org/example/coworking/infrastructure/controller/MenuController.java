@@ -16,15 +16,15 @@ public class MenuController {
 
     private User user;
     MenuService menuService;
-    public static final String EXIT = "0";
-    public static final String LOG_OUT = "2";
-    public static final String ADD_COWORKING_SPACE = "1";
-    public static final String DELETE_COWORKING_SPACE = "2";
-    public static final String GET_ALL_RESERVATIONS = "3";
-    public static final String GET_AVAILABLE_COWORKING_SPACES = "1";
-    public static final String ADD_RESERVATION = "2";
-    public static final String GET_RESERVATIONS = "3";
-    public static final String DELETE_RESERVATION = "4";
+    private static final String EXIT = "0";
+    private static final String LOG_OUT = "2";
+    private static final String ADD_COWORKING_SPACE = "1";
+    private static final String DELETE_COWORKING_SPACE = "2";
+    private static final String GET_ALL_RESERVATIONS = "3";
+    private static final String GET_AVAILABLE_COWORKING_SPACES = "1";
+    private static final String ADD_RESERVATION = "2";
+    private static final String GET_RESERVATIONS = "3";
+    private static final String DELETE_RESERVATION = "4";
     private static final String ADMIN_MENU_KEY = "Admin Menu";
     private static final String CUSTOMER_MENU_KEY = "Customer Menu";
     private static final String NEXT_STEP_MENU_KEY = "Next Step Menu";

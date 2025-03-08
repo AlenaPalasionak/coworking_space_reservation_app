@@ -18,7 +18,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     public ReservationServiceImpl(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-
     }
 
     @Override
@@ -33,6 +32,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    @Override
     public void delete(User user, Reservation reservation) throws ForbiddenActionException, ReservationNotFoundException {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);

@@ -11,7 +11,6 @@ import java.util.Optional;
 
 public class MenuDaoImpl implements MenuDao {
     private static final Logger logger = Log.getLogger(MenuDaoImpl.class);
-
     private final Loader<Menu> menuLoader;
     private static List<Menu> menus;
 

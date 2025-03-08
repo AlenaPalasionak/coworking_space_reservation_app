@@ -10,7 +10,6 @@ import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
-import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
@@ -24,8 +23,7 @@ import java.util.Optional;
 public class CoworkingController {
     private static final Logger logger = Log.getLogger(CoworkingController.class);
 
-    CoworkingService coworkingService;
-    ReservationService reservationService;
+    private final CoworkingService coworkingService;
     public static final String COWORKING_TYPE_MENU = """
             Choose the coworkingSpace type (press only one of the numbers):
             Open space coworkingSpace - 0
@@ -42,9 +40,9 @@ public class CoworkingController {
             CONDITIONING - 4
             """;
 
-    public CoworkingController(CoworkingService coworkingService, ReservationService reservationService) {
+    public CoworkingController(CoworkingService coworkingService) {
         this.coworkingService = coworkingService;
-        this.reservationService = reservationService;
+
     }
 
     public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {

@@ -33,11 +33,11 @@ public class AppFactory {
     private final MenuService MENU_SERVICE = new MenuServiceImpl(MENU_DAO);
 
     public AuthorizationController createAuthorizationController() {
-        return new AuthorizationController(AUTHORIZATION_SERVICE, USER_SERVICE);
+        return new AuthorizationController(AUTHORIZATION_SERVICE);
     }
 
     public CoworkingController createCoworkingController() {
-        return new CoworkingController(COWORKING_SERVICE, RESERVATION_SERVICE);
+        return new CoworkingController(COWORKING_SERVICE);
     }
 
     public ReservationController createReservationController() {

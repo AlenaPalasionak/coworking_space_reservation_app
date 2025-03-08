@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
-import org.example.coworking.service.UserService;
 import org.example.coworking.service.exception.UserNotFoundException;
 
 import java.io.BufferedReader;
@@ -14,12 +13,11 @@ import java.util.Optional;
 
 public class AuthorizationController {
     private static final Logger logger = Log.getLogger(AuthorizationController.class);
-    protected AuthorizationService authorizationService;
-    protected UserService userService;
+    private final AuthorizationService authorizationService;
 
-    public AuthorizationController(AuthorizationService authorizationService, UserService userService) {
+    public AuthorizationController(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
-        this.userService = userService;
+
     }
 
     public Optional<User> authenticate(BufferedReader reader, BufferedWriter writer, Class<? extends User> userType) throws IOException {
