@@ -17,7 +17,6 @@ public class AuthorizationController {
 
     public AuthorizationController(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
-
     }
 
     public Optional<User> authenticate(BufferedReader reader, BufferedWriter writer, Class<? extends User> userType) throws IOException {

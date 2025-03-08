@@ -58,8 +58,8 @@ public class ReservationController {
                     writer.write("Choose another time. The coworking space is unavailable at this time\n");
                     logger.warn(e.getMessage());
                 } catch (InvalidTimeReservationException e) {
-                    writer.write("You entered invalid date.\nTry again\n");
                     logger.warn(e.getMessage());
+                    writer.write("You entered invalid date.\nTry again\n");
                 }
             }
         }

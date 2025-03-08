@@ -8,18 +8,15 @@ import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.factory.AppFactory;
 import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Menu;
-import org.example.coworking.model.User;
 
 import java.io.*;
 
 public class Main {
     private static final Logger logger = Log.getLogger(Main.class);
     private static final String WELCOME_MENU_KEY = "Welcome Menu";
-    public static final String EXIT = "0";
-    public static final String ADMIN = "1";
-    public static final String CUSTOMER = "2";
-
-    public static User user;
+    private static final String EXIT = "0";
+    private static final String ADMIN = "1";
+    private static final String CUSTOMER = "2";
 
     public static void main(String[] args) {
         AppFactory appFactory = new AppFactory();

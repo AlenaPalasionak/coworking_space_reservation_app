@@ -1,5 +1,7 @@
 package org.example.coworking.infrastructure.controller;
 
+import org.apache.logging.log4j.Logger;
+import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
@@ -13,9 +15,9 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class MenuController {
-
+    private static final Logger logger = Log.getLogger(MenuController.class);
     private User user;
-    MenuService menuService;
+    private final MenuService menuService;
     private static final String EXIT = "0";
     private static final String LOG_OUT = "2";
     private static final String ADD_COWORKING_SPACE = "1";
@@ -44,6 +46,7 @@ public class MenuController {
         do {
             userChoice = reader.readLine();
             if (!menuService.doesMatchOneOfPossibleChoices(menu, userChoice)) {
+                logger.info("Wrong number: " + userChoice);
                 writer.write("Wrong number: " + userChoice + "\nTry again\n");
                 writer.flush();
             }

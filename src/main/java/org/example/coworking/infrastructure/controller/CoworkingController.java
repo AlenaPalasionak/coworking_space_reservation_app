@@ -42,7 +42,6 @@ public class CoworkingController {
 
     public CoworkingController(CoworkingService coworkingService) {
         this.coworkingService = coworkingService;
-
     }
 
     public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
@@ -65,7 +64,7 @@ public class CoworkingController {
         writer.flush();
     }
 
-    public void delete( BufferedReader reader, BufferedWriter writer, User user) throws IOException {
+    public void delete(BufferedReader reader, BufferedWriter writer, User user) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         boolean isDeleted = false;
         if (spaces.isEmpty()) {
@@ -80,7 +79,10 @@ public class CoworkingController {
                     String coworkingIdStr = reader.readLine();
 
                     while (!StringHandler.containsOnlyNumbers(coworkingIdStr)) {
-                        writer.write("Wrong symbol. Try again.\nType a coworking id you want to delete:\n");
+                        logger.info("Wrong symbol: " + coworkingIdStr);
+                        writer.write("Wrong symbol: " + coworkingIdStr +
+                                " Try again.\nType a coworking id you want to delete\n");
+
                         writer.flush();
                         coworkingIdStr = reader.readLine();
                     }
@@ -145,12 +147,14 @@ public class CoworkingController {
                 writer.flush();
                 int coworkingTypeIndex = Integer.parseInt(reader.readLine());
                 if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
-                    writer.write("You put a wrong symbol. Try again\n");
+                    logger.warn("Wrong symbol: " + coworkingTypeIndex);
+                    writer.write("You put a wrong symbol: " + coworkingTypeIndex + " Try again\n");
                     writer.flush();
                     continue;
                 }
                 coworkingType = CoworkingType.values()[coworkingTypeIndex];
             } catch (NumberFormatException e) {
+                logger.warn("Wrong symbol");
                 writer.write("You entered wrong number. Try again\n");
                 writer.flush();
             }
@@ -180,6 +184,7 @@ public class CoworkingController {
                     }
                 }
             } else {
+                logger.warn("wrong number(s): " + facilitiesIndexesOnOneLine);
                 writer.write("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
                 writer.flush();
             }

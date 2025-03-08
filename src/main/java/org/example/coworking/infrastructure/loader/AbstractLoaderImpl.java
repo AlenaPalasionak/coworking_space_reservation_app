@@ -14,22 +14,21 @@ import java.util.List;
 
 public abstract class AbstractLoaderImpl<T> implements Loader<T> {
     private static final Logger logger = Log.getLogger(AbstractLoaderImpl.class);
-
-    protected String filePath;
     protected ObjectMapper objectMapper;
 
-    public AbstractLoaderImpl(String filePath) {
+    public AbstractLoaderImpl() {
         objectMapper = new ObjectMapper();
-        this.filePath = filePath;
         objectMapper.registerModule(new JavaTimeModule());
     }
+
+    protected abstract String getFilepath();
 
     public List<T> load(Class<T> beanType) throws FileNotFoundException {
         JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, beanType);
         List<T> list = new ArrayList<>();
-        File jsonFile = new File(filePath);
+        File jsonFile = new File(getFilepath());
         if (!jsonFile.exists()) {
-            String message = "File with the name: " + filePath + " is not found";
+            String message = "File with the name: " + getFilepath() + " is not found";
             logger.error(message);
             throw new FileNotFoundException(message);
         }
@@ -48,9 +47,9 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
 
     public void save(List<T> objects) {
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), objects);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(getFilepath()), objects);
         } catch (IOException e) {
-            logger.error(" Failed to write JSON file: " + filePath, e);
+            logger.error(" Failed to write JSON file: " + getFilepath(), e);
             throw new RuntimeException("Error writing JSON", e);
         }
     }
