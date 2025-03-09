@@ -70,7 +70,7 @@ public class CoworkingController {
             FILE_LOGGER.warn("Coworking List is empty\n");
         } else {
             while (!isDeleted) {
-                spaces.forEach(System.out::println);
+                spaces.forEach(space -> CONSOLE_LOGGER.info(space.toString()));
                 try {
                     int coworkingId = InputValidator.getIntInput(reader
                             , "Type a coworking id you want to delete:\n");
@@ -96,7 +96,7 @@ public class CoworkingController {
     public void getAllSpaces(User user) {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         CONSOLE_LOGGER.info("Spaces list:\n");
-        spaces.forEach(System.out::println);
+        spaces.forEach(space -> CONSOLE_LOGGER.info(space.toString()));
     }
 
     public void load() {

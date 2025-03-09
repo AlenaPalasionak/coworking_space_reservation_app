@@ -37,7 +37,7 @@ public class ReservationController {
         boolean isFound = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(customer);
         CONSOLE_LOGGER.info("Coworking spaces list:\n");
-        coworkingSpaces.forEach(System.out::println);
+        coworkingSpaces.forEach(space -> CONSOLE_LOGGER.info(space.toString()));
 
         while (!isFree && !isFound) {
             int coworkingId = getCoworkingIdFromUser(reader);
@@ -81,16 +81,16 @@ public class ReservationController {
         CONSOLE_LOGGER.info("Your reservations:\n");
         if (reservationsByCustomer.isEmpty()) {
             CONSOLE_LOGGER.warn("Reservation list is empty:\n");
-            CONSOLE_LOGGER.warn("Reservation list is empty:\n");
+            FILE_LOGGER.warn("Reservation list is empty:\n");
         } else {
-            reservationsByCustomer.forEach(System.out::println);
+            reservationsByCustomer.forEach(reservation -> CONSOLE_LOGGER.info(reservation.toString()));
             int reservationId = InputValidator.getIntInput(reader, "\nType reservation Id you want to cancel");
             Optional<Reservation> possibleReservation = Optional.empty();
             try {
                 possibleReservation = reservationService.getById(reservationId);
             } catch (ReservationNotFoundException e) {
                 CONSOLE_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
-                CONSOLE_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
+                FILE_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
             }
             if (possibleReservation.isPresent()) {
                 Reservation reservation = possibleReservation.get();
@@ -99,7 +99,7 @@ public class ReservationController {
                     reservationService.delete(customer, reservation);
                 } catch (ForbiddenActionException e) {
                     CONSOLE_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
-                    CONSOLE_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
+                    FILE_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
                 } catch (ReservationNotFoundException e) {
                     CONSOLE_LOGGER.warn(e.getMessage());
                     FILE_LOGGER.warn(e.getMessage() + "\n");

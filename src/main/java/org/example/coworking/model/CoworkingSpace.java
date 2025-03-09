@@ -43,7 +43,7 @@ public class CoworkingSpace {
         return "CoworkingSpace{" +
                 "id=" + id +
                 ", admin=" + admin +
-                ", price=" + price + "\n" +
+                ", price=" + price +
                 ", coworkingType=" + coworkingType +
                 ", facilities=" + facilities + "\n" +
                 (reservationsPeriods != null ? reservationsPeriods.stream()

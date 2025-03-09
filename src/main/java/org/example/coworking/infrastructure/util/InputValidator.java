@@ -11,6 +11,7 @@ public class InputValidator {
     public static boolean isFacilityStringFromUserValid(String input) {
         return Pattern.compile("^\\s*\\d+(\\s*,\\s*\\d+)*\\s*$").matcher(input).find();
     }
+
     public static int getIntInput(BufferedReader reader, String message) throws IOException {
         while (true) {
             try {
