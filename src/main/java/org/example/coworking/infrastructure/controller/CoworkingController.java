@@ -1,10 +1,8 @@
 package org.example.coworking.infrastructure.controller;
 
-import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.controller.exception.PriceFormatException;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.infrastructure.logger.Log;
-import org.example.coworking.infrastructure.util.StringHandler;
+import org.example.coworking.infrastructure.util.InputValidator;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
@@ -13,15 +11,16 @@ import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class CoworkingController {
-    private static final Logger logger = Log.getLogger(CoworkingController.class);
 
     private final CoworkingService coworkingService;
     public static final String COWORKING_TYPE_MENU = """
@@ -44,77 +43,59 @@ public class CoworkingController {
         this.coworkingService = coworkingService;
     }
 
-    public void add(BufferedReader reader, BufferedWriter writer, User admin) throws IOException {
+    public void add(BufferedReader reader, User admin) throws IOException {
 
         double price = 0;
         while (price == 0) {
             try {
-                price = getPriceFromUser(reader, writer);
+                price = getPriceFromUser(reader);
             } catch (PriceFormatException e) {
-                logger.warn(e.getMessage());
-                writer.write(e.getMessage() + ". Try again. ");
+                CONSOLE_LOGGER.warn(e.getMessage() + ". Try again. ");
+                FILE_LOGGER.warn(e.getMessage());
             }
         }
-        CoworkingType coworkingType = getCoworkingTypeFromUser(reader, writer);
-        List<Facility> facilities = getFacilityFromUser(reader, writer);
+        CoworkingType coworkingType = getCoworkingTypeFromUser(reader);
+        List<Facility> facilities = getFacilityFromUser(reader);
 
         coworkingService.add(admin, price, coworkingType, facilities);
 
-        writer.write("You just added a new Space:\n");
-        writer.flush();
+        CONSOLE_LOGGER.info("You just added a new Space:\n");
     }
 
-    public void delete(BufferedReader reader, BufferedWriter writer, User user) throws IOException {
+    public void delete(BufferedReader reader, User user) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         boolean isDeleted = false;
         if (spaces.isEmpty()) {
-            writer.write("Coworking List is empty\n");
-            writer.flush();
+            CONSOLE_LOGGER.warn("Coworking List is empty\n");
+            FILE_LOGGER.warn("Coworking List is empty\n");
         } else {
             while (!isDeleted) {
                 spaces.forEach(System.out::println);
-                writer.write("Type a coworking id you want to delete:\n");
-                writer.flush();
                 try {
-                    String coworkingIdStr = reader.readLine();
-
-                    while (!StringHandler.containsOnlyNumbers(coworkingIdStr)) {
-                        logger.info("Wrong symbol: " + coworkingIdStr);
-                        writer.write("Wrong symbol: " + coworkingIdStr +
-                                " Try again.\nType a coworking id you want to delete\n");
-
-                        writer.flush();
-                        coworkingIdStr = reader.readLine();
-                    }
-
-                    int coworkingId = Integer.parseInt(coworkingIdStr);
+                    int coworkingId = InputValidator.getIntInput(reader
+                            , "Type a coworking id you want to delete:\n");
                     Optional<CoworkingSpace> possibleCoworking;
 
                     possibleCoworking = coworkingService.getById(coworkingId);
                     if (possibleCoworking.isPresent()) {
                         CoworkingSpace coworkingSpace = possibleCoworking.get();
                         coworkingService.delete(user, coworkingSpace);
-                        writer.write("Coworking with id: " + coworkingId + " has been deleted\n");
-                        writer.flush();
+                        CONSOLE_LOGGER.info("Coworking with id: " + coworkingId + " has been deleted\n");
                         isDeleted = true;
                     }
                 } catch (CoworkingNotFoundException e) {
-                    logger.info(e.getMessage());
-                    writer.write(e.getMessage() + "\n" + "Choose another Coworking \n");
-                    writer.flush();
+                    CONSOLE_LOGGER.info(e.getMessage() + "\n" + "Choose another Coworking \n");
                 } catch (ForbiddenActionException e) {
-                    logger.error(e.getMessage());
-                    writer.write(e.getMessage() + "\n");
-                    writer.flush();
+                    CONSOLE_LOGGER.error(e.getMessage() + "\n");
+                    FILE_LOGGER.error(e.getMessage());
                 }
             }
         }
     }
 
-    public void getAllSpaces(BufferedWriter writer, User user) throws IOException {
+    public void getAllSpaces(User user) {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
-        writer.write("Spaces list:\n");
-        writer.flush();
+        CONSOLE_LOGGER.info("Spaces list:\n");
         spaces.forEach(System.out::println);
     }
 
@@ -126,10 +107,9 @@ public class CoworkingController {
         coworkingService.save();
     }
 
-    private double getPriceFromUser(BufferedReader reader, BufferedWriter writer) throws
+    private double getPriceFromUser(BufferedReader reader) throws
             IOException, PriceFormatException {
-        writer.write("Enter the price in dollars per hour.\n");
-        writer.flush();
+        CONSOLE_LOGGER.info("Enter the price in dollars per hour.\n");
         String price = reader.readLine();
 
         if (price == null || price.trim().isEmpty() || !price.matches("\\d+(\\.\\d+)?")) {
@@ -139,40 +119,36 @@ public class CoworkingController {
         return Double.parseDouble(price);
     }
 
-    private CoworkingType getCoworkingTypeFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
+    private CoworkingType getCoworkingTypeFromUser(BufferedReader reader) throws IOException {
         CoworkingType coworkingType = null;
         while (coworkingType == null) {
             try {
-                writer.write(COWORKING_TYPE_MENU);
-                writer.flush();
+                CONSOLE_LOGGER.info(COWORKING_TYPE_MENU);
                 int coworkingTypeIndex = Integer.parseInt(reader.readLine());
                 if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
-                    logger.warn("Wrong symbol: " + coworkingTypeIndex);
-                    writer.write("You put a wrong symbol: " + coworkingTypeIndex + " Try again\n");
-                    writer.flush();
+                    CONSOLE_LOGGER.warn("You put a wrong symbol: " + coworkingTypeIndex + " Try again\n");
+                    FILE_LOGGER.warn("Wrong symbol: " + coworkingTypeIndex);
                     continue;
                 }
                 coworkingType = CoworkingType.values()[coworkingTypeIndex];
             } catch (NumberFormatException e) {
-                logger.warn("Wrong symbol");
-                writer.write("You entered wrong number. Try again\n");
-                writer.flush();
+                CONSOLE_LOGGER.warn("You entered wrong number. Try again\n");
+                FILE_LOGGER.warn("Wrong symbol");
             }
         }
         return coworkingType;
     }
 
-    private List<Facility> getFacilityFromUser(BufferedReader reader, BufferedWriter writer) throws IOException {
+    private List<Facility> getFacilityFromUser(BufferedReader reader) throws IOException {
         boolean areChosen = false;
         List<Facility> selectedFacilities = new ArrayList<>();
         while (!areChosen) {
-            writer.write(FACILITY_MENU);
-            writer.flush();
+            CONSOLE_LOGGER.info(FACILITY_MENU);
 
             String facilitiesIndexesOnOneLine = reader.readLine();
             if (facilitiesIndexesOnOneLine.matches("")) {
                 areChosen = true;
-            } else if (StringHandler.isFacilityStringFromUserValid(facilitiesIndexesOnOneLine)) {
+            } else if (InputValidator.isFacilityStringFromUserValid(facilitiesIndexesOnOneLine)) {
                 String[] facilitiesIndexes = facilitiesIndexesOnOneLine.split(",");
                 Arrays.sort(facilitiesIndexes);
                 facilitiesIndexes = Arrays.stream(facilitiesIndexes).distinct().toArray(String[]::new);
@@ -184,9 +160,8 @@ public class CoworkingController {
                     }
                 }
             } else {
-                logger.warn("wrong number(s): " + facilitiesIndexesOnOneLine);
-                writer.write("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
-                writer.flush();
+                CONSOLE_LOGGER.warn("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
+                FILE_LOGGER.warn("wrong number(s): " + facilitiesIndexesOnOneLine);
             }
         }
         return selectedFacilities;

@@ -1,16 +1,16 @@
 package org.example.coworking.infrastructure.dao;
 
-import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.loader.Loader;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Menu;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class MenuDaoImpl implements MenuDao {
-    private static final Logger logger = Log.getLogger(MenuDaoImpl.class);
     private final Loader<Menu> menuLoader;
     private static List<Menu> menus;
 
@@ -20,7 +20,7 @@ public class MenuDaoImpl implements MenuDao {
 
     @Override
     public List<Menu> getMenusFromStorage() {
-        if (menus==null) {
+        if (menus == null) {
             loadMenuFromStorage();
         }
         return menus;
@@ -37,7 +37,8 @@ public class MenuDaoImpl implements MenuDao {
         try {
             menus = menuLoader.load(Menu.class);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            CONSOLE_LOGGER.error(e.getMessage());
+            FILE_LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

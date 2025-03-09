@@ -1,18 +1,19 @@
 package org.example;
 
-import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
 import org.example.coworking.infrastructure.controller.MenuController;
 import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.factory.AppFactory;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Menu;
 
 import java.io.*;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class Main {
-    private static final Logger logger = Log.getLogger(Main.class);
+
     private static final String WELCOME_MENU_KEY = "Welcome Menu";
     private static final String EXIT = "0";
     private static final String ADMIN = "1";
@@ -29,26 +30,28 @@ public class Main {
         reservationController.load();
         menuController.getMenusFromStorage();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             label:
             while (true) {
                 Menu welcomeMenu = menuController.getMenuByName(WELCOME_MENU_KEY);
-                menuController.showMenu(writer, welcomeMenu.getMenuName());
-                String userRoleIdentifier = menuController.getUserChoice(reader, writer, welcomeMenu);
+                menuController.showMenu(welcomeMenu.getMenuName());
+                String userRoleIdentifier = menuController.getUserChoice(reader, welcomeMenu);
                 switch (userRoleIdentifier) {
                     case EXIT:
                         break label;
                     case ADMIN:
-                        menuController.handleAdminFlow(authorizationController, menuController, coworkingController, reservationController, reader, writer);
+                        menuController.handleAdminFlow(authorizationController, menuController, coworkingController
+                                , reservationController, reader);
                         break;
                     case CUSTOMER:
-                        menuController.handleCustomerFlow(authorizationController, menuController, coworkingController, reservationController, reader, writer);
+                        menuController.handleCustomerFlow(authorizationController, menuController, coworkingController
+                                , reservationController, reader);
                         break;
                 }
             }
         } catch (IOException e) {
-            logger.error("Error while reading or writing from console. " + e.getMessage());
+            FILE_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
+            CONSOLE_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

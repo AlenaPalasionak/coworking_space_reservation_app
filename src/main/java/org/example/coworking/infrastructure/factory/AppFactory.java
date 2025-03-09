@@ -17,34 +17,34 @@ public class AppFactory {
     private final String userPath = "src/main/resources/users.json";
     private final String coworkingPlacesPath = "src/main/resources/coworking_places.json";
     private final String reservationPath = "src/main/resources/reservations.json";
-    private final Loader<User> USER_LOADER = new UserLoader(userPath);
-    private final Loader<CoworkingSpace> COWORKING_LOADER = new CoworkingSpaceLoader(coworkingPlacesPath);
-    private final Loader<Reservation> RESERVATION_LOADER = new ReservationLoader(reservationPath);
-    private final Loader<Menu> MENU_LOADER = new MenuLoader(menuPath);
+    private final Loader<User> userLoader = new UserLoader(userPath);
+    private final Loader<CoworkingSpace> coworkingSpaceLoader = new CoworkingSpaceLoader(coworkingPlacesPath);
+    private final Loader<Reservation> reservationLoader = new ReservationLoader(reservationPath);
+    private final Loader<Menu> menuLoader = new MenuLoader(menuPath);
 
-    private final UserDao USER_DAO = new UserDaoImpl(USER_LOADER);
-    private final CoworkingDao COWORKING_DAO = new CoworkingDaoImpl(COWORKING_LOADER);
-    private final ReservationDao RESERVATION_DAO = new ReservationDaoImpl(RESERVATION_LOADER);
-    private final MenuDao MENU_DAO = new MenuDaoImpl(MENU_LOADER);
-    private final UserService USER_SERVICE = new UserServiceImpl(USER_DAO);
-    private final CoworkingService COWORKING_SERVICE = new CoworkingServiceImpl(COWORKING_DAO);
-    private final ReservationService RESERVATION_SERVICE = new ReservationServiceImpl(RESERVATION_DAO);
-    private final AuthorizationService AUTHORIZATION_SERVICE = new AuthorizationServiceImpl(USER_SERVICE);
-    private final MenuService MENU_SERVICE = new MenuServiceImpl(MENU_DAO);
+    private final UserDao userDao = new UserDaoImpl(userLoader);
+    private final CoworkingDao coworkingDao = new CoworkingDaoImpl(coworkingSpaceLoader);
+    private final ReservationDao reservationDao = new ReservationDaoImpl(reservationLoader);
+    private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
+    private final UserService userService = new UserServiceImpl(userDao);
+    private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
+    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao);
+    private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
+    private final MenuService menuService = new MenuServiceImpl(menuDao);
 
     public AuthorizationController createAuthorizationController() {
-        return new AuthorizationController(AUTHORIZATION_SERVICE);
+        return new AuthorizationController(authorizationService);
     }
 
     public CoworkingController createCoworkingController() {
-        return new CoworkingController(COWORKING_SERVICE);
+        return new CoworkingController(coworkingService);
     }
 
     public ReservationController createReservationController() {
-        return new ReservationController(COWORKING_SERVICE, RESERVATION_SERVICE);
+        return new ReservationController(coworkingService, reservationService);
     }
 
     public MenuController createMenuController() {
-        return new MenuController(MENU_SERVICE);
+        return new MenuController(menuService);
     }
 }

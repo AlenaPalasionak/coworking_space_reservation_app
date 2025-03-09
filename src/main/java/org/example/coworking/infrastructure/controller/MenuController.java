@@ -1,7 +1,5 @@
 package org.example.coworking.infrastructure.controller;
 
-import org.apache.logging.log4j.Logger;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
@@ -10,12 +8,12 @@ import org.example.coworking.service.MenuService;
 import org.example.coworking.service.exception.MenuNotFoundException;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+
 public class MenuController {
-    private static final Logger logger = Log.getLogger(MenuController.class);
     private User user;
     private final MenuService menuService;
     private static final String EXIT = "0";
@@ -35,20 +33,17 @@ public class MenuController {
         this.menuService = menuService;
     }
 
-    public void showMenu(BufferedWriter writer, String menuName) throws IOException {
+    public void showMenu(String menuName) throws IOException {
         String menuText = menuService.getMenuTextByMenuName(menuName);
-        writer.write(menuText);
-        writer.flush();
+        CONSOLE_LOGGER.info(menuText);
     }
 
-    public String getUserChoice(BufferedReader reader, BufferedWriter writer, Menu menu) throws IOException {
+    public String getUserChoice(BufferedReader reader, Menu menu) throws IOException {
         String userChoice;
         do {
             userChoice = reader.readLine();
             if (!menuService.doesMatchOneOfPossibleChoices(menu, userChoice)) {
-                logger.info("Wrong number: " + userChoice);
-                writer.write("Wrong number: " + userChoice + "\nTry again\n");
-                writer.flush();
+                CONSOLE_LOGGER.info("You entered the wrong number: " + userChoice);
             }
         } while (!menuService.doesMatchOneOfPossibleChoices(menu, userChoice));
         return userChoice;
@@ -68,67 +63,66 @@ public class MenuController {
 
     public void handleAdminFlow(AuthorizationController authorizationController, MenuController menuController,
                                 CoworkingController coworkingController, ReservationController reservationController,
-                                BufferedReader reader, BufferedWriter writer) throws IOException {
-        Optional<User> possibleAdmin = authorizationController.authenticate(reader, writer, Admin.class);
+                                BufferedReader reader) throws IOException {
+        Optional<User> possibleAdmin = authorizationController.authenticate(reader, Admin.class);
         if (possibleAdmin.isPresent()) {
             user = possibleAdmin.get();
             boolean logOut = false;
             while (!logOut) {
                 Menu adminMenu = menuController.getMenuByName(ADMIN_MENU_KEY);
-                menuController.showMenu(writer, adminMenu.getMenuName());
-                String adminOptionChoice = menuController.getUserChoice(reader, writer, adminMenu);
+                menuController.showMenu(adminMenu.getMenuName());
+                String adminOptionChoice = menuController.getUserChoice(reader, adminMenu);
                 switch (adminOptionChoice) {
                     case ADD_COWORKING_SPACE:
-                        coworkingController.add(reader, writer, user);
+                        coworkingController.add(reader, user);
                         break;
                     case DELETE_COWORKING_SPACE:
-                        coworkingController.delete(reader, writer, user);
+                        coworkingController.delete(reader, user);
                         break;
                     case GET_ALL_RESERVATIONS:
-                        reservationController.getAllReservations(writer, user);
+                        reservationController.getAllReservations(user);
                         break;
                 }
-                logOut = handleNextStep(menuController, coworkingController, reservationController, reader, writer);
+                logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
             }
         }
     }
 
     public void handleCustomerFlow(AuthorizationController authorizationController, MenuController menuController,
                                    CoworkingController coworkingController, ReservationController reservationController,
-                                   BufferedReader reader, BufferedWriter writer) throws IOException {
-        Optional<User> possibleCustomer = authorizationController.authenticate(reader, writer, Customer.class);
+                                   BufferedReader reader) throws IOException {
+        Optional<User> possibleCustomer = authorizationController.authenticate(reader, Customer.class);
         if (possibleCustomer.isPresent()) {
             user = possibleCustomer.get();
             boolean logOut = false;
             while (!logOut) {
                 Menu customerMenu = menuController.getMenuByName(CUSTOMER_MENU_KEY);
-                menuController.showMenu(writer, customerMenu.getMenuName());
-                String customerOptionChoice = menuController.getUserChoice(reader, writer, customerMenu);
+                menuController.showMenu(customerMenu.getMenuName());
+                String customerOptionChoice = menuController.getUserChoice(reader, customerMenu);
                 switch (customerOptionChoice) {
                     case GET_AVAILABLE_COWORKING_SPACES:
-                        coworkingController.getAllSpaces(writer, user);
+                        coworkingController.getAllSpaces(user);
                         break;
                     case ADD_RESERVATION:
-                        reservationController.add(reader, writer, user);
+                        reservationController.add(reader, user);
                         break;
                     case GET_RESERVATIONS:
-                        reservationController.getAllReservations(writer, user);
+                        reservationController.getAllReservations(user);
                         break;
                     case DELETE_RESERVATION:
-                        reservationController.delete(reader, writer, user);
+                        reservationController.delete(reader, user);
                         break;
                 }
-                logOut = handleNextStep(menuController, coworkingController, reservationController, reader, writer);
+                logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
             }
         }
     }
 
     public boolean handleNextStep(MenuController menuController, CoworkingController coworkingController,
-                                  ReservationController reservationController, BufferedReader reader,
-                                  BufferedWriter writer) throws IOException {
+                                  ReservationController reservationController, BufferedReader reader) throws IOException {
         Menu nextStepMenu = menuController.getMenuByName(NEXT_STEP_MENU_KEY);
-        menuController.showMenu(writer, nextStepMenu.getMenuName());
-        String nextStep = menuController.getUserChoice(reader, writer, nextStepMenu);
+        menuController.showMenu(nextStepMenu.getMenuName());
+        String nextStep = menuController.getUserChoice(reader, nextStepMenu);
         if (nextStep.equals(LOG_OUT)) {
             return true;
         } else if (nextStep.equals(EXIT)) {

@@ -1,53 +1,47 @@
 package org.example.coworking.infrastructure.controller;
 
-import org.apache.logging.log4j.Logger;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
 import org.example.coworking.service.exception.UserNotFoundException;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class AuthorizationController {
-    private static final Logger logger = Log.getLogger(AuthorizationController.class);
     private final AuthorizationService authorizationService;
 
     public AuthorizationController(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
     }
 
-    public Optional<User> authenticate(BufferedReader reader, BufferedWriter writer, Class<? extends User> userType) throws IOException {
+    public Optional<User> authenticate(BufferedReader reader, Class<? extends User> userType) throws IOException {
         boolean isLoggedIn = false;
         Optional<User> possibleUser = Optional.empty();
 
         while (!isLoggedIn) {
-            writer.write("Enter your name, please.\n");
-            writer.flush();
+            CONSOLE_LOGGER.info("Enter your name, please.\n");
             String name = reader.readLine().trim();
 
-            writer.write(name + ", enter your password, please.\n");
-            writer.flush();
+            CONSOLE_LOGGER.info(name + ", enter your password, please.\n");
             String password = reader.readLine().trim();
 
             try {
                 possibleUser = authorizationService.authenticate(name, password, userType);
             } catch (UserNotFoundException e) {
-                logger.warn(e.getMessage());
-                writer.write(e.getMessage() + "\n" + "Try to log in again. \n");
-                writer.flush();
+                CONSOLE_LOGGER.warn(e.getMessage() + "\n" + "Try to log in again. \n");
+                FILE_LOGGER.warn(e.getMessage());
                 continue;
             }
 
             if (possibleUser.isPresent()) {
                 isLoggedIn = true;
-                writer.write("You have successfully logged in.\n");
-                writer.flush();
+                CONSOLE_LOGGER.info("You have successfully logged in.\n");
             } else {
-                writer.write("Your login data are wrong. Try again.\n");
-                writer.flush();
+                FILE_LOGGER.warn("Your login data are wrong. Try again.\n");
                 reader.readLine();
             }
         }

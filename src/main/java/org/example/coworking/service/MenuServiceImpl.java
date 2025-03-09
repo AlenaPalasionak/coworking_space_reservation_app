@@ -1,16 +1,16 @@
 package org.example.coworking.service;
 
-import org.apache.logging.log4j.Logger;
-import org.example.coworking.service.exception.MenuNotFoundException;
 import org.example.coworking.infrastructure.dao.MenuDao;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.Menu;
+import org.example.coworking.service.exception.MenuNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class MenuServiceImpl implements MenuService {
-    private static final Logger logger = Log.getLogger(MenuServiceImpl.class);
 
     private final MenuDao menuDao;
 
@@ -31,7 +31,8 @@ public class MenuServiceImpl implements MenuService {
         if (possibleMenu.isPresent()) {
             return possibleMenu.get().getMenuText();
         } else {
-            logger.warn("Menu text is not found of " + menuName + "is not found.\n");
+            CONSOLE_LOGGER.warn("Menu text is not found of " + menuName);
+            FILE_LOGGER.warn("Menu text is not found of " + menuName);
             return "Menu text is not found";
         }
     }

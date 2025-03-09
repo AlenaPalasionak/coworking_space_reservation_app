@@ -1,17 +1,17 @@
 package org.example.coworking.infrastructure.dao;
 
-import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.loader.Loader;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.CoworkingSpace;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+
 public class CoworkingDaoImpl implements CoworkingDao {
-    private static final Logger logger = Log.getLogger(CoworkingDaoImpl.class);
     private static List<CoworkingSpace> coworkingSpacesCache;
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
@@ -85,7 +85,8 @@ public class CoworkingDaoImpl implements CoworkingDao {
         try {
             coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            CONSOLE_LOGGER.error(e.getMessage());
+            FILE_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
         return coworkingSpacesCache;
