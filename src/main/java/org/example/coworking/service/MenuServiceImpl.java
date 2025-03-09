@@ -4,6 +4,7 @@ import org.example.coworking.infrastructure.dao.MenuDao;
 import org.example.coworking.model.Menu;
 import org.example.coworking.service.exception.MenuNotFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,13 +38,8 @@ public class MenuServiceImpl implements MenuService {
         }
     }
 
-    public boolean doesMatchOneOfPossibleChoices(Menu menu, String userChoice) {
-        for (String possibleChoice : menu.getPossibleChoices()) {
-            if (possibleChoice.equals(userChoice)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isMatchingOneOfPossibleChoices(Menu menu, String userChoice) {
+        return Arrays.asList(menu.getPossibleChoices()).contains(userChoice);
     }
 
     @Override
@@ -52,6 +48,13 @@ public class MenuServiceImpl implements MenuService {
         if (possibleMenu.isPresent()) {
             return possibleMenu.get();
         } else throw new MenuNotFoundException(name);
+    }
+    public static Optional<Integer> parseInt(String input) {
+        try {
+            return Optional.of(Integer.parseInt(input.trim()));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 }
 

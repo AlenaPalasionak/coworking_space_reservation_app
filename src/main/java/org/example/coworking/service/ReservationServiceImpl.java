@@ -2,13 +2,13 @@ package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.ReservationDao;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.util.OccupationTimeChecker;
-import org.example.coworking.infrastructure.util.ReservationTimeValidator;
-import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
+import org.example.coworking.infrastructure.util.TimeLogicValidator;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeLogicException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.TimeOverlapException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,11 +21,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void add(User customer, CoworkingSpace coworkingSpace, ReservationPeriod period)
-            throws TimeOverlapException, InvalidTimeReservationException {
+    public void add(LocalDateTime startTime, LocalDateTime endTime, User customer, CoworkingSpace coworkingSpace)
+            throws TimeOverlapException, InvalidTimeLogicException {
+        ReservationPeriod period = new ReservationPeriod(startTime, endTime);
 
-        ReservationTimeValidator.validateReservation(period.getStartTime(), period.getEndTime());
-        if (OccupationTimeChecker.isTimeOverlapping(period, coworkingSpace)) {
+        TimeLogicValidator.validateReservation(startTime,endTime);
+        if (OccupationTimeCheckerService.isTimeOverlapping(period, coworkingSpace)) {
             throw new TimeOverlapException(period);
         } else {
             reservationDao.add(new Reservation(customer, period, coworkingSpace));

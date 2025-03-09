@@ -18,13 +18,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         List<User> users = userService.load();
 
-        Optional<User> possibleUser = users.stream().filter(user -> user.getName().equals(name)).filter(user ->
-                user.getPassword().equals(password)).filter(user -> role.isInstance(user)).findFirst();
+        Optional<User> possibleUser = users.stream()
+                .filter(user -> user.getName().equals(name))
+                .filter(user -> user.getPassword().equals(password))
+                .filter(role::isInstance)
+                .findFirst();
+
 
         if (possibleUser.isEmpty()) {
             throw new UserNotFoundException(name);
         }
-
         return possibleUser;
     }
 }

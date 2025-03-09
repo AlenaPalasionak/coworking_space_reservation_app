@@ -25,15 +25,10 @@ public class ReservationDaoImpl implements ReservationDao {
         int generatedId;
         do {
             generatedId = IdGenerator.generateReservationId();
-            isUniqueIdGenerated = true;
-
-            for (Reservation reservationFromCache : reservationsCache) {
-                if (reservationFromCache.getId() == generatedId) {
-                    isUniqueIdGenerated = false;
-                    break;
-                }
-            }
-        } while (!isUniqueIdGenerated);
+            int finalGeneratedId = generatedId;
+            isUniqueIdGenerated = reservationsCache.stream()
+                    .anyMatch(r -> r.getId() == finalGeneratedId);
+        } while (isUniqueIdGenerated);
 
         reservation.setId(generatedId);
         reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
@@ -79,7 +74,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     private boolean checkIfNotExist(int id) {
         return reservationsCache.stream()
-                .noneMatch(c -> c.getId() == id);
+                .noneMatch(r -> r.getId() == id);
     }
 
     private List<Reservation> getFromStorage() {
