@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class InputValidator {
 
@@ -15,10 +16,12 @@ public class InputValidator {
     public static int getIntInput(BufferedReader reader, String message) throws IOException {
         while (true) {
             try {
-                CONSOLE_LOGGER.info(message);
+                USER_OUTPUT_LOGGER.info(message);
+
                 return Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
-                CONSOLE_LOGGER.error("Invalid input: not a number. Please try again.");
+                USER_OUTPUT_LOGGER.error("Invalid input: not a number. Please try again.");
+                TECHNICAL_LOGGER.error("Invalid input: not a number. Please try again.");
             }
         }
     }

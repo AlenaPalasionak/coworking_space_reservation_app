@@ -6,8 +6,8 @@ import org.example.coworking.model.User;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class UserDaoImpl implements UserDao {
     private final Loader<User> userLoader;
@@ -28,8 +28,8 @@ public class UserDaoImpl implements UserDao {
         try {
             usersCache = userLoader.load(User.class);
         } catch (FileNotFoundException e) {
-            CONSOLE_LOGGER.error(e.getMessage());
-            FILE_LOGGER.error(e.getMessage());
+            USER_OUTPUT_LOGGER.error(e.getMessage());
+            TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class CoworkingController {
 
@@ -50,8 +50,8 @@ public class CoworkingController {
             try {
                 price = getPriceFromUser(reader);
             } catch (PriceFormatException e) {
-                CONSOLE_LOGGER.warn(e.getMessage() + ". Try again. ");
-                FILE_LOGGER.warn(e.getMessage());
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + ". Try again. ");
+                TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
         CoworkingType coworkingType = getCoworkingTypeFromUser(reader);
@@ -59,18 +59,18 @@ public class CoworkingController {
 
         coworkingService.add(admin, price, coworkingType, facilities);
 
-        CONSOLE_LOGGER.info("You just added a new Space:\n");
+        USER_OUTPUT_LOGGER.info("You just added a new Space:\n");
     }
 
     public void delete(BufferedReader reader, User user) throws IOException {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         boolean isDeleted = false;
         if (spaces.isEmpty()) {
-            CONSOLE_LOGGER.warn("Coworking List is empty\n");
-            FILE_LOGGER.warn("Coworking List is empty\n");
+            USER_OUTPUT_LOGGER.warn("Coworking List is empty\n");
+            TECHNICAL_LOGGER.warn("Coworking List is empty\n");
         } else {
             while (!isDeleted) {
-                spaces.forEach(space -> CONSOLE_LOGGER.info(space.toString()));
+                spaces.forEach(space -> USER_OUTPUT_LOGGER.info(space.toString()));
                 try {
                     int coworkingId = InputValidator.getIntInput(reader
                             , "Type a coworking id you want to delete:\n");
@@ -80,14 +80,14 @@ public class CoworkingController {
                     if (possibleCoworking.isPresent()) {
                         CoworkingSpace coworkingSpace = possibleCoworking.get();
                         coworkingService.delete(user, coworkingSpace);
-                        CONSOLE_LOGGER.info("Coworking with id: " + coworkingId + " has been deleted\n");
+                        USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingId + " has been deleted\n");
                         isDeleted = true;
                     }
                 } catch (CoworkingNotFoundException e) {
-                    CONSOLE_LOGGER.info(e.getMessage() + "\n" + "Choose another Coworking \n");
+                    USER_OUTPUT_LOGGER.info(e.getMessage() + "\n" + "Choose another Coworking \n");
                 } catch (ForbiddenActionException e) {
-                    CONSOLE_LOGGER.error(e.getMessage() + "\n");
-                    FILE_LOGGER.error(e.getMessage());
+                    USER_OUTPUT_LOGGER.error(e.getMessage() + "\n");
+                    TECHNICAL_LOGGER.error(e.getMessage());
                 }
             }
         }
@@ -95,8 +95,8 @@ public class CoworkingController {
 
     public void getAllSpaces(User user) {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
-        CONSOLE_LOGGER.info("Spaces list:\n");
-        spaces.forEach(space -> CONSOLE_LOGGER.info(space.toString()));
+        USER_OUTPUT_LOGGER.info("Spaces list:\n");
+        spaces.forEach(space -> USER_OUTPUT_LOGGER.info(space.toString()));
     }
 
     public void load() {
@@ -107,9 +107,8 @@ public class CoworkingController {
         coworkingService.save();
     }
 
-    private double getPriceFromUser(BufferedReader reader) throws
-            IOException, PriceFormatException {
-        CONSOLE_LOGGER.info("Enter the price in dollars per hour.\n");
+    private double getPriceFromUser(BufferedReader reader) throws IOException, PriceFormatException {
+        USER_OUTPUT_LOGGER.info("Enter the price in dollars per hour.\n");
         String price = reader.readLine();
 
         if (price == null || price.trim().isEmpty() || !price.matches("\\d+(\\.\\d+)?")) {
@@ -123,17 +122,17 @@ public class CoworkingController {
         CoworkingType coworkingType = null;
         while (coworkingType == null) {
             try {
-                CONSOLE_LOGGER.info(COWORKING_TYPE_MENU);
+                USER_OUTPUT_LOGGER.info(COWORKING_TYPE_MENU);
                 int coworkingTypeIndex = Integer.parseInt(reader.readLine());
                 if (coworkingTypeIndex < 0 || coworkingTypeIndex >= CoworkingType.values().length) {
-                    CONSOLE_LOGGER.warn("You put a wrong symbol: " + coworkingTypeIndex + " Try again\n");
-                    FILE_LOGGER.warn("Wrong symbol: " + coworkingTypeIndex);
+                    USER_OUTPUT_LOGGER.warn("You put a wrong symbol: " + coworkingTypeIndex + " Try again\n");
+                    TECHNICAL_LOGGER.warn("Wrong symbol: " + coworkingTypeIndex);
                     continue;
                 }
                 coworkingType = CoworkingType.values()[coworkingTypeIndex];
             } catch (NumberFormatException e) {
-                CONSOLE_LOGGER.warn("You entered wrong number. Try again\n");
-                FILE_LOGGER.warn("Wrong symbol");
+                USER_OUTPUT_LOGGER.warn("You entered wrong number. Try again\n");
+                TECHNICAL_LOGGER.warn("Wrong symbol");
             }
         }
         return coworkingType;
@@ -143,7 +142,7 @@ public class CoworkingController {
         boolean areChosen = false;
         List<Facility> selectedFacilities = new ArrayList<>();
         while (!areChosen) {
-            CONSOLE_LOGGER.info(FACILITY_MENU);
+            USER_OUTPUT_LOGGER.info(FACILITY_MENU);
 
             String facilitiesIndexesOnOneLine = reader.readLine();
             if (facilitiesIndexesOnOneLine.matches("")) {
@@ -160,8 +159,8 @@ public class CoworkingController {
                     }
                 }
             } else {
-                CONSOLE_LOGGER.warn("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
-                FILE_LOGGER.warn("wrong number(s): " + facilitiesIndexesOnOneLine);
+                USER_OUTPUT_LOGGER.warn("You entered wrong number(s): " + facilitiesIndexesOnOneLine + ". Try again:\n");
+                TECHNICAL_LOGGER.warn("wrong number(s): " + facilitiesIndexesOnOneLine);
             }
         }
         return selectedFacilities;

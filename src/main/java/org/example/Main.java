@@ -9,8 +9,8 @@ import org.example.coworking.model.Menu;
 
 import java.io.*;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class Main {
 
@@ -50,8 +50,8 @@ public class Main {
                 }
             }
         } catch (IOException e) {
-            FILE_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
-            CONSOLE_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
+            TECHNICAL_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
+            USER_OUTPUT_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

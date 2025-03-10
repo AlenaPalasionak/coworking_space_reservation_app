@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public abstract class AbstractLoaderImpl<T> implements Loader<T> {
     protected ObjectMapper objectMapper;
@@ -29,19 +29,19 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
         File jsonFile = new File(getFilepath());
         if (!jsonFile.exists()) {
             String message = "File with the name: " + getFilepath() + " is not found";
-            CONSOLE_LOGGER.error(message);
-            FILE_LOGGER.error(message);
+            USER_OUTPUT_LOGGER.error(message);
+            TECHNICAL_LOGGER.error(message);
             throw new FileNotFoundException(message);
         }
         if (jsonFile.length() == 0) {
-            CONSOLE_LOGGER.warn("JSON file " + jsonFile + " is empty");
-            FILE_LOGGER.warn("JSON file " + jsonFile + " is empty");
+            USER_OUTPUT_LOGGER.warn("JSON file " + jsonFile + " is empty");
+            TECHNICAL_LOGGER.warn("JSON file " + jsonFile + " is empty");
         } else {
             try {
                 list = objectMapper.readValue(jsonFile, javaType);
             } catch (IOException e) {
-                CONSOLE_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
-                FILE_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
+                USER_OUTPUT_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
+                TECHNICAL_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
                 throw new RuntimeException("Error reading JSON", e);
             }
         }
@@ -52,8 +52,8 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(getFilepath()), objects);
         } catch (IOException e) {
-            CONSOLE_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
-            FILE_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
+            USER_OUTPUT_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
+            TECHNICAL_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
             throw new RuntimeException("Error writing JSON", e);
         }
     }

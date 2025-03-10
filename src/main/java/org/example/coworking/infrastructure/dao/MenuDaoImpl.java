@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class MenuDaoImpl implements MenuDao {
     private final Loader<Menu> menuLoader;
@@ -37,8 +37,8 @@ public class MenuDaoImpl implements MenuDao {
         try {
             menus = menuLoader.load(Menu.class);
         } catch (FileNotFoundException e) {
-            CONSOLE_LOGGER.error(e.getMessage());
-            FILE_LOGGER.error(e.getMessage());
+            USER_OUTPUT_LOGGER.error(e.getMessage());
+            TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

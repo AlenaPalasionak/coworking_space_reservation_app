@@ -7,8 +7,8 @@ import org.example.coworking.service.exception.MenuNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class MenuServiceImpl implements MenuService {
 
@@ -31,8 +31,8 @@ public class MenuServiceImpl implements MenuService {
         if (possibleMenu.isPresent()) {
             return possibleMenu.get().getMenuText();
         } else {
-            CONSOLE_LOGGER.warn("Menu text is not found of " + menuName);
-            FILE_LOGGER.warn("Menu text is not found of " + menuName);
+            USER_OUTPUT_LOGGER.warn("Menu text is not found of " + menuName);
+            TECHNICAL_LOGGER.warn("Menu text is not found of " + menuName);
             return "Menu text is not found";
         }
     }
