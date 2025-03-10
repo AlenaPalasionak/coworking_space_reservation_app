@@ -1,47 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<Configuration status="WARN">
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n</Pattern>
-            </PatternLayout>
+        <Console name="UserOutputLog" target="SYSTEM_OUT">
+            <PatternLayout disableAnsi="false" pattern="*** %highlight{%-5level} *** %n%msg%n{FATAL=red blink, ERROR=red, WARN=yellow, INFO=green,
+            DEBUG=blue, TRACE=magenta}"/>
         </Console>
 
-        <File name="FileAppender" fileName="logs/app.log">
-            <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n</Pattern>
-            </PatternLayout>
+        <File name="TechnicalLog" fileName="logs/app.log" append="false">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n"/>
         </File>
     </Appenders>
 
     <Loggers>
-        <Logger name="org.example.coworking.dao" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-        <Logger name="org.example.coworking.infrastructure.loader" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
+        <Logger name="UserOutputLogger" level="info" additivity="false">
+            <AppenderRef ref="UserOutputLog"/>
         </Logger>
 
-        <Logger name="org.example.coworking.service" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Logger name="org.example.coworking.infrastructure.controller" level="WARN" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Logger name="org.example.main" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-
-        <Root level="ERROR">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="FileAppender"/>
+        <Root level="warn">
+            <AppenderRef ref="TechnicalLog"/>
         </Root>
     </Loggers>
 </Configuration>

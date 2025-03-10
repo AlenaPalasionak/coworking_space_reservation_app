@@ -2,37 +2,49 @@ package org.example.coworking.infrastructure.factory;
 
 import org.example.coworking.infrastructure.controller.AuthorizationController;
 import org.example.coworking.infrastructure.controller.CoworkingController;
+import org.example.coworking.infrastructure.controller.MenuController;
 import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.dao.*;
-import org.example.coworking.infrastructure.loader.CoworkingSpaceLoader;
-import org.example.coworking.infrastructure.loader.Loader;
-import org.example.coworking.infrastructure.loader.ReservationLoader;
-import org.example.coworking.infrastructure.loader.UserLoader;
+import org.example.coworking.infrastructure.loader.*;
+import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.model.Menu;
+import org.example.coworking.model.Reservation;
+import org.example.coworking.model.User;
 import org.example.coworking.service.*;
 
 public class AppFactory {
-    private static final Loader USER_LOADER = new UserLoader();
-    private static final Loader COWORKING_LOADER = new CoworkingSpaceLoader();
-    private static final Loader RESERVATION_LOADER = new ReservationLoader();
+    private final String menuPath = "src/main/resources/menu.json";
+    private final String userPath = "src/main/resources/users.json";
+    private final String coworkingPlacesPath = "src/main/resources/coworking_places.json";
+    private final String reservationPath = "src/main/resources/reservations.json";
+    private final Loader<User> userLoader = new UserLoader(userPath);
+    private final Loader<CoworkingSpace> coworkingSpaceLoader = new CoworkingSpaceLoader(coworkingPlacesPath);
+    private final Loader<Reservation> reservationLoader = new ReservationLoader(reservationPath);
+    private final Loader<Menu> menuLoader = new MenuLoader(menuPath);
 
-    private static final UserDao userDao = new UserDaoImpl(USER_LOADER);
-    private static final CoworkingDao coworkingDao = new CoworkingDaoImpl(COWORKING_LOADER);
-    private static final ReservationDao reservationDao = new ReservationDaoImpl(RESERVATION_LOADER);
+    private final UserDao userDao = new UserDaoImpl(userLoader);
+    private final CoworkingDao coworkingDao = new CoworkingDaoImpl(coworkingSpaceLoader);
+    private final ReservationDao reservationDao = new ReservationDaoImpl(reservationLoader);
+    private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
+    private final UserService userService = new UserServiceImpl(userDao);
+    private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
+    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao);
+    private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
+    private final MenuService menuService = new MenuServiceImpl(menuDao);
 
-    private static final UserService userService = new UserServiceImpl(userDao);
-    private static final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
-    private static final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingDao);
-    private static final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
-
-    public static AuthorizationController createAuthorizationController() {
-        return new AuthorizationController(authorizationService, userService);
+    public AuthorizationController createAuthorizationController() {
+        return new AuthorizationController(authorizationService);
     }
 
-    public static CoworkingController createCoworkingController() {
-        return new CoworkingController(coworkingService, reservationService);
+    public CoworkingController createCoworkingController() {
+        return new CoworkingController(coworkingService);
     }
 
-    public static ReservationController createReservationController() {
+    public ReservationController createReservationController() {
         return new ReservationController(coworkingService, reservationService);
+    }
+
+    public MenuController createMenuController() {
+        return new MenuController(menuService);
     }
 }

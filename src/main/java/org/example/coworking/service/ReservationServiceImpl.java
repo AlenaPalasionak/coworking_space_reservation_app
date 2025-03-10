@@ -1,38 +1,39 @@
 package org.example.coworking.service;
 
-import org.example.coworking.infrastructure.dao.CoworkingDao;
 import org.example.coworking.infrastructure.dao.ReservationDao;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 import org.example.coworking.infrastructure.util.OccupationTimeChecker;
 import org.example.coworking.infrastructure.util.ReservationTimeValidator;
+import org.example.coworking.infrastructure.util.exception.InvalidTimeReservationException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.TimeOverlapException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
-    ReservationDao reservationDao;
-    CoworkingDao coworkingDao;
+    private final ReservationDao reservationDao;
 
-    public ReservationServiceImpl(ReservationDao reservationDao, CoworkingDao coworkingDao) {
+    public ReservationServiceImpl(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-        this.coworkingDao = coworkingDao;
     }
 
     @Override
-    public void add(User customer, CoworkingSpace coworkingSpace, ReservationPeriod period) throws TimeOverlapException, InvalidTimeReservationException {
+    public void add(User customer, CoworkingSpace coworkingSpace, ReservationPeriod period)
+            throws TimeOverlapException, InvalidTimeReservationException {
+
         ReservationTimeValidator.validateReservation(period.getStartTime(), period.getEndTime());
         if (OccupationTimeChecker.isTimeOverlapping(period, coworkingSpace)) {
             throw new TimeOverlapException(period);
         } else {
-            reservationDao.addReservation(new Reservation(customer, period, coworkingSpace));
+            reservationDao.add(new Reservation(customer, period, coworkingSpace));
         }
     }
 
-    public void delete(Reservation reservation, User user, CoworkingSpace coworking) throws ForbiddenActionException, ReservationNotFoundException {
+    @Override
+    public void delete(User user, Reservation reservation) throws ForbiddenActionException, ReservationNotFoundException {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);
         } else {
@@ -41,17 +42,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAllReservations(User user) {
+    public List<Reservation> getAllByUser(User user) {
         if (user != null && user.getClass() == Customer.class) {
-            return reservationDao.getReservationsByCustomer(user.getId());
+            return reservationDao.getAll().stream()
+                    .filter(reservation -> reservation.getCustomer().getId() == user.getId())
+                    .collect(Collectors.toList());
         } else {
-            return reservationDao.getAllReservations();
+            return reservationDao.getAll();
         }
     }
 
     @Override
-    public Optional<Reservation> getReservationByReservationId(int reservationId) throws ReservationNotFoundException {
-        return reservationDao.getReservationById(reservationId);
+    public Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException {
+        return reservationDao.getById(reservationId);
     }
 
     @Override

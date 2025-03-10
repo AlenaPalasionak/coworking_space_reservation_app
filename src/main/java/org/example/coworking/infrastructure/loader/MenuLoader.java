@@ -1,11 +1,12 @@
 package org.example.coworking.infrastructure.loader;
 
-import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.model.Menu;
 
-public class CoworkingSpaceLoader extends AbstractLoaderImpl<CoworkingSpace> {
+public class MenuLoader extends AbstractLoaderImpl<Menu> {
+
     private final String filePath;
 
-    public CoworkingSpaceLoader(String filePath) {
+    public MenuLoader(String filePath) {
         super();
         this.filePath = filePath;
     }
@@ -15,5 +16,3 @@ public class CoworkingSpaceLoader extends AbstractLoaderImpl<CoworkingSpace> {
         return filePath;
     }
 }
-
-

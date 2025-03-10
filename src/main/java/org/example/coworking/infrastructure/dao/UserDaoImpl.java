@@ -1,20 +1,19 @@
 package org.example.coworking.infrastructure.dao;
 
-import org.apache.logging.log4j.Logger;
 import org.example.coworking.infrastructure.loader.Loader;
-import org.example.coworking.infrastructure.logger.Log;
 import org.example.coworking.model.User;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 
-public class UserDaoImpl implements UserDao {
-    private static final Logger logger = Log.getLogger(UserDaoImpl.class);
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
-    private final Loader userLoader;
+public class UserDaoImpl implements UserDao {
+    private final Loader<User> userLoader;
     private List<User> usersCache;
 
-    public UserDaoImpl(Loader userLoader) {
+    public UserDaoImpl(Loader<User> userLoader) {
         this.userLoader = userLoader;
     }
 
@@ -29,7 +28,8 @@ public class UserDaoImpl implements UserDao {
         try {
             usersCache = userLoader.load(User.class);
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            USER_OUTPUT_LOGGER.error(e.getMessage());
+            TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

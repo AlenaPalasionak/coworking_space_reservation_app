@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
-    UserService userService;
+    private final UserService userService;
 
     public AuthorizationServiceImpl(UserService userService) {
         this.userService = userService;

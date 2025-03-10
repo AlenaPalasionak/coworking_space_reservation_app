@@ -3,56 +3,58 @@ package org.example.coworking.infrastructure.loader;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.logging.log4j.Logger;
-import org.example.coworking.infrastructure.logger.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractLoaderImpl implements Loader {
-    private static final Logger logger = Log.getLogger(AbstractLoaderImpl.class);
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
-    protected String filePath;
+public abstract class AbstractLoaderImpl<T> implements Loader<T> {
     protected ObjectMapper objectMapper;
 
-    public AbstractLoaderImpl(String filePath) {
+    public AbstractLoaderImpl() {
         objectMapper = new ObjectMapper();
-        this.filePath = filePath;
         objectMapper.registerModule(new JavaTimeModule());
     }
 
-    public <T> List<T> load(Class<T> beanType) throws FileNotFoundException {
+    protected abstract String getFilepath();
+
+    public List<T> load(Class<T> beanType) throws FileNotFoundException {
         JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, beanType);
         List<T> list = new ArrayList<>();
-        File jsonFile = new File(filePath);
+        File jsonFile = new File(getFilepath());
         if (!jsonFile.exists()) {
-            String message = "File with the name: " + filePath + " is not found";
-            logger.error(message);
+            String message = "File with the name: " + getFilepath() + " is not found";
+            USER_OUTPUT_LOGGER.error(message);
+            TECHNICAL_LOGGER.error(message);
             throw new FileNotFoundException(message);
         }
         if (jsonFile.length() == 0) {
-            logger.warn("JSON file " + jsonFile + " with the path " + filePath + " is empty");
+            USER_OUTPUT_LOGGER.warn("JSON file " + jsonFile + " is empty");
+            TECHNICAL_LOGGER.warn("JSON file " + jsonFile + " is empty");
         } else {
             try {
                 list = objectMapper.readValue(jsonFile, javaType);
             } catch (IOException e) {
-                logger.error("Can not read JSON into POJO: " + beanType.getName() + "\n" + e.getStackTrace());
-                throw new RuntimeException(e.getMessage());
+                USER_OUTPUT_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
+                TECHNICAL_LOGGER.error("Failed to parse JSON file:  " + beanType.getName() + "\n", e);
+                throw new RuntimeException("Error reading JSON", e);
             }
         }
-        return list != null ? list : Collections.emptyList();
+        return list;
     }
 
-    public <T> void save(List<T> objects) {
-            try {
-                objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), objects);
-            } catch (IOException e) {
-                logger.error(" Unable to write data to the file. " + filePath + "\n" + e.getStackTrace());
-                throw new RuntimeException(e.getMessage());
-            }
+    public void save(List<T> objects) {
+        try {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(getFilepath()), objects);
+        } catch (IOException e) {
+            USER_OUTPUT_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
+            TECHNICAL_LOGGER.error(" Failed to write JSON file: " + getFilepath(), e);
+            throw new RuntimeException("Error writing JSON", e);
         }
     }
+}
