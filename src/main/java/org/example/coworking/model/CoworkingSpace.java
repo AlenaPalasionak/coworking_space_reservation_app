@@ -48,7 +48,7 @@ public class CoworkingSpace {
                 ", facilities=" + facilities + "\n" +
                 (reservationsPeriods != null ? reservationsPeriods.stream()
                         .map(ReservationPeriod::toString)
-                        .collect(Collectors.joining("\n")) : "No reservations available") + "\n" +
-                '}';
+                        .collect(Collectors.joining("\n")) : "No reservations available") +
+                '}' + "\n";
     }
 }

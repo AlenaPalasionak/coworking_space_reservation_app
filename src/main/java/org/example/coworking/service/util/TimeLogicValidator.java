@@ -1,6 +1,6 @@
-package org.example.coworking.service.exception;
+package org.example.coworking.service.util;
 
-import org.example.coworking.service.util.InvalidTimeLogicException;
+import org.example.coworking.service.exception.InvalidTimeLogicException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

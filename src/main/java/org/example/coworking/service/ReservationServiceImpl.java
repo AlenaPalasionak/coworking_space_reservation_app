@@ -2,8 +2,8 @@ package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.ReservationDao;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.service.exception.TimeLogicValidator;
-import org.example.coworking.service.util.InvalidTimeLogicException;
+import org.example.coworking.service.util.TimeLogicValidator;
+import org.example.coworking.service.exception.InvalidTimeLogicException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.TimeOverlapException;

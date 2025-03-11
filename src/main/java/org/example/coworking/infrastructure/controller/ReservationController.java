@@ -3,7 +3,7 @@ package org.example.coworking.infrastructure.controller;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.controller.validator.InputValidator;
-import org.example.coworking.service.util.InvalidTimeLogicException;
+import org.example.coworking.service.exception.InvalidTimeLogicException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
