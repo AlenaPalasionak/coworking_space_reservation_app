@@ -30,7 +30,7 @@ public class AppFactory {
     private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
     private final UserService userService = new UserServiceImpl(userDao);
     private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
-    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao);
+    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingService);
     private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
 
     private final CoworkingMapper coworkingMapper = new CoworkingMapper();

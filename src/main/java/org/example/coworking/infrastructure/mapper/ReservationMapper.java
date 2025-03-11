@@ -1,15 +1,6 @@
 package org.example.coworking.infrastructure.mapper;
 
-import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.model.CoworkingSpace;
-
-import java.io.IOException;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class ReservationMapper {
 
@@ -23,13 +14,7 @@ public class ReservationMapper {
         return LocalDateTime.of(year, month, day, hour, minute);
     }
 
-    private Optional<CoworkingSpace> getCoworkingSpaceFromUser(int coworkingId) {
-        try {
-            return coworkingService.getById(coworkingId);
-        } catch (CoworkingNotFoundException e) {
-            USER_OUTPUT_LOGGER.warn(e.getMessage());
-            TECHNICAL_LOGGER.warn(e.getMessage());
-            return Optional.empty();
-        }
+    public int getId(String idInput) {
+        return Integer.parseInt(idInput);
     }
 }

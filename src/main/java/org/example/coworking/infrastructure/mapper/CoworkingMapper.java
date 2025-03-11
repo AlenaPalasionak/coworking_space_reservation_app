@@ -2,20 +2,14 @@ package org.example.coworking.infrastructure.mapper;
 
 import org.example.coworking.infrastructure.mapper.exception.CoworkingTypeIndexException;
 import org.example.coworking.infrastructure.mapper.exception.FacilityIndexException;
-import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
-import org.example.coworking.model.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class CoworkingMapper {
-
-    public CoworkingSpace getCoworkingSpace(User user, double price, CoworkingType coworkingType, List<Facility> facilities) {
-        return new CoworkingSpace(user, price, coworkingType, facilities);
-    }
 
     public double getPrice(String priceInput) {
         return Double.parseDouble(priceInput);

@@ -45,6 +45,14 @@ public class CoworkingController {
         this.coworkingMapper = coworkingMapper;
     }
 
+    public void load() {
+        coworkingService.load();
+    }
+
+    public void save() {
+        coworkingService.save();
+    }
+
     public void add(BufferedReader reader, User admin) throws IOException {
         double price;
         CoworkingType coworkingType;
@@ -102,7 +110,7 @@ public class CoworkingController {
             }
         }
 
-        coworkingService.add(coworkingMapper.getCoworkingSpace(admin, price, coworkingType, facilities));
+        coworkingService.add(admin, price, coworkingType, facilities);
         USER_OUTPUT_LOGGER.info("You just added a new Space:\n");
     }
 
@@ -128,12 +136,9 @@ public class CoworkingController {
                 coworkingService.delete(user, coworkingSpaceId);
                 USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingSpaceId + " has been deleted\n");
                 isDeleted = true;
-            } catch (CoworkingNotFoundException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + "\n" + "Choose another Coworking \n");
+            } catch (CoworkingNotFoundException | ForbiddenActionException e) {
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + "\n" + "Try again\n");
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (ForbiddenActionException e) {
-                USER_OUTPUT_LOGGER.error(e.getMessage() + "\n");
-                TECHNICAL_LOGGER.error(e.getMessage());
             }
         }
     }
@@ -142,13 +147,5 @@ public class CoworkingController {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         USER_OUTPUT_LOGGER.info("Spaces list:\n");
         spaces.forEach(space -> USER_OUTPUT_LOGGER.info(space.toString()));
-    }
-
-    public void load() {
-        coworkingService.load();
-    }
-
-    public void save() {
-        coworkingService.save();
     }
 }
