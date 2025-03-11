@@ -49,4 +49,16 @@
   "coworkingType" : "CoworkingSpace + Co-living",
   "facilities" : [ "KITCHEN" ],
   "reservationsPeriods" : [ ]
+}, {
+  "id" : 1,
+  "admin" : {
+    "type" : "admin",
+    "id" : 1,
+    "name" : "a",
+    "password" : "1"
+  },
+  "price" : 12345.0,
+  "coworkingType" : "Private Office",
+  "facilities" : [ "WIFI" ],
+  "reservationsPeriods" : [ ]
 } ]

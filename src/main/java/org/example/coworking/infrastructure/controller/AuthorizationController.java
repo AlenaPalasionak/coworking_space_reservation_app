@@ -8,8 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
@@ -20,26 +20,25 @@ public class AuthorizationController {
 
     public Optional<User> authenticate(BufferedReader reader, Class<? extends User> userType) throws IOException {
         while (true) {
-            CONSOLE_LOGGER.info("Enter your name, please.");
+            USER_OUTPUT_LOGGER.info("Enter your name, please.");
             String name = reader.readLine().trim();
 
-            CONSOLE_LOGGER.info(name + ", enter your password, please.");
+            USER_OUTPUT_LOGGER.info(name + ", enter your password, please.");
             String password = reader.readLine().trim();
 
             try {
                 Optional<User> possibleUser = authorizationService.authenticate(name, password, userType);
 
                 if (possibleUser.isPresent()) {
-                    CONSOLE_LOGGER.info("You have successfully logged in.");
+                    USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                     return possibleUser;
                 } else {
-                    CONSOLE_LOGGER.warn("Your login data are incorrect. Try again.");
+                    USER_OUTPUT_LOGGER.warn("Your login data are incorrect. Try again.");
                 }
             } catch (UserNotFoundException e) {
-                CONSOLE_LOGGER.warn(e.getMessage() + "\nTry to log in again.");
-                FILE_LOGGER.warn(e.getMessage());
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + "\nTry to log in again.");
+                TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
     }
-
 }

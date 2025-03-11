@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class MenuServiceImpl implements MenuService {
 
@@ -48,13 +48,6 @@ public class MenuServiceImpl implements MenuService {
         if (possibleMenu.isPresent()) {
             return possibleMenu.get();
         } else throw new MenuNotFoundException(name);
-    }
-    public static Optional<Integer> parseInt(String input) {
-        try {
-            return Optional.of(Integer.parseInt(input.trim()));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
     }
 }
 

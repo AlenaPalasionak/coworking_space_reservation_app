@@ -2,8 +2,8 @@ package org.example.coworking.infrastructure.controller;
 
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
-import org.example.coworking.infrastructure.util.InputValidator;
-import org.example.coworking.infrastructure.util.exception.InvalidTimeLogicException;
+import org.example.coworking.infrastructure.controller.validator.InputValidator;
+import org.example.coworking.service.util.InvalidTimeLogicException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.FILE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class ReservationController {
     private final CoworkingService coworkingService;
@@ -35,11 +35,11 @@ public class ReservationController {
         boolean isFree = false;
         boolean isFound = false;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(customer);
-        CONSOLE_LOGGER.info("Coworking spaces list:\n");
-        coworkingSpaces.forEach(CONSOLE_LOGGER::info);
+        USER_OUTPUT_LOGGER.info("Coworking spaces list:\n");
+        coworkingSpaces.forEach(USER_OUTPUT_LOGGER::info);
 
         while (!isFree && !isFound) {
-            int coworkingId = getCoworkingIdFromUser(reader);
+            int coworkingId = InputValidator.convertInputToInt(reader, "Choose a CoworkingSpace and type its id to book it:\n");
             LocalDateTime startTime = getDateTimeFromUser(reader, "start");
             LocalDateTime endTime = getDateTimeFromUser(reader, "end");
 
@@ -49,14 +49,14 @@ public class ReservationController {
                 try {
                     CoworkingSpace coworkingSpace = possibleCoworkingSpace.get();
                     reservationService.add(startTime, endTime, customer, coworkingSpace);
-                    CONSOLE_LOGGER.info("You've just made a reservation:\n" + coworkingSpace + ", " + startTime + endTime);
+                    USER_OUTPUT_LOGGER.info("You've just made a reservation:\n" + coworkingSpace + ", " + startTime + endTime);
                     isFree = true;
                 } catch (TimeOverlapException e) {
-                    CONSOLE_LOGGER.warn("Choose other time. The coworking space is unavailable at this time\n");
-                    FILE_LOGGER.warn(e.getMessage());
+                    USER_OUTPUT_LOGGER.warn("Choose other time. The coworking space is unavailable at this time\n");
+                    TECHNICAL_LOGGER.warn(e.getMessage());
                 } catch (InvalidTimeLogicException e) {
-                    CONSOLE_LOGGER.warn("You entered invalid date.\nTry again\n");
-                    FILE_LOGGER.warn(e.getMessage());
+                    USER_OUTPUT_LOGGER.warn("You entered invalid date.\nTry again\n");
+                    TECHNICAL_LOGGER.warn(e.getMessage());
                 }
             }
         }
@@ -65,29 +65,29 @@ public class ReservationController {
     public void getAllReservations(User customer) {
         List<Reservation> reservations = reservationService.getAllByUser(customer);
         if (reservations.isEmpty()) {
-            CONSOLE_LOGGER.warn("Reservation list is empty\n");
-            FILE_LOGGER.warn("Reservation list is empty\n");
+            USER_OUTPUT_LOGGER.warn("Reservation list is empty\n");
+            TECHNICAL_LOGGER.warn("Reservation list is empty\n");
         } else {
-            CONSOLE_LOGGER.info("Your reservation(s):\n");
-            reservations.forEach(CONSOLE_LOGGER::info);
+            USER_OUTPUT_LOGGER.info("Your reservation(s):\n");
+            reservations.forEach(USER_OUTPUT_LOGGER::info);
         }
     }
 
     public void delete(BufferedReader reader, User customer) throws IOException {
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
-        CONSOLE_LOGGER.info("Your reservations:\n");
+        USER_OUTPUT_LOGGER.info("Your reservations:\n");
         if (reservationsByCustomer.isEmpty()) {
-            CONSOLE_LOGGER.warn("Reservation list is empty:\n");
-            FILE_LOGGER.warn("Reservation list is empty:\n");
+            USER_OUTPUT_LOGGER.warn("Reservation list is empty:\n");
+            TECHNICAL_LOGGER.warn("Reservation list is empty:\n");
         } else {
-            reservationsByCustomer.forEach(CONSOLE_LOGGER::info);
-            int reservationId = InputValidator.getInput(reader, "\nType reservation Id you want to cancel");
+            reservationsByCustomer.forEach(USER_OUTPUT_LOGGER::info);
+            int reservationId = InputValidator.convertInputToInt(reader, "\nType reservation Id you want to cancel");
             Optional<Reservation> possibleReservation = Optional.empty();
             try {
                 possibleReservation = reservationService.getById(reservationId);
             } catch (ReservationNotFoundException e) {
-                CONSOLE_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
-                FILE_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
+                USER_OUTPUT_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
+                TECHNICAL_LOGGER.warn("Reservation with Id " + reservationId + " is absent\n");
             }
             if (possibleReservation.isPresent()) {
                 Reservation reservation = possibleReservation.get();
@@ -95,13 +95,13 @@ public class ReservationController {
                 try {
                     reservationService.delete(customer, reservation);
                 } catch (ForbiddenActionException e) {
-                    CONSOLE_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
-                    FILE_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
+                    USER_OUTPUT_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
+                    TECHNICAL_LOGGER.warn(e.getMessage() + "Reservation with id: " + reservationId + " belongs to another user");
                 } catch (ReservationNotFoundException e) {
-                    CONSOLE_LOGGER.warn(e.getMessage());
-                    FILE_LOGGER.warn(e.getMessage() + "\n");
+                    USER_OUTPUT_LOGGER.warn(e.getMessage());
+                    TECHNICAL_LOGGER.warn(e.getMessage() + "\n");
                 }
-                CONSOLE_LOGGER.info("Reservation with Id " + reservationId + " is canceled\n");
+                USER_OUTPUT_LOGGER.info("Reservation with Id " + reservationId + " is canceled\n");
             }
         }
     }
@@ -114,34 +114,19 @@ public class ReservationController {
         reservationService.save();
     }
 
-    private int getCoworkingIdFromUser(BufferedReader reader) throws IOException {
-        CONSOLE_LOGGER.info("Choose a CoworkingSpace and type its id to book it:\n");
-        return Integer.parseInt(reader.readLine());
-    }
-
     private LocalDateTime getDateTimeFromUser(BufferedReader reader, String timeType) throws IOException {
         while (true) {
             try {
-                int year = InputValidator.getInput(reader, "Type a year. Format: yyyy");
-                int month = getIntInputInRange(reader, "Type a month. Format: m or mm", 1, 12);
-                int day = getIntInputInRange(reader, "Type a day. Format: d or dd", 1, 31); // Будет уточняться
-                int hour = getIntInputInRange(reader, "Type " + timeType + " hour. Format: h or hh", 0, 23);
-                int minute = getIntInputInRange(reader, "Type " + timeType + " minute. Format: m or mm", 0, 59);
+                int year = InputValidator.convertInputToInt(reader, "Type a year. Format: yyyy");
+                int month = InputValidator.getIntInputInRange(reader, "Type a month. Format: m or mm", 1, 12);
+                int day = InputValidator.getIntInputInRange(reader, "Type a day. Format: d or dd", 1, 31); // Будет уточняться
+                int hour = InputValidator.getIntInputInRange(reader, "Type " + timeType + " hour. Format: h or hh", 0, 23);
+                int minute = InputValidator.getIntInputInRange(reader, "Type " + timeType + " minute. Format: m or mm", 0, 59);
 
                 return LocalDateTime.of(year, month, day, hour, minute);
             } catch (DateTimeException e) {
-                CONSOLE_LOGGER.error("Invalid date or time value: {}. Please try again.", e.getMessage());
-            }
-        }
-    }
-
-    private int getIntInputInRange(BufferedReader reader, String message, int min, int max) throws IOException {
-        while (true) {
-            int value = InputValidator.getInput(reader, message);
-            if (value >= min && value <= max) {
-                return value;
-            } else {
-                CONSOLE_LOGGER.error("Invalid input: must be between {} and {}. Please try again.", min, max);
+                USER_OUTPUT_LOGGER.error("Invalid date or time value: {}. Please try again.", e.getMessage());
+                TECHNICAL_LOGGER.error("Invalid date or time value: {}. Please try again.", e.getMessage());
             }
         }
     }
@@ -150,8 +135,8 @@ public class ReservationController {
         try {
             return coworkingService.getById(coworkingId);
         } catch (CoworkingNotFoundException e) {
-            CONSOLE_LOGGER.warn(e.getMessage());
-            FILE_LOGGER.warn(e.getMessage());
+            USER_OUTPUT_LOGGER.warn(e.getMessage());
+            TECHNICAL_LOGGER.warn(e.getMessage());
             return Optional.empty();
         }
     }

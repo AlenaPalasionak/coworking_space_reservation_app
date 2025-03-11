@@ -11,7 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.CONSOLE_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class MenuController {
     private User user = null;
@@ -35,7 +35,7 @@ public class MenuController {
 
     public void showMenu(String menuName) throws IOException {
         String menuText = menuService.getMenuTextByMenuName(menuName);
-        CONSOLE_LOGGER.info(menuText);
+        USER_OUTPUT_LOGGER.info(menuText);
     }
 
     public String getUserChoice(BufferedReader reader, Menu menu) throws IOException {
@@ -43,7 +43,7 @@ public class MenuController {
         do {
             userChoice = reader.readLine();
             if (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
-                CONSOLE_LOGGER.info("You entered the wrong number: " + userChoice);
+                USER_OUTPUT_LOGGER.info("You entered the wrong number: " + userChoice);
             }
         } while (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice));
         return userChoice;

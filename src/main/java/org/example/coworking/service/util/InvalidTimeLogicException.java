@@ -1,4 +1,4 @@
-package org.example.coworking.infrastructure.util.exception;
+package org.example.coworking.service.util;
 
 import java.time.LocalDateTime;
 
