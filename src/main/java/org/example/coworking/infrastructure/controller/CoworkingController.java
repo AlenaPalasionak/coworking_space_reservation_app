@@ -107,9 +107,9 @@ public class CoworkingController {
     }
 
     public void delete(BufferedReader reader, User user) throws IOException {
-        List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(user);
         boolean isDeleted = false;
-        String spacesAsString = spaces.stream()
+        String spacesAsString = coworkingSpaces.stream()
                 .map(CoworkingSpace::toString)
                 .reduce((s1, s2) -> s1 + "\n" + s2)
                 .orElse("No spaces available");

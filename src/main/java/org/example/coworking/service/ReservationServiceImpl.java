@@ -21,8 +21,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void add(LocalDateTime startTime, LocalDateTime endTime, User customer, CoworkingSpace coworkingSpace)
-            throws TimeOverlapException, InvalidTimeLogicException {
+    public void add(LocalDateTime startTime, LocalDateTime endTime, User customer, CoworkingSpace coworkingSpace) throws TimeOverlapException, InvalidTimeLogicException {
         ReservationPeriod period = new ReservationPeriod(startTime, endTime);
 
         TimeLogicValidator.validateReservation(startTime,endTime);
