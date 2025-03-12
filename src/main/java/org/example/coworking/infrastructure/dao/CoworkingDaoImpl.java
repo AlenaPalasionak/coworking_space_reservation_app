@@ -6,10 +6,9 @@ import org.example.coworking.model.CoworkingSpace;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class CoworkingDaoImpl implements CoworkingDao {
     private static List<CoworkingSpace> coworkingSpacesCache;
@@ -46,16 +45,11 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public Optional<CoworkingSpace> getById(int coworkingId) throws CoworkingNotFoundException {
-        Optional<CoworkingSpace> possibleCoworkingSpace;
-        if (checkIfNotExist(coworkingId)) {
-            throw new CoworkingNotFoundException(coworkingId);
-        } else {
-            possibleCoworkingSpace = coworkingSpacesCache.stream()
-                    .filter(c -> c.getId() == coworkingId)
-                    .findFirst();
-        }
-        return possibleCoworkingSpace;
+    public CoworkingSpace getById(int coworkingId) throws CoworkingNotFoundException {
+        return coworkingSpacesCache.stream()
+                .filter(c -> c.getId() == coworkingId)
+                .findFirst()
+                .orElseThrow(() -> new CoworkingNotFoundException(coworkingId));
     }
 
     @Override

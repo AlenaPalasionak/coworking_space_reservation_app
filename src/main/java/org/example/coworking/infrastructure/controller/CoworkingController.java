@@ -41,7 +41,7 @@ public class CoworkingController {
             """;
     private static final String TRY_AGAIN_MESSAGE = "\nTry again\n";
     private static final String ANY_NUMBER_PATTERN = "\\d+";
-    private static final String FACILITY_PATTERN = "^\\s*\\d+(\\s*,\\s*\\d+)*\\s*$";
+    private static final String FACILITY_PATTERN = "^\\s*(\\d+(\\s*,\\s*\\d+)*)?\\s*$";
     private static final String PRICE_PATTERN = "\\d+(\\.\\d+)?";
 
     public CoworkingController(CoworkingService coworkingService, CoworkingMapper coworkingMapper) {

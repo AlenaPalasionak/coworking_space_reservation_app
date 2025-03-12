@@ -13,6 +13,7 @@ import org.example.coworking.model.Menu;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
 import org.example.coworking.service.*;
+import org.example.coworking.util.TimeLogicValidator;
 
 public class AppFactory {
     private final String menuPath = "src/main/resources/menu.json";
@@ -28,9 +29,10 @@ public class AppFactory {
     private final CoworkingDao coworkingDao = new CoworkingDaoImpl(coworkingSpaceLoader);
     private final ReservationDao reservationDao = new ReservationDaoImpl(reservationLoader);
     private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
+    private final TimeLogicValidator timeLogicValidator = new TimeLogicValidator();
     private final UserService userService = new UserServiceImpl(userDao);
     private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
-    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingService);
+    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingService, timeLogicValidator);
     private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
 
     private final CoworkingMapper coworkingMapper = new CoworkingMapper();

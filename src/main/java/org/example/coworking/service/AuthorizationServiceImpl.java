@@ -14,7 +14,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     @Override
-    public Optional<User> authenticate(String name, String password, Class<? extends User> role) throws UserNotFoundException {
+    public User authenticate(String name, String password, Class<? extends User> role) throws UserNotFoundException {
 
         List<User> users = userService.load();
 
@@ -23,11 +23,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .filter(user -> user.getPassword().equals(password))
                 .filter(role::isInstance)
                 .findFirst();
-
-        if (possibleUser.isEmpty()) {
+        if (possibleUser.isPresent()) {
+            return possibleUser.get();
+        } else
             throw new UserNotFoundException(name);
-        } else {
-            return possibleUser;
-        }
     }
 }
+

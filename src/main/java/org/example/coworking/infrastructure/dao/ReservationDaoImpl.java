@@ -6,10 +6,9 @@ import org.example.coworking.model.Reservation;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class ReservationDaoImpl implements ReservationDao {
     private static List<Reservation> reservationsCache;
@@ -17,6 +16,18 @@ public class ReservationDaoImpl implements ReservationDao {
 
     public ReservationDaoImpl(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
+    }
+
+    @Override
+    public void load() {
+        if (reservationsCache == null) {
+            reservationsCache = getFromStorage();
+        }
+    }
+
+    @Override
+    public void save() {
+        reservationLoader.save(reservationsCache);
     }
 
     @Override
@@ -44,32 +55,16 @@ public class ReservationDaoImpl implements ReservationDao {
         reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
     }
 
-    public Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException {
-        Optional<Reservation> possibleReservation;
-        if (checkIfNotExist(reservationId)) {
-            throw new ReservationNotFoundException(reservationId);
-        } else {
-            possibleReservation = reservationsCache.stream().filter(r -> r.getId() == reservationId)
-                    .findFirst();
-        }
-        return possibleReservation;
+    public Reservation getById(int reservationId) throws ReservationNotFoundException {
+        return reservationsCache.stream()
+                .filter(r -> r.getId() == reservationId)
+                .findFirst()
+                .orElseThrow(() -> new ReservationNotFoundException(reservationId));
     }
 
     @Override
     public List<Reservation> getAll() {
         return reservationsCache;
-    }
-
-    @Override
-    public void load() {
-        if (reservationsCache == null) {
-            reservationsCache = getFromStorage();
-        }
-    }
-
-    @Override
-    public void save() {
-        reservationLoader.save(reservationsCache);
     }
 
     private boolean checkIfNotExist(int id) {

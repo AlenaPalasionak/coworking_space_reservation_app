@@ -10,7 +10,6 @@ import org.example.coworking.service.exception.TimeOverlapException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ReservationService {
     void load();
@@ -18,5 +17,5 @@ public interface ReservationService {
     void add(User customer, LocalDateTime startTime, LocalDateTime endTime, int coworkingSpaceId) throws TimeOverlapException, InvalidTimeLogicException, CoworkingNotFoundException;
     void delete(User user, int reservationId) throws ForbiddenActionException, ReservationNotFoundException;
     List<Reservation> getAllByUser(User user);
-    Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException;
+   Reservation getById(int reservationId) throws ReservationNotFoundException;
 }
