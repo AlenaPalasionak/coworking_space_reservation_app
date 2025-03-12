@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class MenuController {
@@ -57,6 +58,8 @@ public class MenuController {
         try {
             return menuService.getMenuByName(name);
         } catch (MenuNotFoundException e) {
+            USER_OUTPUT_LOGGER.error(e.getMessage());
+            TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

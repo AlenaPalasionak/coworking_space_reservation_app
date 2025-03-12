@@ -24,10 +24,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                 .filter(role::isInstance)
                 .findFirst();
 
-
         if (possibleUser.isEmpty()) {
             throw new UserNotFoundException(name);
+        } else {
+            return possibleUser;
         }
-        return possibleUser;
     }
 }

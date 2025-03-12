@@ -62,18 +62,6 @@
   "facilities" : [ "WIFI" ],
   "reservationsPeriods" : [ ]
 }, {
-  "id" : 2,
-  "admin" : {
-    "type" : "admin",
-    "id" : 1,
-    "name" : "a",
-    "password" : "1"
-  },
-  "price" : 11.0,
-  "coworkingType" : "Private Office",
-  "facilities" : [ "PARKING", "KITCHEN", "PRINTER" ],
-  "reservationsPeriods" : [ ]
-}, {
   "id" : 5,
   "admin" : {
     "type" : "admin",
@@ -84,5 +72,8 @@
   "price" : 11.0,
   "coworkingType" : "Private Office",
   "facilities" : [ "PARKING", "WIFI", "KITCHEN", "PRINTER", "CONDITIONING" ],
-  "reservationsPeriods" : [ ]
+  "reservationsPeriods" : [ {
+    "startTime" : "2026-11-11 11:11",
+    "endTime" : "2027-11-11 11:11"
+  } ]
 } ]

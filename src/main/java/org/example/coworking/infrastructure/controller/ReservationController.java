@@ -27,6 +27,13 @@ public class ReservationController {
     private final CoworkingService coworkingService;
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
+    private static final String TRY_AGAIN_MESSAGE = "\nTry again\n";
+    private static final String YEAR_PATTERN = "^(202[5-9]|20[3-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})$";
+    private static final String MONTH_PATTERN = "^(0?[1-9]|1[0-2])$";
+    private static final String DAY_PATTERN = "^(0?[1-9]|[12][0-9]|3[01])$";
+    private static final String HOUR_PATTERN = "^(0?[0-9]|1[0-9]|2[0-3])$";
+    private static final String MINUTE_PATTERN = "^([0-5]?[0-9])$";
+    private static final String ANY_NUMBER_PATTERN = "\\d+";
 
     public ReservationController(CoworkingService coworkingService, ReservationService reservationService, ReservationMapper reservationMapper) {
         this.coworkingService = coworkingService;
@@ -55,12 +62,13 @@ public class ReservationController {
 
         while (true) {
             try {
-                coworkingIdInput = InputValidator.getInputSupplier(reader, "\\d+")
+                coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(coworkingSpacesAsString + "\n Choose a CoworkingSpace id to book it:\n");
                 coworkingId = reservationMapper.getId(coworkingIdInput);
+                coworkingService.getById(coworkingId);
                 break;
-            } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + " Try again:\n");
+            } catch (InvalidInputException | CoworkingNotFoundException e) {
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
@@ -71,7 +79,7 @@ public class ReservationController {
             reservationService.add(customer, startTime, endTime, coworkingId);
             USER_OUTPUT_LOGGER.info("You've just made a reservation:\n" + startTime + endTime);
         } catch (TimeOverlapException | InvalidTimeLogicException | CoworkingNotFoundException e) {
-            USER_OUTPUT_LOGGER.warn(e.getMessage() + "\nTry again\n");
+            USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
             TECHNICAL_LOGGER.warn(e.getMessage());
         }
     }
@@ -91,17 +99,23 @@ public class ReservationController {
         String reservationIdInput;
         int reservationId;
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
+        if (reservationsByCustomer.isEmpty()) {
+            USER_OUTPUT_LOGGER.info("Reservation list is empty.\n");
+            return;
+        }
+
         boolean isDeleted = false;
         String spacesAsString = reservationsByCustomer.stream()
                 .map(Reservation::toString)
                 .reduce((s1, s2) -> s1 + "\n" + s2)
-                .orElse("Reservation list is empty:\n");
+                .orElse("");
+
         while (!isDeleted) {
             try {
-                reservationIdInput = InputValidator.getInputSupplier(reader, "\\d+")
+                reservationIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(spacesAsString + "\nType reservation Id you want to cancel\n");
             } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + ". Try again:\n");
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
                 TECHNICAL_LOGGER.warn(e.getMessage());
                 continue;
             }
@@ -113,7 +127,7 @@ public class ReservationController {
                 USER_OUTPUT_LOGGER.info("Reservation with Id " + reservationId + " is canceled\n");
                 isDeleted = true;
             } catch (ForbiddenActionException | ReservationNotFoundException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + " Try again\n");
+                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
@@ -128,15 +142,15 @@ public class ReservationController {
         LocalDateTime time;
         while (true) {
             try {
-                year = InputValidator.getInputSupplier(reader, "^(202[5-9]|20[3-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})$").supplier("Type a year. Format: yyyy");
-                month = InputValidator.getInputSupplier(reader, "^(0?[1-9]|1[0-2])$").supplier("Type a month. Format: mm");
-                day = InputValidator.getInputSupplier(reader, "^(0?[1-9]|[12][0-9]|3[01])$").supplier("Type a day. Format: dd");
-                hour = InputValidator.getInputSupplier(reader, "^(0?[0-9]|1[0-9]|2[0-3])$").supplier("Type  hour. Format: hh");
-                minute = InputValidator.getInputSupplier(reader, "^([0-5]?[0-9])$").supplier("Type minute. Format: mm");
+                year = InputValidator.getInputSupplier(reader, YEAR_PATTERN).supplier("Type a year. Format: yyyy");
+                month = InputValidator.getInputSupplier(reader, MONTH_PATTERN).supplier("Type a month. Format: mm");
+                day = InputValidator.getInputSupplier(reader, DAY_PATTERN).supplier("Type a day. Format: dd");
+                hour = InputValidator.getInputSupplier(reader, HOUR_PATTERN).supplier("Type  hour. Format: hh");
+                minute = InputValidator.getInputSupplier(reader, MINUTE_PATTERN).supplier("Type minute. Format: mm");
                 time = reservationMapper.getLocalDateTime(year, month, day, hour, minute);
                 break;
             } catch (InvalidInputException | DateTimeException e) {
-                USER_OUTPUT_LOGGER.error(e.getMessage() + " Try again: \n");
+                USER_OUTPUT_LOGGER.error(e.getMessage() + TRY_AGAIN_MESSAGE);
                 TECHNICAL_LOGGER.error(e.getMessage());
             }
         }
