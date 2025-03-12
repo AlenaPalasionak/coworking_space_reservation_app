@@ -11,10 +11,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class MenuController {
-    private User user;
+    private User user = null;
     private final MenuService menuService;
     private static final String EXIT = "0";
     private static final String LOG_OUT = "2";
@@ -42,10 +43,10 @@ public class MenuController {
         String userChoice;
         do {
             userChoice = reader.readLine();
-            if (!menuService.doesMatchOneOfPossibleChoices(menu, userChoice)) {
+            if (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
                 USER_OUTPUT_LOGGER.info("You entered the wrong number: " + userChoice);
             }
-        } while (!menuService.doesMatchOneOfPossibleChoices(menu, userChoice));
+        } while (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice));
         return userChoice;
     }
 
@@ -57,6 +58,8 @@ public class MenuController {
         try {
             return menuService.getMenuByName(name);
         } catch (MenuNotFoundException e) {
+            USER_OUTPUT_LOGGER.error(e.getMessage());
+            TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -73,15 +76,9 @@ public class MenuController {
                 menuController.showMenu(adminMenu.getMenuName());
                 String adminOptionChoice = menuController.getUserChoice(reader, adminMenu);
                 switch (adminOptionChoice) {
-                    case ADD_COWORKING_SPACE:
-                        coworkingController.add(reader, user);
-                        break;
-                    case DELETE_COWORKING_SPACE:
-                        coworkingController.delete(reader, user);
-                        break;
-                    case GET_ALL_RESERVATIONS:
-                        reservationController.getAllReservations(user);
-                        break;
+                    case ADD_COWORKING_SPACE -> coworkingController.add(reader, user);
+                    case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, user);
+                    case GET_ALL_RESERVATIONS -> reservationController.getAllReservations(user);
                 }
                 logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
             }
@@ -100,18 +97,10 @@ public class MenuController {
                 menuController.showMenu(customerMenu.getMenuName());
                 String customerOptionChoice = menuController.getUserChoice(reader, customerMenu);
                 switch (customerOptionChoice) {
-                    case GET_AVAILABLE_COWORKING_SPACES:
-                        coworkingController.getAllSpaces(user);
-                        break;
-                    case ADD_RESERVATION:
-                        reservationController.add(reader, user);
-                        break;
-                    case GET_RESERVATIONS:
-                        reservationController.getAllReservations(user);
-                        break;
-                    case DELETE_RESERVATION:
-                        reservationController.delete(reader, user);
-                        break;
+                    case GET_AVAILABLE_COWORKING_SPACES -> coworkingController.getAllSpaces(user);
+                    case ADD_RESERVATION -> reservationController.add(reader, user);
+                    case GET_RESERVATIONS -> reservationController.getAllReservations(user);
+                    case DELETE_RESERVATION -> reservationController.delete(reader, user);
                 }
                 logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
             }

@@ -17,15 +17,33 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
-        coworkingDao.add(new CoworkingSpace(admin, price, coworkingType, facilities));
+    public void load() {
+        coworkingDao.load();
     }
 
     @Override
-    public void delete(User user, CoworkingSpace coworkingSpace) throws ForbiddenActionException, CoworkingNotFoundException {
+    public void save() {
+        coworkingDao.save();
+    }
+
+    @Override
+    public void add(User user, double price, CoworkingType coworkingType, List<Facility> facilities) {
+        coworkingDao.add(new CoworkingSpace(user, price, coworkingType, facilities));
+    }
+
+    @Override
+    public void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
             throw new ForbiddenActionException(user.getClass());
-        } else coworkingDao.delete(coworkingSpace);
+        }
+
+        Optional<CoworkingSpace> possibleCoworking = getById(id);
+        if (possibleCoworking.isPresent()) {
+            CoworkingSpace coworkingSpace = possibleCoworking.get();
+            coworkingDao.delete(coworkingSpace);
+        } else {
+            throw new CoworkingNotFoundException(id);
+        }
     }
 
     @Override
@@ -42,15 +60,5 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public Optional<CoworkingSpace> getById(int coworkingId) throws CoworkingNotFoundException {
         return coworkingDao.getById(coworkingId);
-    }
-
-    @Override
-    public void load() {
-        coworkingDao.load();
-    }
-
-    @Override
-    public void save() {
-        coworkingDao.save();
     }
 }

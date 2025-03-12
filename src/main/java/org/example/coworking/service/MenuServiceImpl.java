@@ -4,11 +4,12 @@ import org.example.coworking.infrastructure.dao.MenuDao;
 import org.example.coworking.model.Menu;
 import org.example.coworking.service.exception.MenuNotFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
+import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class MenuServiceImpl implements MenuService {
 
@@ -37,13 +38,8 @@ public class MenuServiceImpl implements MenuService {
         }
     }
 
-    public boolean doesMatchOneOfPossibleChoices(Menu menu, String userChoice) {
-        for (String possibleChoice : menu.getPossibleChoices()) {
-            if (possibleChoice.equals(userChoice)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isMatchingOneOfPossibleChoices(Menu menu, String userChoice) {
+        return Arrays.asList(menu.getPossibleChoices()).contains(userChoice);
     }
 
     @Override

@@ -6,6 +6,8 @@ import org.example.coworking.infrastructure.controller.MenuController;
 import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.dao.*;
 import org.example.coworking.infrastructure.loader.*;
+import org.example.coworking.infrastructure.mapper.CoworkingMapper;
+import org.example.coworking.infrastructure.mapper.ReservationMapper;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Menu;
 import org.example.coworking.model.Reservation;
@@ -28,8 +30,11 @@ public class AppFactory {
     private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
     private final UserService userService = new UserServiceImpl(userDao);
     private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
-    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao);
+    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingService);
     private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
+
+    private final CoworkingMapper coworkingMapper = new CoworkingMapper();
+    private final ReservationMapper reservationMapper = new ReservationMapper();
     private final MenuService menuService = new MenuServiceImpl(menuDao);
 
     public AuthorizationController createAuthorizationController() {
@@ -37,11 +42,11 @@ public class AppFactory {
     }
 
     public CoworkingController createCoworkingController() {
-        return new CoworkingController(coworkingService);
+        return new CoworkingController(coworkingService, coworkingMapper);
     }
 
     public ReservationController createReservationController() {
-        return new ReservationController(coworkingService, reservationService);
+        return new ReservationController(coworkingService, reservationService, reservationMapper);
     }
 
     public MenuController createMenuController() {

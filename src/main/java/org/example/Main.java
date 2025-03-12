@@ -50,8 +50,8 @@ public class Main {
                 }
             }
         } catch (IOException e) {
-            TECHNICAL_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
-            USER_OUTPUT_LOGGER.error("Error while reading or writing from console. " + e.getMessage());
+            TECHNICAL_LOGGER.error("Error while reading from console. " + e.getMessage());
+            USER_OUTPUT_LOGGER.error("Error while reading from console. " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

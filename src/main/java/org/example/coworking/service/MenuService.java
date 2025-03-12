@@ -8,6 +8,6 @@ import java.util.List;
 public interface MenuService {
     List<Menu> getMenusFromStorage();
     String getMenuTextByMenuName(String menuName);
-    boolean doesMatchOneOfPossibleChoices(Menu menu, String userChoice);
-    public Menu getMenuByName(String name) throws MenuNotFoundException;
+    boolean isMatchingOneOfPossibleChoices(Menu menu, String userChoice);
+    Menu getMenuByName(String name) throws MenuNotFoundException;
 }

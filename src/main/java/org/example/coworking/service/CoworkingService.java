@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CoworkingService {
-    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities);
-    void delete(User user, CoworkingSpace coworking) throws ForbiddenActionException, CoworkingNotFoundException;
-    List<CoworkingSpace> getAllByUser(User user);
-    Optional<CoworkingSpace> getById(int id) throws CoworkingNotFoundException;
     void load();
     void save();
+    void add(User user, double price, CoworkingType coworkingType, List<Facility> facilities);
+    void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException;
+    List<CoworkingSpace> getAllByUser(User user);
+    Optional<CoworkingSpace> getById(int id) throws CoworkingNotFoundException;
 }
