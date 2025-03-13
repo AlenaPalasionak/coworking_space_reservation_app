@@ -13,7 +13,7 @@ import org.example.coworking.model.Menu;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
 import org.example.coworking.service.*;
-import org.example.coworking.util.TimeLogicValidator;
+import org.example.coworking.service.validator.TimeLogicValidator;
 
 public class AppFactory {
     private final String menuPath = "src/main/resources/menu.json";

@@ -1,7 +1,13 @@
 package org.example.coworking.infrastructure.mapper.exception;
 
-public class FacilityIndexException extends Throwable {
-    public FacilityIndexException(int facilitiesIndex) {
-        super("You entered: " + facilitiesIndex + ". Wrong index.");
+import lombok.Getter;
+
+@Getter
+public class FacilityIndexException extends RuntimeException {
+    private final MapperErrorCode errorCode;
+    public FacilityIndexException(String message) {
+        super(message);
+        this.errorCode = MapperErrorCode.INVALID_FACILITY_INDEX;
     }
+
 }

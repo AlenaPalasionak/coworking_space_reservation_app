@@ -33,7 +33,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
-            throw new ForbiddenActionException(user.getClass());
+            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass());
         }
         CoworkingSpace coworkingSpace = getById(id);
         coworkingDao.delete(coworkingSpace);

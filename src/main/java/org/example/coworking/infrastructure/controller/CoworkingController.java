@@ -39,7 +39,6 @@ public class CoworkingController {
             PRINTER - 3,
             CONDITIONING - 4
             """;
-    private static final String TRY_AGAIN_MESSAGE = "\nTry again\n";
     private static final String ANY_NUMBER_PATTERN = "\\d+";
     private static final String FACILITY_PATTERN = "^\\s*(\\d+(\\s*,\\s*\\d+)*)?\\s*$";
     private static final String PRICE_PATTERN = "\\d+(\\.\\d+)?";
@@ -66,14 +65,12 @@ public class CoworkingController {
             try {
                 priceInput = InputValidator.getInputSupplier(reader, PRICE_PATTERN)
                         .supplier("Enter the price in dollars per hour.\n");
+                price = coworkingMapper.getPrice(priceInput);
+                break;
             } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                USER_OUTPUT_LOGGER.warn(e.getMessage());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-                continue;
             }
-
-            price = coworkingMapper.getPrice(priceInput);
-            break;
         }
 
         while (true) {
@@ -81,35 +78,29 @@ public class CoworkingController {
             try {
                 coworkingTypeInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(COWORKING_TYPE_MENU);
-            } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
-                TECHNICAL_LOGGER.warn(e.getMessage());
-                continue;
-            }
-            try {
                 coworkingType = coworkingMapper.getCoworkingType(coworkingTypeInput);
                 break;
+            } catch (InvalidInputException e) {
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
+                TECHNICAL_LOGGER.warn(e.getMessage());
             } catch (CoworkingTypeIndexException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
 
         while (true) {
-            String facilitiesIndexesInput = null;
+            String facilitiesIndexesInput;
             try {
                 facilitiesIndexesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
                         .supplier(FACILITY_MENU + "\nPlease enter numbers separated by commas.\n");
-            } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
-                TECHNICAL_LOGGER.warn(e.getMessage() + facilitiesIndexesInput);
-                continue;
-            }
-            try {
                 facilities = coworkingMapper.getFacility(facilitiesIndexesInput);
                 break;
+            } catch (InvalidInputException e) {
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
+                TECHNICAL_LOGGER.warn(e.getMessage());
             } catch (FacilityIndexException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }
@@ -125,28 +116,28 @@ public class CoworkingController {
             return;
         }
 
-        boolean isDeleted = false;
         String spacesAsString = coworkingSpaces.stream()
                 .map(CoworkingSpace::toString)
                 .reduce((s1, s2) -> s1 + "\n" + s2)
                 .orElse("");
-        while (!isDeleted) {
+
+        while (true) {
             String coworkingIdInput;
             try {
                 coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(spacesAsString + "Type a coworking id you want to delete:\n");
-            } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
-                TECHNICAL_LOGGER.warn(e.getMessage());
-                continue;
-            }
-            try {
                 int coworkingSpaceId = Integer.parseInt(coworkingIdInput);
                 coworkingService.delete(user, coworkingSpaceId);
                 USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingSpaceId + " has been deleted\n");
-                isDeleted = true;
-            } catch (CoworkingNotFoundException | ForbiddenActionException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                break;
+            } catch (InvalidInputException e) {
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
+                TECHNICAL_LOGGER.warn(e.getMessage());
+            } catch (ForbiddenActionException e) {
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
+                TECHNICAL_LOGGER.warn(e.getMessage());
+            } catch (CoworkingNotFoundException e) {
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }

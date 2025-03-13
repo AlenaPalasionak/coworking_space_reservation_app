@@ -14,7 +14,7 @@ import lombok.*;
         @JsonSubTypes.Type(value = Customer.class, name = "customer")
 })
 public class User {
-    protected int id;
+    protected long id;
     protected String name;
     protected String password;
 

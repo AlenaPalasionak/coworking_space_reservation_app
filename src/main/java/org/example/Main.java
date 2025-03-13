@@ -7,9 +7,10 @@ import org.example.coworking.infrastructure.controller.ReservationController;
 import org.example.coworking.infrastructure.factory.AppFactory;
 import org.example.coworking.model.Menu;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class Main {
@@ -51,7 +52,6 @@ public class Main {
             }
         } catch (IOException e) {
             TECHNICAL_LOGGER.error("Error while reading from console. " + e.getMessage());
-            USER_OUTPUT_LOGGER.error("Error while reading from console. " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }

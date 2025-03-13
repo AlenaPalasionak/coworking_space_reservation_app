@@ -1,43 +1,4 @@
 [ {
-  "id" : 3,
-  "admin" : {
-    "type" : "admin",
-    "id" : 1,
-    "name" : "a",
-    "password" : "1"
-  },
-  "price" : 11.0,
-  "coworkingType" : "Private Office",
-  "facilities" : [ "WIFI" ],
-  "reservationsPeriods" : [ ]
-}, {
-  "id" : 4,
-  "admin" : {
-    "type" : "admin",
-    "id" : 1,
-    "name" : "a",
-    "password" : "1"
-  },
-  "price" : 11.0,
-  "coworkingType" : "Private Office",
-  "facilities" : [ "WIFI" ],
-  "reservationsPeriods" : [ ]
-}, {
-  "id" : 6,
-  "admin" : {
-    "type" : "admin",
-    "id" : 1,
-    "name" : "a",
-    "password" : "1"
-  },
-  "price" : 11.0,
-  "coworkingType" : "Private Office",
-  "facilities" : [ "KITCHEN" ],
-  "reservationsPeriods" : [ {
-    "startTime" : "2025-11-11 11:11",
-    "endTime" : "2026-11-11 11:11"
-  } ]
-}, {
   "id" : 0,
   "admin" : {
     "type" : "admin",
@@ -45,8 +6,11 @@
     "name" : "a",
     "password" : "1"
   },
-  "price" : 2.0,
-  "coworkingType" : "CoworkingSpace + Co-living",
+  "price" : 1500.0,
+  "coworkingType" : "Private Office",
   "facilities" : [ "KITCHEN" ],
-  "reservationsPeriods" : [ ]
+  "reservationsPeriods" : [ {
+    "startTime" : "2025-12-01 01:01",
+    "endTime" : "2026-12-11 01:01"
+  } ]
 } ]

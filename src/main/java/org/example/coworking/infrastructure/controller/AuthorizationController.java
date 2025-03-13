@@ -4,7 +4,7 @@ import org.example.coworking.infrastructure.controller.exception.InvalidInputExc
 import org.example.coworking.infrastructure.controller.validator.InputValidator;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
-import org.example.coworking.service.exception.UserNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.UserNotFoundException;
 
 import java.io.BufferedReader;
 
@@ -13,7 +13,6 @@ import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER
 
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
-    private static final String TRY_AGAIN_MESSAGE = "\nTry again\n";
     private static final String USER_NAME_PATTERN = "^[a-zA-Zа-яА-Я0-9]{1,20}$";
     private static final String USER_PASSWORD_PATTERN = "^[a-zA-Zа-яА-Я0-9]{1,20}$";
 
@@ -31,7 +30,7 @@ public class AuthorizationController {
                 passwordInput = InputValidator.getInputSupplier(reader, USER_PASSWORD_PATTERN)
                         .supplier(nameInput + ", enter your password, please.");
             } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
                 continue;
             }
@@ -41,7 +40,7 @@ public class AuthorizationController {
                 USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                 return user;
             } catch (UserNotFoundException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage() + TRY_AGAIN_MESSAGE);
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }

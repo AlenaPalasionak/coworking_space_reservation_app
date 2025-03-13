@@ -5,7 +5,7 @@ import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
 import org.example.coworking.model.User;
 import org.example.coworking.service.MenuService;
-import org.example.coworking.service.exception.MenuNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.MenuNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class MenuController {
         do {
             userChoice = reader.readLine();
             if (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
-                USER_OUTPUT_LOGGER.info("You entered the wrong symbol: " + userChoice);
+                USER_OUTPUT_LOGGER.info("You entered the wrong symbol: " + userChoice + ". Try again\n");
             }
         } while (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice));
         return userChoice;
@@ -77,7 +77,7 @@ public class MenuController {
                 case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, user);
                 case GET_ALL_RESERVATIONS -> reservationController.getAllReservations(user);
             }
-            logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
+            logOut = shouldLogOut(menuController, coworkingController, reservationController, reader);
         }
     }
 
@@ -96,12 +96,12 @@ public class MenuController {
                 case GET_RESERVATIONS -> reservationController.getAllReservations(user);
                 case DELETE_RESERVATION -> reservationController.delete(reader, user);
             }
-            logOut = handleNextStep(menuController, coworkingController, reservationController, reader);
+            logOut = shouldLogOut(menuController, coworkingController, reservationController, reader);
         }
     }
 
-    public boolean handleNextStep(MenuController menuController, CoworkingController coworkingController,
-                                  ReservationController reservationController, BufferedReader reader) throws IOException {
+    public boolean shouldLogOut(MenuController menuController, CoworkingController coworkingController,
+                                ReservationController reservationController, BufferedReader reader) throws IOException {
         Menu nextStepMenu = menuController.getMenuByName(NEXT_STEP_MENU_KEY);
         menuController.showMenu(nextStepMenu.getMenuName());
         String nextStep = menuController.getUserChoice(reader, nextStepMenu);

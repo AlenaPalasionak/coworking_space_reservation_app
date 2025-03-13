@@ -2,7 +2,7 @@ package org.example.coworking.service;
 
 import org.example.coworking.infrastructure.dao.MenuDao;
 import org.example.coworking.model.Menu;
-import org.example.coworking.service.exception.MenuNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.MenuNotFoundException;
 
 import java.util.Arrays;
 import java.util.List;

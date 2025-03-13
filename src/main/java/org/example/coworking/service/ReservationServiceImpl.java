@@ -7,7 +7,8 @@ import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.InvalidTimeLogicException;
 import org.example.coworking.service.exception.TimeOverlapException;
-import org.example.coworking.util.TimeLogicValidator;
+import org.example.coworking.service.validator.OccupationTimeValidator;
+import org.example.coworking.service.validator.TimeLogicValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,8 +40,8 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationPeriod period = new ReservationPeriod(startTime, endTime);
         CoworkingSpace coworkingSpace = coworkingService.getById(coworkingSpaceId);
         timeLogicValidator.validateReservation(startTime, endTime);
-        if (OccupationTimeCheckerService.isTimeOverlapping(period, coworkingSpace)) {
-            throw new TimeOverlapException(period);
+        if (OccupationTimeValidator.isTimeOverlapping(period, coworkingSpace)) {
+            throw new TimeOverlapException(startTime + " - " + endTime + " overlaps with existing period");
         } else {
             Reservation reservation = new Reservation(customer, new ReservationPeriod(startTime, endTime), coworkingSpace);
             reservationDao.add(reservation);
@@ -53,7 +54,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException(user.getClass());
+            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass());
         }
     }
 

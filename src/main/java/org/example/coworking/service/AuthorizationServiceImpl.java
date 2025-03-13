@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.model.User;
-import org.example.coworking.service.exception.UserNotFoundException;
+import org.example.coworking.infrastructure.dao.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Optional;

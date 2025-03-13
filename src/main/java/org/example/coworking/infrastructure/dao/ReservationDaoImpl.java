@@ -33,10 +33,10 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void add(Reservation reservation) {
         boolean isUniqueIdGenerated;
-        int generatedId;
+        long generatedId;
         do {
             generatedId = IdGenerator.generateReservationId();
-            int finalGeneratedId = generatedId;
+            long finalGeneratedId = generatedId;
             isUniqueIdGenerated = reservationsCache.stream()
                     .anyMatch(r -> r.getId() == finalGeneratedId);
         } while (isUniqueIdGenerated);
@@ -49,7 +49,7 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void delete(Reservation reservation) throws ReservationNotFoundException {
         if (checkIfNotExist(reservation.getId())) {
-            throw new ReservationNotFoundException(reservation.getId());
+            throw new ReservationNotFoundException("Reservation with id: " + reservation.getId() + " is not found. ");
         }
         reservationsCache.remove(reservation);
         reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
@@ -59,7 +59,7 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache.stream()
                 .filter(r -> r.getId() == reservationId)
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException(reservationId));
+                .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
-    private boolean checkIfNotExist(int id) {
+    private boolean checkIfNotExist(long id) {
         return reservationsCache.stream()
                 .noneMatch(r -> r.getId() == id);
     }

@@ -1,8 +1,13 @@
 package org.example.coworking.infrastructure.dao.exception;
 
-public class ReservationNotFoundException extends Exception {
+import lombok.Getter;
 
-    public ReservationNotFoundException(int reservationId) {
-        super("Reservation with id " + reservationId + ". is not found");
+@Getter
+public class ReservationNotFoundException extends Exception {
+    private final DaoErrorCode errorCode;
+
+    public ReservationNotFoundException(String message) {
+        super(message);
+        this.errorCode = DaoErrorCode.RESERVATION_NOT_FOUND;
     }
 }

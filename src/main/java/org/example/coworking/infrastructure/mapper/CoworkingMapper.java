@@ -5,9 +5,9 @@ import org.example.coworking.infrastructure.mapper.exception.FacilityIndexExcept
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CoworkingMapper {
 
@@ -17,38 +17,32 @@ public class CoworkingMapper {
 
     public CoworkingType getCoworkingType(String coworkingTypeInput) throws CoworkingTypeIndexException {
         int coworkingTypeIndex = Integer.parseInt(coworkingTypeInput);
-        if (!areCoworkingTypeIndexNotOutOfBound(coworkingTypeIndex)) {
-            throw new CoworkingTypeIndexException(coworkingTypeIndex);
+        if (isIndexOutOfBound(coworkingTypeIndex, CoworkingType.class)) {
+            throw new CoworkingTypeIndexException("Index: " + coworkingTypeIndex + " is out of bound in enum CoworkingType. ");
         } else
             return CoworkingType.values()[coworkingTypeIndex];
     }
 
     public List<Facility> getFacility(String facilityIndexesInput) throws FacilityIndexException {
-        String hasNoFacilities = "";
-        boolean areChosen = false;
-        List<Facility> facilities = new ArrayList<>();
-        while (!areChosen) {
-            if (facilityIndexesInput.matches(hasNoFacilities)) {
-                areChosen = true;
-            } else {
-                String[] facilitiesIndexes = facilityIndexesInput.split(",");
-                Arrays.sort(facilitiesIndexes);
-                facilitiesIndexes = Arrays.stream(facilitiesIndexes).distinct().toArray(String[]::new);
-                for (String index : facilitiesIndexes) {
-                    int facilityIndex = Integer.parseInt(index.trim());
-                    if (facilityIndex >= 0 && facilityIndex < Facility.values().length) {
-                        facilities.add(Facility.values()[facilityIndex]);
-                        areChosen = true;
-                    } else {
-                        throw new FacilityIndexException(facilityIndex);
-                    }
-                }
-            }
+        if (facilityIndexesInput.isBlank()) {
+            return List.of();
         }
-        return facilities;
+
+        return Arrays.stream(facilityIndexesInput.split(","))
+                .map(String::trim)
+                .distinct()
+                .sorted()
+                .map(Integer::parseInt)
+                .map(index -> {
+                    if (isIndexOutOfBound(index, Facility.class)) {
+                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility. ");
+                    }
+                    return Facility.values()[index];
+                })
+                .collect(Collectors.toList());
     }
 
-    private static boolean areCoworkingTypeIndexNotOutOfBound(int coworkingTypeIndex) {
-        return coworkingTypeIndex >= 0 && coworkingTypeIndex < CoworkingType.values().length;
+    private static <T extends Enum<T>> boolean isIndexOutOfBound(int enumIndex, Class<T> enumClass) {
+        return enumIndex < 0 || enumIndex >= enumClass.getEnumConstants().length;
     }
 }

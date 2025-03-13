@@ -1,9 +1,13 @@
 package org.example.coworking.service.exception;
 
-import org.example.coworking.model.ReservationPeriod;
+import lombok.Getter;
 
+@Getter
 public class TimeOverlapException extends Exception {
-    public TimeOverlapException(ReservationPeriod newPeriod) {
-        super("Reservation overlaps with an existing period: " + newPeriod);
+    private final ServiceErrorCode errorCode;
+
+    public TimeOverlapException(String message) {
+        super(message);
+        this.errorCode = ServiceErrorCode.TIME_OVERLAPS;
     }
 }

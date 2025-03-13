@@ -1,1 +1,29 @@
-[ ]
+[ {
+  "id" : 0,
+  "customer" : {
+    "type" : "customer",
+    "id" : 2,
+    "name" : "c",
+    "password" : "3"
+  },
+  "period" : {
+    "startTime" : "2025-12-01 01:01",
+    "endTime" : "2026-12-11 01:01"
+  },
+  "coworkingSpace" : {
+    "id" : 0,
+    "admin" : {
+      "type" : "admin",
+      "id" : 1,
+      "name" : "a",
+      "password" : "1"
+    },
+    "price" : 1500.0,
+    "coworkingType" : "Private Office",
+    "facilities" : [ "KITCHEN" ],
+    "reservationsPeriods" : [ {
+      "startTime" : "2025-12-01 01:01",
+      "endTime" : "2026-12-11 01:01"
+    } ]
+  }
+} ]
