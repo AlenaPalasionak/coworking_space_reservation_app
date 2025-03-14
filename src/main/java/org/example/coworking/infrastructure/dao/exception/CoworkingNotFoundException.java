@@ -1,8 +1,13 @@
 package org.example.coworking.infrastructure.dao.exception;
 
-public class CoworkingNotFoundException extends Exception {
+import lombok.Getter;
 
-    public CoworkingNotFoundException(int coworkingSpaceId) {
-        super("Coworking with id " + coworkingSpaceId + " is not found\n");
+@Getter
+public class CoworkingNotFoundException extends Exception {
+    private final DaoErrorCode errorCode;
+
+    public CoworkingNotFoundException(String message) {
+        super(message);
+        this.errorCode = DaoErrorCode.COWORKING_IS_NOT_FOUND;
     }
 }

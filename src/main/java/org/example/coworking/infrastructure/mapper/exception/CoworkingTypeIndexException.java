@@ -1,9 +1,13 @@
 package org.example.coworking.infrastructure.mapper.exception;
 
+import lombok.Getter;
+
+@Getter
 public class CoworkingTypeIndexException extends Exception {
+    private final MapperErrorCode errorCode;
 
-
-    public CoworkingTypeIndexException(int coworkingTypeIndex) {
-        super("You entered: " + coworkingTypeIndex + ". Wrong index.");
+    public CoworkingTypeIndexException(String message) {
+        super(message);
+        this.errorCode = MapperErrorCode.INVALID_COWORKING_TYPE_INDEX;
     }
 }

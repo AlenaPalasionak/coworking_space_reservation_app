@@ -2,12 +2,12 @@ package org.example.coworking.infrastructure.dao;
 
 public class IdGenerator {
 
-    private static int coworkingId = 0;
-    private static int reservationId = 0;
-    public static int generateCoworkingId() {
+    private static long coworkingId = 0;
+    private static long reservationId = 0;
+    public static long generateCoworkingId() {
         return coworkingId++;
     }
-    public static int generateReservationId() {
+    public static long generateReservationId() {
         return reservationId++;
     }
 }

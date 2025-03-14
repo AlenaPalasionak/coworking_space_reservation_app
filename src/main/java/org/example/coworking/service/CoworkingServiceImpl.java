@@ -6,7 +6,6 @@ import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CoworkingServiceImpl implements CoworkingService {
@@ -34,16 +33,10 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
-            throw new ForbiddenActionException(user.getClass());
+            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass());
         }
-
-        Optional<CoworkingSpace> possibleCoworking = getById(id);
-        if (possibleCoworking.isPresent()) {
-            CoworkingSpace coworkingSpace = possibleCoworking.get();
-            coworkingDao.delete(coworkingSpace);
-        } else {
-            throw new CoworkingNotFoundException(id);
-        }
+        CoworkingSpace coworkingSpace = getById(id);
+        coworkingDao.delete(coworkingSpace);
     }
 
     @Override
@@ -58,7 +51,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public Optional<CoworkingSpace> getById(int coworkingId) throws CoworkingNotFoundException {
+    public CoworkingSpace getById(int coworkingId) throws CoworkingNotFoundException {
         return coworkingDao.getById(coworkingId);
     }
 }

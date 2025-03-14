@@ -1,9 +1,13 @@
 package org.example.coworking.service.exception;
 
-import java.time.LocalDateTime;
+import lombok.Getter;
 
+@Getter
 public class InvalidTimeLogicException extends Exception {
-    public InvalidTimeLogicException(LocalDateTime startTime, LocalDateTime endTime) {
-        super("Error in startTime or endTime: \n" + " Start time = " + startTime + ".\n End time = " + endTime);
+    private final ServiceErrorCode errorCode;
+
+    public InvalidTimeLogicException(String message) {
+        super(message);
+        this.errorCode = ServiceErrorCode.INVALID_TIME_LOGIC;
     }
 }

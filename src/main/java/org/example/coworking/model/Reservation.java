@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor(force = true)
 public class Reservation {
     @Setter
-    private int id;
+    private long id;
     private final User customer;
     private final ReservationPeriod period;
     private final CoworkingSpace coworkingSpace;

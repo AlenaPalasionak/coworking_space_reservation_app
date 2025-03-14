@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class CoworkingSpace {
 
     @Setter
-    private int id;
+    private long id;
 
     @JsonProperty("admin")
     private final User admin;

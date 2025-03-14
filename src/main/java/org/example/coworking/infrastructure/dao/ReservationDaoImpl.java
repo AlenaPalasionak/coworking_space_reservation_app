@@ -6,9 +6,7 @@ import org.example.coworking.model.Reservation;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
 
 public class ReservationDaoImpl implements ReservationDao {
@@ -17,47 +15,6 @@ public class ReservationDaoImpl implements ReservationDao {
 
     public ReservationDaoImpl(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
-    }
-
-    @Override
-    public void add(Reservation reservation) {
-        boolean isUniqueIdGenerated;
-        int generatedId;
-        do {
-            generatedId = IdGenerator.generateReservationId();
-            int finalGeneratedId = generatedId;
-            isUniqueIdGenerated = reservationsCache.stream()
-                    .anyMatch(r -> r.getId() == finalGeneratedId);
-        } while (isUniqueIdGenerated);
-
-        reservation.setId(generatedId);
-        reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
-        reservationsCache.add(reservation);
-    }
-
-    @Override
-    public void delete(Reservation reservation) throws ReservationNotFoundException {
-        if (checkIfNotExist(reservation.getId())) {
-            throw new ReservationNotFoundException(reservation.getId());
-        }
-        reservationsCache.remove(reservation);
-        reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
-    }
-
-    public Optional<Reservation> getById(int reservationId) throws ReservationNotFoundException {
-        Optional<Reservation> possibleReservation;
-        if (checkIfNotExist(reservationId)) {
-            throw new ReservationNotFoundException(reservationId);
-        } else {
-            possibleReservation = reservationsCache.stream().filter(r -> r.getId() == reservationId)
-                    .findFirst();
-        }
-        return possibleReservation;
-    }
-
-    @Override
-    public List<Reservation> getAll() {
-        return reservationsCache;
     }
 
     @Override
@@ -72,7 +29,44 @@ public class ReservationDaoImpl implements ReservationDao {
         reservationLoader.save(reservationsCache);
     }
 
-    private boolean checkIfNotExist(int id) {
+    @Override
+    public void add(Reservation reservation) {
+        boolean isUniqueIdGenerated;
+        long generatedId;
+        do {
+            generatedId = IdGenerator.generateReservationId();
+            long finalGeneratedId = generatedId;
+            isUniqueIdGenerated = reservationsCache.stream()
+                    .anyMatch(r -> r.getId() == finalGeneratedId);
+        } while (isUniqueIdGenerated);
+
+        reservation.setId(generatedId);
+        reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
+        reservationsCache.add(reservation);
+    }
+
+    @Override
+    public void delete(Reservation reservation) throws ReservationNotFoundException {
+        if (checkIfNotExist(reservation.getId())) {
+            throw new ReservationNotFoundException("Reservation with id: " + reservation.getId() + " is not found. ");
+        }
+        reservationsCache.remove(reservation);
+        reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
+    }
+
+    public Reservation getById(int reservationId) throws ReservationNotFoundException {
+        return reservationsCache.stream()
+                .filter(r -> r.getId() == reservationId)
+                .findFirst()
+                .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "));
+    }
+
+    @Override
+    public List<Reservation> getAll() {
+        return reservationsCache;
+    }
+
+    private boolean checkIfNotExist(long id) {
         return reservationsCache.stream()
                 .noneMatch(r -> r.getId() == id);
     }
@@ -81,7 +75,6 @@ public class ReservationDaoImpl implements ReservationDao {
         try {
             reservationsCache = reservationLoader.load(Reservation.class);
         } catch (FileNotFoundException e) {
-            USER_OUTPUT_LOGGER.error(e.getMessage());
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }

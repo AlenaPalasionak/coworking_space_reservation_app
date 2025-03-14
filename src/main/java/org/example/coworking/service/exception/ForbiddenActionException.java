@@ -1,10 +1,13 @@
 package org.example.coworking.service.exception;
 
-import org.example.coworking.model.User;
+import lombok.Getter;
 
+@Getter
 public class ForbiddenActionException extends Exception {
+    private final ServiceErrorCode errorCode;
 
-    public ForbiddenActionException(Class<? extends User> user) {
-        super("Action is forbidden for the user: " + user.getSimpleName() + ". \n");
+    public ForbiddenActionException(String message) {
+        super(message);
+        this.errorCode = ServiceErrorCode.FORBIDDEN_ACTION;
     }
 }

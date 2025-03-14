@@ -1,8 +1,14 @@
 package org.example.coworking.infrastructure.controller.exception;
 
-public class InvalidInputException extends Throwable {
+import lombok.Getter;
 
-    public InvalidInputException(String input) {
-        super("Invalid input: " + input);
+@Getter
+public class InvalidInputException extends Exception {
+    private final ControllerErrorCode errorCode;
+
+    public InvalidInputException(String message) {
+        super(message);
+        this.errorCode = ControllerErrorCode.INVALID_INPUT;
     }
+
 }
