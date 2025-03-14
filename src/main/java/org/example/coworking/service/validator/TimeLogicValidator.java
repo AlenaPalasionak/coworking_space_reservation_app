@@ -1,6 +1,6 @@
 package org.example.coworking.service.validator;
 
-import org.example.coworking.service.exception.InvalidTimeLogicException;
+import org.example.coworking.service.exception.ReservationTimeException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 
 import java.time.LocalDateTime;
@@ -9,42 +9,42 @@ import java.time.temporal.ChronoUnit;
 public class TimeLogicValidator {
     private static final long MIN_HOURS_DURATION = 1;
 
-    public void validateReservation(LocalDateTime startTime, LocalDateTime endTime) throws InvalidTimeLogicException {
+    public void validateReservation(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         validateNotNull(startTime, endTime);
         validateDatesNotInPast(startTime, endTime);
         validateStartNotAfterEnd(startTime, endTime);
         validateDurationAtLeastOneHour(startTime, endTime);
     }
 
-    private void validateNotNull(LocalDateTime startTime, LocalDateTime endTime) throws InvalidTimeLogicException {
+    private void validateNotNull(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         if (startTime == null || endTime == null) {
-            throw new InvalidTimeLogicException("StartTime and endTime are null. ", ServiceErrorCode.INVALID_TIME_LOGIC);
+            throw new ReservationTimeException("StartTime and endTime are null. ", ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }
 
-    private void validateDatesNotInPast(LocalDateTime startTime, LocalDateTime endTime) throws InvalidTimeLogicException {
+    private void validateDatesNotInPast(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         LocalDateTime now = LocalDateTime.now();
         if (startTime.isBefore(now)) {
-            throw new InvalidTimeLogicException("StartTime: *" + startTime + "* is already in the past"
+            throw new ReservationTimeException("StartTime: *" + startTime + "* is already in the past"
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
         if (endTime.isBefore(now)) {
-            throw new InvalidTimeLogicException("EndTime: *" + endTime + "* is already in the past"
+            throw new ReservationTimeException("EndTime: *" + endTime + "* is already in the past"
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }
 
-    private void validateStartNotAfterEnd(LocalDateTime startTime, LocalDateTime endTime) throws InvalidTimeLogicException {
+    private void validateStartNotAfterEnd(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         if (startTime.isAfter(endTime)) {
-            throw new InvalidTimeLogicException("StartTime: *" + startTime + "*  is after endTime: *" + endTime + "*"
+            throw new ReservationTimeException("StartTime: *" + startTime + "*  is after endTime: *" + endTime + "*"
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }
 
-    private void validateDurationAtLeastOneHour(LocalDateTime startTime, LocalDateTime endTime) throws InvalidTimeLogicException {
+    private void validateDurationAtLeastOneHour(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         long hoursBetween = ChronoUnit.HOURS.between(startTime, endTime);
         if (hoursBetween < MIN_HOURS_DURATION) {
-            throw new InvalidTimeLogicException("Reservation duration is less than an hour", ServiceErrorCode.INVALID_TIME_LOGIC);
+            throw new ReservationTimeException("Reservation duration is less than an hour", ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }
 }

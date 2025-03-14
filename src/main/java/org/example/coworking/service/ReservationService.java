@@ -5,8 +5,7 @@ import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundExc
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
-import org.example.coworking.service.exception.InvalidTimeLogicException;
-import org.example.coworking.service.exception.TimeOverlapException;
+import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +15,7 @@ public interface ReservationService {
 
     void save();
 
-    void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws TimeOverlapException, InvalidTimeLogicException, CoworkingNotFoundException;
+    void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws ReservationTimeException, CoworkingNotFoundException;
 
     void delete(User user, Long reservationId) throws ForbiddenActionException, ReservationNotFoundException;
 

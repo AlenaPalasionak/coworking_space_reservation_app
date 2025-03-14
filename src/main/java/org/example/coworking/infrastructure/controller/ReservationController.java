@@ -11,8 +11,7 @@ import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
-import org.example.coworking.service.exception.InvalidTimeLogicException;
-import org.example.coworking.service.exception.TimeOverlapException;
+import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,10 +106,7 @@ public class ReservationController {
         } catch (CoworkingNotFoundException e) {
             USER_OUTPUT_LOGGER.warn(e.getErrorCode());
             TECHNICAL_LOGGER.warn(e.getMessage());
-        } catch (InvalidTimeLogicException e) {
-            USER_OUTPUT_LOGGER.warn(e.getErrorCode());
-            TECHNICAL_LOGGER.warn(e.getMessage());
-        } catch (TimeOverlapException e) {
+        } catch (ReservationTimeException e) {
             USER_OUTPUT_LOGGER.warn(e.getErrorCode());
             TECHNICAL_LOGGER.warn(e.getMessage());
         }

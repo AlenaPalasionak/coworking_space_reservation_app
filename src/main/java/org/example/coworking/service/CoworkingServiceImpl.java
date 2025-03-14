@@ -45,7 +45,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     public List<CoworkingSpace> getAllByUser(User user) {
         if (user != null && user.getClass() == Admin.class) {
             return coworkingDao.getAll().stream()
-                    .filter(coworking -> coworking.getAdmin().getId() == user.getId())
+                    .filter(coworking -> coworking.getAdmin().getId().equals(user.getId()))
                     .collect(Collectors.toList());
         } else {
             return coworkingDao.getAll();

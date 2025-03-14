@@ -38,7 +38,7 @@ public class ReservationDaoImpl implements ReservationDao {
             generatedId = IdGenerator.generateReservationId();
             Long finalGeneratedId = generatedId;
             isUniqueIdGenerated = reservationsCache.stream()
-                    .anyMatch(r -> r.getId() == finalGeneratedId);
+                    .anyMatch(r -> r.getId().equals(finalGeneratedId));
         } while (isUniqueIdGenerated);
 
         reservation.setId(generatedId);
@@ -58,7 +58,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     public Reservation getById(Long reservationId) throws ReservationNotFoundException {
         return reservationsCache.stream()
-                .filter(r -> r.getId() == reservationId)
+                .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
                 .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "
                         , DaoErrorCode.RESERVATION_IS_NOT_FOUND));
@@ -71,7 +71,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     private boolean checkIfNotExist(Long id) {
         return reservationsCache.stream()
-                .noneMatch(r -> r.getId() == id);
+                .noneMatch(r -> r.getId().equals(id));
     }
 
     private List<Reservation> getFromStorage() {
