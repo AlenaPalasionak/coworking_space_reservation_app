@@ -4,16 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum ControllerErrorCode {
-    INVALID_INPUT("Invalid input. Try again\\n");
+    INVALID_INPUT("Invalid input. Try again");
 
-    private final String errorCode;
+    private final String controllerErrorCode;
 
-    ControllerErrorCode(String errorCode) {
-        this.errorCode = errorCode;
+    ControllerErrorCode(String controllerErrorCode) {
+        this.controllerErrorCode = controllerErrorCode;
     }
 
     @Override
     public String toString() {
-        return this.errorCode;
+        return this.controllerErrorCode;
     }
 }

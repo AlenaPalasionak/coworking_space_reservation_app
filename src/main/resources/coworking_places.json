@@ -1,13 +1,20 @@
-[ {
-  "id" : 1,
-  "admin" : {
-    "type" : "admin",
-    "id" : 1,
-    "name" : "a",
-    "password" : "1"
-  },
-  "price" : 11.0,
-  "coworkingType" : "CoworkingSpace + Co-living",
-  "facilities" : [ "PARKING", "WIFI", "PRINTER", "CONDITIONING" ],
-  "reservationsPeriods" : [ ]
-} ]
+[
+  {
+    "id": 1,
+    "admin": {
+      "type": "admin",
+      "id": 1,
+      "name": "a",
+      "password": "1"
+    },
+    "price": 44.0,
+    "coworkingType": "CoworkingSpace + Co-living",
+    "facilities": [
+      "PARKING",
+      "KITCHEN",
+      "PRINTER",
+      "CONDITIONING"
+    ],
+    "reservationsPeriods": []
+  }
+]

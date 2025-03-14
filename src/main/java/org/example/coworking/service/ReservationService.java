@@ -13,9 +13,14 @@ import java.util.List;
 
 public interface ReservationService {
     void load();
+
     void save();
-    void add(User customer, LocalDateTime startTime, LocalDateTime endTime, int coworkingSpaceId) throws TimeOverlapException, InvalidTimeLogicException, CoworkingNotFoundException;
-    void delete(User user, int reservationId) throws ForbiddenActionException, ReservationNotFoundException;
+
+    void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws TimeOverlapException, InvalidTimeLogicException, CoworkingNotFoundException;
+
+    void delete(User user, Long reservationId) throws ForbiddenActionException, ReservationNotFoundException;
+
     List<Reservation> getAllByUser(User user);
-   Reservation getById(int reservationId) throws ReservationNotFoundException;
+
+    Reservation getById(Long reservationId) throws ReservationNotFoundException;
 }

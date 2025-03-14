@@ -14,7 +14,7 @@ public class ReservationMapper {
         return LocalDateTime.of(year, month, day, hour, minute);
     }
 
-    public int getId(String idInput) {
-        return Integer.parseInt(idInput);
+    public Long getId(String idInput) {
+        return Long.parseLong(idInput);
     }
 }

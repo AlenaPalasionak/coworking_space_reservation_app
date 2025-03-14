@@ -6,8 +6,8 @@ import lombok.Getter;
 public class InvalidTimeLogicException extends Exception {
     private final ServiceErrorCode errorCode;
 
-    public InvalidTimeLogicException(String message) {
+    public InvalidTimeLogicException(String message, ServiceErrorCode errorCode) {
         super(message);
-        this.errorCode = ServiceErrorCode.INVALID_TIME_LOGIC;
+        this.errorCode = errorCode;
     }
 }

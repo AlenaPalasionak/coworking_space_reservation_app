@@ -2,6 +2,7 @@ package org.example.coworking.infrastructure.mapper;
 
 import org.example.coworking.infrastructure.mapper.exception.CoworkingTypeIndexException;
 import org.example.coworking.infrastructure.mapper.exception.FacilityIndexException;
+import org.example.coworking.infrastructure.mapper.exception.MapperErrorCode;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 
@@ -35,7 +36,8 @@ public class CoworkingMapper {
                 .map(Integer::parseInt)
                 .map(index -> {
                     if (isIndexOutOfBound(index, Facility.class)) {
-                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility. ");
+                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility. "
+                        , MapperErrorCode.INVALID_FACILITY_INDEX);
                     }
                     return Facility.values()[index];
                 })

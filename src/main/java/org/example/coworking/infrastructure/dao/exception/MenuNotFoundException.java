@@ -6,8 +6,8 @@ import lombok.Getter;
 public class MenuNotFoundException extends Exception {
     private final DaoErrorCode errorCode;
 
-    public MenuNotFoundException(String message) {
+    public MenuNotFoundException(String message, DaoErrorCode errorCode) {
         super(message);
-        this.errorCode = DaoErrorCode.MENU_NOT_IS_FOUND;
+        this.errorCode = errorCode;
     }
 }

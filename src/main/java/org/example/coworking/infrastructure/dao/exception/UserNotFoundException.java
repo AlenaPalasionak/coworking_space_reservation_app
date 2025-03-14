@@ -6,8 +6,8 @@ import lombok.Getter;
 public class UserNotFoundException extends Exception {
     private final DaoErrorCode errorCode;
 
-    public UserNotFoundException(String message) {
+    public UserNotFoundException(String message, DaoErrorCode errorCode) {
         super(message);
-        this.errorCode = DaoErrorCode.USER_NOT_IS_FOUND;
+        this.errorCode = errorCode;
     }
 }

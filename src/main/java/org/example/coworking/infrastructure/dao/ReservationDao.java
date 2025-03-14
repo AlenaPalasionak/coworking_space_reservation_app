@@ -8,7 +8,7 @@ import java.util.List;
 public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoundException> {
     void add(Reservation reservation);
     void delete(Reservation reservation) throws ReservationNotFoundException;
-    Reservation getById(int reservationId) throws ReservationNotFoundException;
+    Reservation getById(Long reservationId) throws ReservationNotFoundException;
     List<Reservation> getAll();
     void load();
     void save();

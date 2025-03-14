@@ -13,7 +13,7 @@ public interface CoworkingService {
     void load();
     void save();
     void add(User user, double price, CoworkingType coworkingType, List<Facility> facilities);
-    void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException;
+    void delete(User user, Long id) throws ForbiddenActionException, CoworkingNotFoundException;
     List<CoworkingSpace> getAllByUser(User user);
-    CoworkingSpace getById(int id) throws CoworkingNotFoundException;
+    CoworkingSpace getById(Long id) throws CoworkingNotFoundException;
 }

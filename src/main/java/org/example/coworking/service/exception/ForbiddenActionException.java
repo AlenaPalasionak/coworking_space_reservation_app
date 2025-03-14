@@ -6,8 +6,8 @@ import lombok.Getter;
 public class ForbiddenActionException extends Exception {
     private final ServiceErrorCode errorCode;
 
-    public ForbiddenActionException(String message) {
+    public ForbiddenActionException(String message, ServiceErrorCode errorCode) {
         super(message);
-        this.errorCode = ServiceErrorCode.FORBIDDEN_ACTION;
+        this.errorCode = errorCode;
     }
 }

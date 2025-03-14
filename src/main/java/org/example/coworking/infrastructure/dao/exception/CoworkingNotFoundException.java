@@ -6,8 +6,8 @@ import lombok.Getter;
 public class CoworkingNotFoundException extends Exception {
     private final DaoErrorCode errorCode;
 
-    public CoworkingNotFoundException(String message) {
+    public CoworkingNotFoundException(String message, DaoErrorCode errorCode) {
         super(message);
-        this.errorCode = DaoErrorCode.COWORKING_IS_NOT_FOUND;
+        this.errorCode = errorCode;
     }
 }
