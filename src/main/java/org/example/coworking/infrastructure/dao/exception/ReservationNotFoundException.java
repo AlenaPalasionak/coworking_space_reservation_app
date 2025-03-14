@@ -8,6 +8,6 @@ public class ReservationNotFoundException extends Exception {
 
     public ReservationNotFoundException(String message) {
         super(message);
-        this.errorCode = DaoErrorCode.RESERVATION_NOT_FOUND;
+        this.errorCode = DaoErrorCode.RESERVATION_IS_NOT_FOUND;
     }
 }

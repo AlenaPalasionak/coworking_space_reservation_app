@@ -8,6 +8,6 @@ public class UserNotFoundException extends Exception {
 
     public UserNotFoundException(String message) {
         super(message);
-        this.errorCode = DaoErrorCode.USER_NOT_FOUND;
+        this.errorCode = DaoErrorCode.USER_NOT_IS_FOUND;
     }
 }

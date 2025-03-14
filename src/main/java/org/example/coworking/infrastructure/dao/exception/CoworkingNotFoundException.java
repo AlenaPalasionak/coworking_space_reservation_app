@@ -8,6 +8,6 @@ public class CoworkingNotFoundException extends Exception {
 
     public CoworkingNotFoundException(String message) {
         super(message);
-        this.errorCode = DaoErrorCode.COWORKING_NOT_FOUND;
+        this.errorCode = DaoErrorCode.COWORKING_IS_NOT_FOUND;
     }
 }

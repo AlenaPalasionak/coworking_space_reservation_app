@@ -68,7 +68,7 @@ public class CoworkingController {
                 price = coworkingMapper.getPrice(priceInput);
                 break;
             } catch (InvalidInputException e) {
-                USER_OUTPUT_LOGGER.warn(e.getMessage());
+                USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
         }

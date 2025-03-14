@@ -13,6 +13,7 @@ public enum ServiceErrorCode {
     ServiceErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
+
     @Override
     public String toString() {
         return this.errorCode;

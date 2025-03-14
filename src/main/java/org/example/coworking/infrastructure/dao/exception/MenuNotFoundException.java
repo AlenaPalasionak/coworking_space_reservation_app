@@ -8,6 +8,6 @@ public class MenuNotFoundException extends Exception {
 
     public MenuNotFoundException(String message) {
         super(message);
-        this.errorCode = DaoErrorCode.MENU_NOT_FOUND;
+        this.errorCode = DaoErrorCode.MENU_NOT_IS_FOUND;
     }
 }

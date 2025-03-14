@@ -43,7 +43,7 @@ public class MenuController {
         do {
             userChoice = reader.readLine();
             if (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
-                USER_OUTPUT_LOGGER.info("You entered the wrong symbol: " + userChoice + ". Try again\n");
+                USER_OUTPUT_LOGGER.warn("You entered the wrong symbol: " + userChoice + ". Try again\n");
             }
         } while (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice));
         return userChoice;

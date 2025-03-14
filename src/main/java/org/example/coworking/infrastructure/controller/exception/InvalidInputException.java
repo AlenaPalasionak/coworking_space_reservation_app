@@ -10,4 +10,5 @@ public class InvalidInputException extends Exception {
         super(message);
         this.errorCode = ControllerErrorCode.INVALID_INPUT;
     }
+
 }

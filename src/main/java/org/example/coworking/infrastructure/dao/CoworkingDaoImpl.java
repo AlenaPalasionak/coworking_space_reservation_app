@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import static org.example.coworking.infrastructure.logger.Log.TECHNICAL_LOGGER;
-import static org.example.coworking.infrastructure.logger.Log.USER_OUTPUT_LOGGER;
 
 public class CoworkingDaoImpl implements CoworkingDao {
     private static List<CoworkingSpace> coworkingSpacesCache;
@@ -78,7 +77,6 @@ public class CoworkingDaoImpl implements CoworkingDao {
         try {
             coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
         } catch (FileNotFoundException e) {
-            USER_OUTPUT_LOGGER.error(e.getMessage());
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }

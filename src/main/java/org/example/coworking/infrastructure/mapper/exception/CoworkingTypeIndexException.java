@@ -8,6 +8,6 @@ public class CoworkingTypeIndexException extends Exception {
 
     public CoworkingTypeIndexException(String message) {
         super(message);
-        this.errorCode = MapperErrorCode.INVALID_COWORKING_TYPE_NUMBER;
+        this.errorCode = MapperErrorCode.INVALID_COWORKING_TYPE_INDEX;
     }
 }
