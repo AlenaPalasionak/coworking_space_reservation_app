@@ -6,8 +6,8 @@ import lombok.Getter;
 public class ReservationNotFoundException extends Exception {
     private final DaoErrorCode errorCode;
 
-    public ReservationNotFoundException(String message) {
+    public ReservationNotFoundException(String message, DaoErrorCode errorCode) {
         super(message);
-        this.errorCode = DaoErrorCode.RESERVATION_IS_NOT_FOUND;
+        this.errorCode = errorCode;
     }
 }

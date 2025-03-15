@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.controller.validator;
 
+import org.example.coworking.infrastructure.controller.exception.ControllerErrorCode;
 import org.example.coworking.infrastructure.controller.exception.InvalidInputException;
 
 import java.util.function.Consumer;
@@ -21,7 +22,7 @@ public class ValidatedInputSupplier {
         consumer.accept(message);
         String input = supplier.get();
         if (!validator.test(input)) {
-            throw new InvalidInputException("Wrong input: " + input);
+            throw new InvalidInputException("Wrong input: " + input, ControllerErrorCode.INVALID_INPUT);
         }
         return input;
     }

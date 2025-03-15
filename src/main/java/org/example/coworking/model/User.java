@@ -14,9 +14,9 @@ import lombok.*;
         @JsonSubTypes.Type(value = Customer.class, name = "customer")
 })
 public class User {
-    protected long id;
-    protected String name;
-    protected String password;
+    private Long id;
+    private String name;
+    private String password;
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
 package org.example.coworking.service;
 
+import org.example.coworking.infrastructure.dao.exception.DaoErrorCode;
 import org.example.coworking.model.User;
 import org.example.coworking.infrastructure.dao.exception.UserNotFoundException;
 
@@ -26,7 +27,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         if (possibleUser.isPresent()) {
             return possibleUser.get();
         } else
-            throw new UserNotFoundException(name);
+            throw new UserNotFoundException("User with the name: " + name + " is not found."
+                    , DaoErrorCode.USER_NOT_IS_FOUND);
     }
 }
 

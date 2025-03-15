@@ -11,8 +11,7 @@ import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
-import org.example.coworking.service.exception.InvalidTimeLogicException;
-import org.example.coworking.service.exception.TimeOverlapException;
+import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class ReservationController {
     private final CoworkingService coworkingService;
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
-    private static final String YEAR_PATTERN = "^(202[5-9]|20[3-9][0-9]|2[1-9][0-9]{2}|[3-9][0-9]{3})$";
+    private static final String YEAR_PATTERN = "20(2[5-9]|[3-9][0-9])";
     private static final String MONTH_PATTERN = "^(0?[1-9]|1[0-2])$";
     private static final String DAY_PATTERN = "^(0?[1-9]|[12][0-9]|3[01])$";
     private static final String HOUR_PATTERN = "^(0?[0-9]|1[0-9]|2[0-3])$";
@@ -50,19 +49,25 @@ public class ReservationController {
 
     public void add(BufferedReader reader, User customer) throws IOException {
         String coworkingIdInput;
-        int coworkingId;
+        Long coworkingId;
         LocalDateTime startTime;
         LocalDateTime endTime;
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(customer);
-        String coworkingSpacesAsString = coworkingSpaces.stream()
+
+        if (coworkingSpaces.isEmpty()) {
+            USER_OUTPUT_LOGGER.info("Coworking Spaces list is empty.\n");
+            return;
+        }
+
+        String spacesAsString = coworkingSpaces.stream()
                 .map(CoworkingSpace::toString)
                 .reduce((s1, s2) -> s1 + "\n" + s2)
-                .orElse("No spaces available");
+                .orElse("");
 
         while (true) {
             try {
                 coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
-                        .supplier(coworkingSpacesAsString + "\n Choose a CoworkingSpace id to book it:\n");
+                        .supplier(spacesAsString + "\n Choose a CoworkingSpace id to book it:\n");
                 coworkingId = reservationMapper.getId(coworkingIdInput);
                 coworkingService.getById(coworkingId);
                 break;
@@ -101,10 +106,7 @@ public class ReservationController {
         } catch (CoworkingNotFoundException e) {
             USER_OUTPUT_LOGGER.warn(e.getErrorCode());
             TECHNICAL_LOGGER.warn(e.getMessage());
-        } catch (InvalidTimeLogicException e) {
-            USER_OUTPUT_LOGGER.warn(e.getErrorCode());
-            TECHNICAL_LOGGER.warn(e.getMessage());
-        } catch (TimeOverlapException e) {
+        } catch (ReservationTimeException e) {
             USER_OUTPUT_LOGGER.warn(e.getErrorCode());
             TECHNICAL_LOGGER.warn(e.getMessage());
         }
@@ -123,7 +125,7 @@ public class ReservationController {
 
     public void delete(BufferedReader reader, User customer) throws IOException {
         String reservationIdInput;
-        int reservationId;
+        Long reservationId;
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
         if (reservationsByCustomer.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Reservation list is empty.\n");

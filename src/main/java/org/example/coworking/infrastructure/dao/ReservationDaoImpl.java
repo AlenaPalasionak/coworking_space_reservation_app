@@ -1,5 +1,6 @@
 package org.example.coworking.infrastructure.dao;
 
+import org.example.coworking.infrastructure.dao.exception.DaoErrorCode;
 import org.example.coworking.infrastructure.dao.exception.ReservationNotFoundException;
 import org.example.coworking.infrastructure.loader.Loader;
 import org.example.coworking.model.Reservation;
@@ -32,12 +33,12 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void add(Reservation reservation) {
         boolean isUniqueIdGenerated;
-        long generatedId;
+        Long generatedId;
         do {
             generatedId = IdGenerator.generateReservationId();
-            long finalGeneratedId = generatedId;
+            Long finalGeneratedId = generatedId;
             isUniqueIdGenerated = reservationsCache.stream()
-                    .anyMatch(r -> r.getId() == finalGeneratedId);
+                    .anyMatch(r -> r.getId().equals(finalGeneratedId));
         } while (isUniqueIdGenerated);
 
         reservation.setId(generatedId);
@@ -48,17 +49,19 @@ public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void delete(Reservation reservation) throws ReservationNotFoundException {
         if (checkIfNotExist(reservation.getId())) {
-            throw new ReservationNotFoundException("Reservation with id: " + reservation.getId() + " is not found. ");
+            throw new ReservationNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
+                    , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
         reservationsCache.remove(reservation);
         reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
     }
 
-    public Reservation getById(int reservationId) throws ReservationNotFoundException {
+    public Reservation getById(Long reservationId) throws ReservationNotFoundException {
         return reservationsCache.stream()
-                .filter(r -> r.getId() == reservationId)
+                .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "));
+                .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "
+                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
     @Override
@@ -66,9 +69,9 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
-    private boolean checkIfNotExist(long id) {
+    private boolean checkIfNotExist(Long id) {
         return reservationsCache.stream()
-                .noneMatch(r -> r.getId() == id);
+                .noneMatch(r -> r.getId().equals(id));
     }
 
     private List<Reservation> getFromStorage() {

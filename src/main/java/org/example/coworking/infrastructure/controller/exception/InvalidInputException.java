@@ -6,9 +6,8 @@ import lombok.Getter;
 public class InvalidInputException extends Exception {
     private final ControllerErrorCode errorCode;
 
-    public InvalidInputException(String message) {
+    public InvalidInputException(String message, ControllerErrorCode errorCode) {
         super(message);
-        this.errorCode = ControllerErrorCode.INVALID_INPUT;
+        this.errorCode = errorCode;
     }
-
 }

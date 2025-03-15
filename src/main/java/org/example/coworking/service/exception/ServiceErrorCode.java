@@ -4,9 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum ServiceErrorCode {
-    FORBIDDEN_ACTION("Action is forbidden. Try again\n"),
-    INVALID_TIME_LOGIC("Error in time logic. Try again\n"),
+    FORBIDDEN_ACTION("Action is forbidden. Try again."),
+    INVALID_TIME_LOGIC("Error in time logic. Try again."),
     TIME_OVERLAPS("Time overlaps with another time.");
+
 
     private final String errorCode;
 

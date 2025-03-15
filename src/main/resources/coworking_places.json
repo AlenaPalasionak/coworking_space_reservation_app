@@ -6,8 +6,11 @@
     "name" : "a",
     "password" : "1"
   },
-  "price" : 11.0,
+  "price" : 44.0,
   "coworkingType" : "CoworkingSpace + Co-living",
-  "facilities" : [ "PARKING", "WIFI", "PRINTER", "CONDITIONING" ],
-  "reservationsPeriods" : [ ]
+  "facilities" : [ "PARKING", "KITCHEN", "PRINTER", "CONDITIONING" ],
+  "reservationsPeriods" : [ {
+    "startTime" : "2025-11-11 11:11",
+    "endTime" : "2026-11-11 11:11"
+  } ]
 } ]

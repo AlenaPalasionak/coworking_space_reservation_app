@@ -126,7 +126,7 @@ public class CoworkingController {
             try {
                 coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(spacesAsString + "Type a coworking id you want to delete:\n");
-                int coworkingSpaceId = Integer.parseInt(coworkingIdInput);
+                Long coworkingSpaceId = Long.parseLong(coworkingIdInput);
                 coworkingService.delete(user, coworkingSpaceId);
                 USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingSpaceId + " has been deleted\n");
                 break;

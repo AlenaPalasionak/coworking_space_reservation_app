@@ -4,6 +4,7 @@ import org.example.coworking.infrastructure.dao.CoworkingDao;
 import org.example.coworking.infrastructure.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
+import org.example.coworking.service.exception.ServiceErrorCode;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,9 +32,10 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void delete(User user, int id) throws ForbiddenActionException, CoworkingNotFoundException {
+    public void delete(User user, Long id) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass());
+            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass()
+                    , ServiceErrorCode.FORBIDDEN_ACTION);
         }
         CoworkingSpace coworkingSpace = getById(id);
         coworkingDao.delete(coworkingSpace);
@@ -43,7 +45,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     public List<CoworkingSpace> getAllByUser(User user) {
         if (user != null && user.getClass() == Admin.class) {
             return coworkingDao.getAll().stream()
-                    .filter(coworking -> coworking.getAdmin().getId() == user.getId())
+                    .filter(coworking -> coworking.getAdmin().getId().equals(user.getId()))
                     .collect(Collectors.toList());
         } else {
             return coworkingDao.getAll();
@@ -51,7 +53,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public CoworkingSpace getById(int coworkingId) throws CoworkingNotFoundException {
+    public CoworkingSpace getById(Long coworkingId) throws CoworkingNotFoundException {
         return coworkingDao.getById(coworkingId);
     }
 }

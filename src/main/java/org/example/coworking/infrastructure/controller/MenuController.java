@@ -57,7 +57,7 @@ public class MenuController {
         try {
             return menuService.getMenuByName(name);
         } catch (MenuNotFoundException e) {
-            USER_OUTPUT_LOGGER.error(e.getMessage());
+            USER_OUTPUT_LOGGER.error(e.getErrorCode());
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }

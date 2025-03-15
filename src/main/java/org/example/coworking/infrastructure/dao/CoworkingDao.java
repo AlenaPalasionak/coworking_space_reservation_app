@@ -8,7 +8,7 @@ import java.util.List;
 public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFoundException> {
     void add(CoworkingSpace coworkingSpace);
     void delete(CoworkingSpace coworking) throws CoworkingNotFoundException;
-    CoworkingSpace getById(int id) throws CoworkingNotFoundException;
+    CoworkingSpace getById(Long id) throws CoworkingNotFoundException;
     List<CoworkingSpace> getAll();
     void load();
     void save();
