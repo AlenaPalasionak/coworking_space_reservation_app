@@ -79,6 +79,11 @@
                             <goals>
                                 <goal>shade</goal>
                             </goals>
+                            <configuration>
+                                <shadedArtifactAttached>false</shadedArtifactAttached>
+                                <createDependencyReducedPom>false</createDependencyReducedPom>
+                                <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
+                            </configuration>
                         </execution>
                     </executions>
                     <configuration>
