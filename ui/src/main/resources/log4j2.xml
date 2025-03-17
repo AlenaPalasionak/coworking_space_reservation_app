@@ -2,8 +2,7 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="UserOutputLog" target="SYSTEM_OUT">
-            <PatternLayout disableAnsi="false" pattern="*** %highlight{%-5level} *** %n%msg%n{FATAL=red blink, ERROR=red, WARN=yellow, INFO=green,
-            DEBUG=blue, TRACE=magenta}"/>
+            <PatternLayout disableAnsi="false" pattern="*** %-5level *** %n%msg%n"/>
         </Console>
 
         <File name="TechnicalLog" fileName="logs/app.log" append="false">
