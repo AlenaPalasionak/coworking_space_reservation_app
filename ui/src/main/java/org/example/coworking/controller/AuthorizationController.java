@@ -11,6 +11,11 @@ import java.io.BufferedReader;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
 
+/**
+ * This class handles user authentication using the {@link AuthorizationService}.
+ * It validates the user's input for name and password, and then attempts to authenticate the user.
+ * If authentication fails, the user is prompted to enter the credentials again.
+ */
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
     private static final String USER_NAME_PATTERN = "^[a-zA-Zа-яА-Я0-9]{1,20}$";
@@ -20,6 +25,15 @@ public class AuthorizationController {
         this.authorizationService = authorizationService;
     }
 
+    /**
+     * Prompts the user to enter their name and password, validates the input,
+     * and attempts to authenticate the user.
+     * If the input is invalid or the authentication fails, the user is asked to try again.
+     *
+     * @param reader the {@link BufferedReader} to read user input
+     * @param userType the class type of the user to be authenticated
+     * @return the authenticated {@link User} object if authentication is successful
+     */
     public User authenticate(BufferedReader reader, Class<? extends User> userType) {
         while (true) {
             String nameInput;

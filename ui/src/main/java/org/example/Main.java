@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
-
+/**
+ * The Main class is the entry point of the application. It initializes various controllers
+ * for handling different aspects of the system such as reservations, authorization, coworking spaces,
+ * and menus.
+ */
 public class Main {
 
     private static final String WELCOME_MENU_KEY = "Welcome Menu";

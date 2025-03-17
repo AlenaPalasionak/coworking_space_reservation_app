@@ -22,10 +22,17 @@ import java.util.List;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
 
+/**
+ * The ReservationController class manages reservations for customers, allowing them to create, view, and delete reservations
+ * for coworking spaces. This class interacts with the reservation service, coworking service, and reservation mapper to
+ * perform actions related to reservations.
+ */
 public class ReservationController {
     private final CoworkingService coworkingService;
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
+
+    // Regular expression patterns for validation
     private static final String YEAR_PATTERN = "20(2[5-9]|[3-9][0-9])";
     private static final String MONTH_PATTERN = "^(0?[1-9]|1[0-2])$";
     private static final String DAY_PATTERN = "^(0?[1-9]|[12][0-9]|3[01])$";
@@ -33,20 +40,41 @@ public class ReservationController {
     private static final String MINUTE_PATTERN = "^([0-5]?[0-9])$";
     private static final String ANY_NUMBER_PATTERN = "\\d+";
 
+    /**
+     * Constructs a ReservationController object with the specified services and mapper.
+     *
+     * @param coworkingService the service responsible for managing coworking spaces
+     * @param reservationService the service responsible for managing reservations
+     * @param reservationMapper the mapper for converting input to reservation objects
+     */
     public ReservationController(CoworkingService coworkingService, ReservationService reservationService, ReservationMapper reservationMapper) {
         this.coworkingService = coworkingService;
         this.reservationService = reservationService;
         this.reservationMapper = reservationMapper;
     }
 
+    /**
+     * Loads the reservations from the storage.
+     */
     public void load() {
         reservationService.load();
     }
 
+    /**
+     * Saves the current reservations to the storage.
+     */
     public void save() {
         reservationService.save();
     }
 
+    /**
+     * Allows a customer to add a reservation for a coworking space by specifying the start and end times.
+     * Prompts the user for input and validates the entered values.
+     *
+     * @param reader the BufferedReader for user input
+     * @param customer the customer making the reservation
+     * @throws IOException if an input error occurs
+     */
     public void add(BufferedReader reader, User customer) throws IOException {
         String coworkingIdInput;
         Long coworkingId;
@@ -112,6 +140,11 @@ public class ReservationController {
         }
     }
 
+    /**
+     * Displays all reservations made by the specified customer.
+     *
+     * @param customer the customer whose reservations are to be displayed
+     */
     public void getAllReservations(User customer) {
         List<Reservation> reservations = reservationService.getAllByUser(customer);
         if (reservations.isEmpty()) {
@@ -123,6 +156,14 @@ public class ReservationController {
         }
     }
 
+    /**
+     * Allows a customer to delete a reservation by specifying its reservation ID.
+     * Prompts the user for input and validates the entered values.
+     *
+     * @param reader the BufferedReader for user input
+     * @param customer the customer deleting the reservation
+     * @throws IOException if an input error occurs
+     */
     public void delete(BufferedReader reader, User customer) throws IOException {
         String reservationIdInput;
         Long reservationId;
@@ -158,8 +199,15 @@ public class ReservationController {
         }
     }
 
-    private LocalDateTime getLocalDateTimeObject(BufferedReader reader) throws
-            InvalidInputException, DateTimeException {
+    /**
+     * Prompts the user for a valid date and time and returns the corresponding LocalDateTime object.
+     *
+     * @param reader the BufferedReader for user input
+     * @return the LocalDateTime object corresponding to the input date and time
+     * @throws InvalidInputException if the input is invalid
+     * @throws DateTimeException if the date/time is invalid
+     */
+    private LocalDateTime getLocalDateTimeObject(BufferedReader reader) throws InvalidInputException, DateTimeException {
         String year;
         String month;
         String day;
@@ -170,7 +218,7 @@ public class ReservationController {
         year = InputValidator.getInputSupplier(reader, YEAR_PATTERN).supplier("Type a year. Format: yyyy");
         month = InputValidator.getInputSupplier(reader, MONTH_PATTERN).supplier("Type a month. Format: mm");
         day = InputValidator.getInputSupplier(reader, DAY_PATTERN).supplier("Type a day. Format: dd");
-        hour = InputValidator.getInputSupplier(reader, HOUR_PATTERN).supplier("Type  hour. Format: hh");
+        hour = InputValidator.getInputSupplier(reader, HOUR_PATTERN).supplier("Type hour. Format: hh");
         minute = InputValidator.getInputSupplier(reader, MINUTE_PATTERN).supplier("Type minute. Format: mm");
         time = reservationMapper.getLocalDateTime(year, month, day, hour, minute);
 

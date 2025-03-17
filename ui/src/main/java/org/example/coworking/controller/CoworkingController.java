@@ -19,16 +19,23 @@ import java.util.List;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
 
+/**
+ * This class handles user interactions related to coworking spaces. It interacts with the {@link CoworkingService}
+ * and {@link CoworkingMapper} to load, save, add, delete, and retrieve coworking spaces.
+ * It also provides menus for selecting coworking types and facilities and validates user inputs.
+ */
 public class CoworkingController {
 
     private final CoworkingService coworkingService;
     private final CoworkingMapper coworkingMapper;
+
     public static final String COWORKING_TYPE_MENU = """
             Choose the coworkingSpace type (press only one of the numbers):
             Open space coworkingSpace - 0
             Private Office - 1
             Coworking+Co-living - 2
             """;
+
     public static final String FACILITY_MENU = """
             Choose the facilities. Write numbers comma-separated on one line:
             NO Facilities - just press Enter,
@@ -38,27 +45,48 @@ public class CoworkingController {
             PRINTER - 3,
             CONDITIONING - 4
             """;
+
     private static final String ANY_NUMBER_PATTERN = "\\d+";
     private static final String FACILITY_PATTERN = "^\\s*(\\d+(\\s*,\\s*\\d+)*)?\\s*$";
     private static final String PRICE_PATTERN = "\\d+(\\.\\d+)?";
 
+    /**
+     * Constructs a {@link CoworkingController} with the specified {@link CoworkingService} and {@link CoworkingMapper}.
+     *
+     * @param coworkingService the service for managing coworking spaces
+     * @param coworkingMapper  the mapper used for mapping inputs to valid coworking types and facilities
+     */
     public CoworkingController(CoworkingService coworkingService, CoworkingMapper coworkingMapper) {
         this.coworkingService = coworkingService;
         this.coworkingMapper = coworkingMapper;
     }
 
+    /**
+     * Loads the coworking spaces from the service.
+     */
     public void load() {
         coworkingService.load();
     }
 
+    /**
+     * Saves the coworking spaces to the service.
+     */
     public void save() {
         coworkingService.save();
     }
 
+    /**
+     * Prompts the admin to enter details to add a new coworking space, such as price, coworking type, and facilities.
+     * After the input is validated, the coworking space is added using the {@link CoworkingService}.
+     *
+     * @param reader the {@link BufferedReader} used to get user input
+     * @param admin  the admin user adding the coworking space
+     */
     public void add(BufferedReader reader, User admin) {
         double price;
         CoworkingType coworkingType;
         List<Facility> facilities;
+
         while (true) {
             String priceInput;
             try {
@@ -108,6 +136,13 @@ public class CoworkingController {
         USER_OUTPUT_LOGGER.info("You just added a new Space:\n");
     }
 
+    /**
+     * Prompts the user to select a coworking space from their list and delete it.
+     * The coworking space is deleted using the {@link CoworkingService}.
+     *
+     * @param reader the {@link BufferedReader} used to get user input
+     * @param user   the user deleting the coworking space
+     */
     public void delete(BufferedReader reader, User user) {
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(user);
         if (coworkingSpaces.isEmpty()) {
@@ -142,6 +177,11 @@ public class CoworkingController {
         }
     }
 
+    /**
+     * Retrieves and displays all coworking spaces associated with the given user.
+     *
+     * @param user the user whose coworking spaces are to be retrieved
+     */
     public void getAllSpaces(User user) {
         List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
         USER_OUTPUT_LOGGER.info("Spaces list:\n");

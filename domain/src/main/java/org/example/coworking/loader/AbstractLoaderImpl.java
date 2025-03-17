@@ -13,7 +13,21 @@ import java.util.List;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+/**
+ * An abstract implementation of the {@link Loader} interface, providing common functionality
+ * for loading and saving data of type {@link T} from and to a JSON file.
+ * <p>
+ * This class uses the {@link ObjectMapper} for JSON serialization and deserialization,
+ * and it requires subclasses to define the file path where data will be loaded from or saved to.
+ * </p>
+ *
+ * @param <T> the type of the data to be loaded and saved
+ */
 public abstract class AbstractLoaderImpl<T> implements Loader<T> {
+
+    /**
+     * An instance of {@link ObjectMapper} used for converting between Java objects and JSON.
+     */
     protected ObjectMapper objectMapper;
 
     public AbstractLoaderImpl() {
@@ -21,8 +35,17 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
         objectMapper.registerModule(new JavaTimeModule());
     }
 
+    /**
+     * Abstract method to retrieve the file path where the data is stored.
+     * <p>
+     * This method must be implemented by subclasses to return the specific file path.
+     * </p>
+     *
+     * @return the file path where data is stored
+     */
     protected abstract String getFilepath();
 
+    @Override
     public List<T> load(Class<T> beanType) throws FileNotFoundException {
         JavaType javaType = objectMapper.getTypeFactory().constructParametricType(List.class, beanType);
         List<T> list = new ArrayList<>();
@@ -48,6 +71,7 @@ public abstract class AbstractLoaderImpl<T> implements Loader<T> {
         return list;
     }
 
+    @Override
     public void save(List<T> objects) {
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(getFilepath()), objects);

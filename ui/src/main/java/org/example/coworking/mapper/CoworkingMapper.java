@@ -10,20 +10,49 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The CoworkingMapper class is responsible for converting input data (such as strings) into
+ * corresponding values of various enumerations and data types related to coworking spaces.
+ */
 public class CoworkingMapper {
 
+    /**
+     * Converts a string representing a price into a double.
+     *
+     * @param priceInput the string representation of the price
+     * @return the parsed price as a double
+     * @throws NumberFormatException if the priceInput cannot be parsed as a valid double
+     */
     public double getPrice(String priceInput) {
         return Double.parseDouble(priceInput);
     }
 
+    /**
+     * Converts a string representing a coworking type index into the corresponding enum value of CoworkingType.
+     * Throws a CoworkingTypeIndexException if the index is out of bounds for the CoworkingType enum.
+     *
+     * @param coworkingTypeInput the string representing the coworking type index
+     * @return the corresponding CoworkingType enum value
+     * @throws CoworkingTypeIndexException if the coworking type index is invalid
+     */
     public CoworkingType getCoworkingType(String coworkingTypeInput) throws CoworkingTypeIndexException {
         int coworkingTypeIndex = Integer.parseInt(coworkingTypeInput);
         if (isIndexOutOfBound(coworkingTypeIndex, CoworkingType.class)) {
-            throw new CoworkingTypeIndexException("Index: " + coworkingTypeIndex + " is out of bound in enum CoworkingType. ");
-        } else
+            throw new CoworkingTypeIndexException("Index: " + coworkingTypeIndex + " is out of bound in enum CoworkingType.");
+        } else {
             return CoworkingType.values()[coworkingTypeIndex];
+        }
     }
 
+    /**
+     * Converts a comma-separated string of facility indexes into a list of corresponding Facility enum values.
+     * The string is split, trimmed, and parsed, and any invalid index will result in a FacilityIndexException.
+     * If the input string is blank, an empty list is returned.
+     *
+     * @param facilityIndexesInput the string of comma-separated facility indexes
+     * @return a list of corresponding Facility enum values
+     * @throws FacilityIndexException if any facility index is invalid or out of bounds
+     */
     public List<Facility> getFacility(String facilityIndexesInput) throws FacilityIndexException {
         if (facilityIndexesInput.isBlank()) {
             return List.of();
@@ -36,14 +65,21 @@ public class CoworkingMapper {
                 .map(Integer::parseInt)
                 .map(index -> {
                     if (isIndexOutOfBound(index, Facility.class)) {
-                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility. "
-                        , MapperErrorCode.INVALID_FACILITY_INDEX);
+                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility.", MapperErrorCode.INVALID_FACILITY_INDEX);
                     }
                     return Facility.values()[index];
                 })
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Helper method to check if a given index is out of bounds for the specified enum class.
+     *
+     * @param enumIndex the index to check
+     * @param enumClass the class of the enum to check the index against
+     * @param <T> the type of the enum
+     * @return true if the index is out of bounds, false otherwise
+     */
     private static <T extends Enum<T>> boolean isIndexOutOfBound(int enumIndex, Class<T> enumClass) {
         return enumIndex < 0 || enumIndex >= enumClass.getEnumConstants().length;
     }
