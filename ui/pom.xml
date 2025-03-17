@@ -24,7 +24,6 @@
 
     <build>
         <plugins>
-            <!-- Копирование log4j2.xml и JSON-файлов из domain -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -41,7 +40,7 @@
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/../domain/src/main/resources
-                                    </directory> <!-- Исправленный путь -->
+                                    </directory>
                                     <includes>
                                         <include>*.json</include>
                                         <include>log4j2.xml</include>
@@ -53,7 +52,6 @@
                 </executions>
             </plugin>
 
-            <!-- Сборка fat JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -80,7 +78,6 @@
             </plugin>
         </plugins>
     </build>
-
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>
