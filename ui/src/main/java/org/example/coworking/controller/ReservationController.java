@@ -14,7 +14,6 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,8 +30,6 @@ public class ReservationController {
     private final CoworkingService coworkingService;
     private final ReservationService reservationService;
     private final ReservationMapper reservationMapper;
-
-    // Regular expression patterns for validation
     private static final String YEAR_PATTERN = "20(2[5-9]|[3-9][0-9])";
     private static final String MONTH_PATTERN = "^(0?[1-9]|1[0-2])$";
     private static final String DAY_PATTERN = "^(0?[1-9]|[12][0-9]|3[01])$";
@@ -73,9 +70,8 @@ public class ReservationController {
      *
      * @param reader the BufferedReader for user input
      * @param customer the customer making the reservation
-     * @throws IOException if an input error occurs
      */
-    public void add(BufferedReader reader, User customer) throws IOException {
+    public void add(BufferedReader reader, User customer) {
         String coworkingIdInput;
         Long coworkingId;
         LocalDateTime startTime;
@@ -162,9 +158,8 @@ public class ReservationController {
      *
      * @param reader the BufferedReader for user input
      * @param customer the customer deleting the reservation
-     * @throws IOException if an input error occurs
      */
-    public void delete(BufferedReader reader, User customer) throws IOException {
+    public void delete(BufferedReader reader, User customer){
         String reservationIdInput;
         Long reservationId;
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);

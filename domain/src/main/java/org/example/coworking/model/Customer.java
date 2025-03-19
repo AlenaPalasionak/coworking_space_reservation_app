@@ -1,8 +1,9 @@
 package org.example.coworking.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 @Getter
-@AllArgsConstructor
 public class Customer extends User {
+    public Customer(Long id, String name, String password) {
+        super(id, name, password);
+    }
 }

@@ -7,6 +7,7 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class CoworkingServiceImpl implements CoworkingService {
@@ -27,17 +28,17 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(User user, double price, CoworkingType coworkingType, List<Facility> facilities) {
-        coworkingDao.add(new CoworkingSpace(user, price, coworkingType, facilities));
+    public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
+        coworkingDao.add(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 
     @Override
-    public void delete(User user, Long id) throws ForbiddenActionException, CoworkingNotFoundException {
+    public void delete(User user, Long coworkingSpaceId) throws ForbiddenActionException, CoworkingNotFoundException {
         if (user.getClass() == Customer.class) {
             throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass()
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
-        CoworkingSpace coworkingSpace = getById(id);
+        CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
         coworkingDao.delete(coworkingSpace);
     }
 
@@ -55,5 +56,11 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public CoworkingSpace getById(Long coworkingId) throws CoworkingNotFoundException {
         return coworkingDao.getById(coworkingId);
+    }
+
+    @Override
+    public TreeSet<ReservationPeriod> getCoworkingSpacePeriod(CoworkingSpace coworkingSpace) {
+        return coworkingSpace.getReservationsPeriods();
+
     }
 }

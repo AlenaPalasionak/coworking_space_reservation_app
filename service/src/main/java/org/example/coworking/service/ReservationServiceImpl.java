@@ -12,6 +12,7 @@ import org.example.coworking.service.validator.TimeLogicValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
@@ -40,7 +41,8 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationPeriod period = new ReservationPeriod(startTime, endTime);
         CoworkingSpace coworkingSpace = coworkingService.getById(coworkingSpaceId);
         timeLogicValidator.validateReservation(startTime, endTime);
-        if (OccupationTimeValidator.isTimeOverlapping(period, coworkingSpace)) {
+        TreeSet<ReservationPeriod> existingPeriods = coworkingService.getCoworkingSpacePeriod(coworkingSpace);
+        if (OccupationTimeValidator.isTimeOverlapping(period, existingPeriods)) {
             throw new ReservationTimeException(startTime + " - " + endTime + " overlaps with existing period", ServiceErrorCode.TIME_OVERLAPS);
         }
         Reservation reservation = new Reservation(customer, new ReservationPeriod(startTime, endTime), coworkingSpace);
