@@ -33,9 +33,9 @@ class ValidatedInputSupplierTest {
         when(supplierMock.get()).thenReturn(expectedInput);
         when(validatorMock.test(expectedInput)).thenReturn(true);
 
-        String result = validatedInputSupplier.supplier("Enter input:");
+        String actualInput = validatedInputSupplier.supplier("Enter input:");
 
-        assertEquals(expectedInput, result);
+        assertEquals(expectedInput, actualInput);
         verify(consumerMock).accept("Enter input:");
     }
 
