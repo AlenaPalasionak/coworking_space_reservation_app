@@ -22,7 +22,6 @@ class AuthorizationServiceImplTest {
     @InjectMocks
     private AuthorizationServiceImpl authorizationService;
 
-
     @Test
     void testAuthenticateValidAdmin() throws UserNotFoundException {
         User expectedAdmin = new Admin(1L, "Aden", "123");

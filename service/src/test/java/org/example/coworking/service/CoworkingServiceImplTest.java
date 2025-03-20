@@ -141,6 +141,7 @@ class CoworkingServiceImplTest {
         CoworkingSpace actualCoworkingSpace = coworkingService.getById(1L);
 
         assertThat(actualCoworkingSpace).isEqualTo(expectedCoworkingSpace);
+        verify(coworkingDao, times(1)).getById(1L);
     }
 
     @Test
@@ -151,6 +152,7 @@ class CoworkingServiceImplTest {
 
         assertThatThrownBy(() -> coworkingService.getById(coworkingId))
                 .isInstanceOf(CoworkingNotFoundException.class);
+        verify(coworkingDao, times(1)).getById(coworkingId);
     }
 
     @Test
