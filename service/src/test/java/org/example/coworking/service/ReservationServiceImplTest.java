@@ -195,6 +195,27 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void getById() {
+    void testGetByIdReturnsReservationWhenExists() throws ReservationNotFoundException {
+        Long reservationId = 10L;
+        Reservation reservation = new Reservation(Mockito.mock(Customer.class), Mockito.mock(ReservationPeriod.class), Mockito.mock(CoworkingSpace.class));
+        reservation.setId(reservationId);
+        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+
+        Reservation actualReservation = reservationService.getById(reservationId);
+
+        assertThat(actualReservation).isEqualTo(reservation);
+    }
+
+    @Test
+    void testGetByIdThrowsReservationNotFoundExceptionWhenNotFound() throws ReservationNotFoundException {
+        Long reservationId = 99L;
+        Reservation reservation = new Reservation(Mockito.mock(Customer.class), Mockito.mock(ReservationPeriod.class), Mockito.mock(CoworkingSpace.class));
+        reservation.setId(reservationId);
+
+        when(reservationDao.getById(reservationId)).thenThrow(new ReservationNotFoundException
+                ("Reservation with id: " + reservation.getId() + " is not found. ", DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+
+        assertThatThrownBy(() -> reservationService.getById(reservationId))
+                .isInstanceOf(ReservationNotFoundException.class);
     }
 }

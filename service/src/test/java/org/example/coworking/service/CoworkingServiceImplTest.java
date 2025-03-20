@@ -57,7 +57,6 @@ class CoworkingServiceImplTest {
                 .hasFieldOrPropertyWithValue("price", price)
                 .hasFieldOrPropertyWithValue("coworkingType", type)
                 .hasFieldOrPropertyWithValue("facilities", facilities);
-
     }
 
     @Test
@@ -116,8 +115,6 @@ class CoworkingServiceImplTest {
         List<CoworkingSpace> actualCoworkingSpaces = coworkingService.getAllByUser(admin);
 
         assertThat(actualCoworkingSpaces).containsExactly(coworking1, coworking2);
-
-
     }
 
     @Test
@@ -157,7 +154,7 @@ class CoworkingServiceImplTest {
     }
 
     @Test
-    void testGetCoworkingSpacePeriodReturnsCorrectReservations() {
+    void testGetCoworkingSpacePeriod() {
         User admin = new Admin(1L, "Aden", "123");
         CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, List.of());
         ReservationPeriod period1 = new ReservationPeriod(LocalDateTime.of(2027, 1, 2, 12, 0)
