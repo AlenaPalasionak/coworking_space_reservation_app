@@ -56,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getCustomer().equals(user)) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass()
+            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getName()
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -68,7 +68,9 @@ public class ReservationServiceImpl implements ReservationService {
                     .filter(reservation -> reservation.getCustomer().getId().equals(user.getId()))
                     .collect(Collectors.toList());
         } else {
-            return reservationDao.getAll();
+            return reservationDao.getAll().stream()
+                    .filter(reservation -> reservation.getCoworkingSpace().getAdmin().equals(user))
+                    .collect(Collectors.toList());
         }
     }
 

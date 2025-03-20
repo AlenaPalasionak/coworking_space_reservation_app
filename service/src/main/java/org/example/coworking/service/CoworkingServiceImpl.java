@@ -33,13 +33,14 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void delete(User user, Long coworkingSpaceId) throws ForbiddenActionException, CoworkingNotFoundException {
-        if (user.getClass() == Customer.class) {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getClass()
+    public void delete(User admin, Long coworkingSpaceId) throws ForbiddenActionException, CoworkingNotFoundException {
+        CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
+        if (coworkingSpace.getAdmin().equals(admin)) {
+            coworkingDao.delete(coworkingSpace);
+        } else {
+            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName()
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
-        CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
-        coworkingDao.delete(coworkingSpace);
     }
 
     @Override
@@ -61,6 +62,5 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public TreeSet<ReservationPeriod> getCoworkingSpacePeriod(CoworkingSpace coworkingSpace) {
         return coworkingSpace.getReservationsPeriods();
-
     }
 }
