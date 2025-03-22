@@ -1,13 +1,11 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
-import org.example.coworking.model.User;
+import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * This interface defines the operations for managing coworking spaces in the system.
@@ -28,22 +26,22 @@ public interface CoworkingService {
     /**
      * Adds a new coworking space for the specified user with the given price, coworking type, and list of facilities.
      *
-     * @param user the user who is adding the coworking space
-     * @param price the price of the coworking space
+     * @param admin         the user who is adding the coworking space
+     * @param price         the price of the coworking space
      * @param coworkingType the type of the coworking space
-     * @param facilities a list of facilities available in the coworking space
+     * @param facilities    a list of facilities available in the coworking space
      */
-    void add(User user, double price, CoworkingType coworkingType, List<Facility> facilities);
+    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities);
 
     /**
      * Deletes a coworking space for the specified user by its ID.
      *
      * @param user the user who is deleting the coworking space
-     * @param id the ID of the coworking space to be deleted
-     * @throws ForbiddenActionException if the user is not allowed to delete the coworking space
+     * @param coworkingSpaceId the ID of the coworking space to be deleted
+     * @throws ForbiddenActionException   if the user is not allowed to delete the coworking space
      * @throws CoworkingNotFoundException if the coworking space with the given ID is not found
      */
-    void delete(User user, Long id) throws ForbiddenActionException, CoworkingNotFoundException;
+    void delete(User user, Long coworkingSpaceId) throws ForbiddenActionException, CoworkingNotFoundException;
 
     /**
      * Retrieves all coworking spaces associated with the specified user.
@@ -61,4 +59,6 @@ public interface CoworkingService {
      * @throws CoworkingNotFoundException if no coworking space with the given ID is found
      */
     CoworkingSpace getById(Long id) throws CoworkingNotFoundException;
+
+    TreeSet<ReservationPeriod> getCoworkingSpacePeriod(CoworkingSpace coworkingSpace);
 }

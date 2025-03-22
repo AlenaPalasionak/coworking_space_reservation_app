@@ -23,8 +23,6 @@ public class MenuController {
 
     private User user = null;
     private final MenuService menuService;
-
-    // Constants for menu options
     private static final String EXIT = "0";
     private static final String LOG_OUT = "2";
     private static final String ADD_COWORKING_SPACE = "1";

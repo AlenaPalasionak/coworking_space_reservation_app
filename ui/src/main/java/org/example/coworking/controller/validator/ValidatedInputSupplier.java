@@ -22,8 +22,8 @@ public class ValidatedInputSupplier {
      * Constructs a new instance of {@link ValidatedInputSupplier} with the specified consumer,
      * supplier, and validator.
      *
-     * @param consumer a {@link Consumer} to handle the message to be displayed before input
-     * @param supplier a {@link Supplier} that provides the user input
+     * @param consumer  a {@link Consumer} to handle the message to be displayed before input
+     * @param supplier  a {@link Supplier} that provides the user input
      * @param validator a {@link Predicate} that validates the input
      */
     public ValidatedInputSupplier(Consumer<String> consumer, Supplier<String> supplier, Predicate<String> validator) {
@@ -41,9 +41,9 @@ public class ValidatedInputSupplier {
      * @throws InvalidInputException if the input does not meet the validation criteria
      */
     public String supplier(String message) throws InvalidInputException {
-        consumer.accept(message);  // Display the message
-        String input = supplier.get();  // Get user input
-        if (!validator.test(input)) {  // Validate the input
+        consumer.accept(message);
+        String input = supplier.get();
+        if (!validator.test(input)) {
             throw new InvalidInputException("Wrong input: " + input, ControllerErrorCode.INVALID_INPUT);
         }
         return input;
