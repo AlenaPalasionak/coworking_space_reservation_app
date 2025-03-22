@@ -1,0 +1,70 @@
+CREATE TYPE public.user_role AS ENUM ('ADMIN', 'CUSTOMER');
+
+CREATE TABLE public.users
+(
+    id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name     TEXT      NOT NULL,
+    password TEXT      NOT NULL,
+    role     public.user_role NOT NULL
+);
+
+CREATE TABLE public.coworking_types
+(
+    id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO public.coworking_types (name)
+VALUES ('Open space coworkingSpace'),
+       ('Private Office'),
+       ('CoworkingSpace + Co-living');
+
+CREATE TABLE public.facilities
+(
+    id          SERIAL PRIMARY KEY,
+    description VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO public.facilities (description)
+VALUES ('parking'),
+       ('wifi'),
+       ('kitchen'),
+       ('printer'),
+       ('conditioning');
+
+CREATE TABLE public.coworking_spaces
+(
+    id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    admin_id BIGINT           NOT NULL,
+    price    DOUBLE PRECISION NOT NULL,
+    type_id  BIGINT           NOT NULL,
+
+    FOREIGN KEY (type_id) REFERENCES public.coworking_types (id),
+    CONSTRAINT fk_admin FOREIGN KEY (admin_id) REFERENCES public.users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE public.coworking_space_facilities
+(
+    coworking_space_id BIGINT REFERENCES public.coworking_spaces (id) ON DELETE CASCADE,
+    facility_id        BIGINT REFERENCES public.facilities (id) ON DELETE CASCADE,
+    PRIMARY KEY (coworking_space_id, facility_id)
+);
+
+CREATE TABLE public.reservation_periods
+(
+    id         SERIAL PRIMARY KEY,
+    start_time TIMESTAMP NOT NULL,
+    end_time   TIMESTAMP NOT NULL,
+    CONSTRAINT reservation_periods_check_time CHECK (start_time < end_time)
+);
+
+CREATE TABLE public.reservations
+(
+    id                 SERIAL PRIMARY KEY,
+    customer_id        BIGINT NOT NULL,
+    coworking_space_id BIGINT NOT NULL,
+    period_id          BIGINT NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES public.users (id) ON DELETE CASCADE,
+    FOREIGN KEY (coworking_space_id) REFERENCES public.coworking_spaces (id) ON DELETE CASCADE,
+    FOREIGN KEY (period_id) REFERENCES public.reservation_periods (id) ON DELETE CASCADE
+);
