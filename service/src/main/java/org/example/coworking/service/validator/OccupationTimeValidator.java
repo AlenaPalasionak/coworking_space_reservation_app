@@ -2,10 +2,10 @@ package org.example.coworking.service.validator;
 
 import org.example.coworking.model.ReservationPeriod;
 
-import java.util.TreeSet;
+import java.util.Collection;
 
 public class OccupationTimeValidator {
-    public static boolean isTimeOverlapping(ReservationPeriod newPeriod, TreeSet<ReservationPeriod> periods) {
+    public static boolean isTimeOverlapping(ReservationPeriod newPeriod, Collection<ReservationPeriod> periods) {
         return periods.stream()
                 .anyMatch(existingPeriod -> isOverlapping(existingPeriod, newPeriod));
     }
