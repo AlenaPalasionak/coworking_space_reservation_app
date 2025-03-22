@@ -7,17 +7,18 @@ import java.util.List;
 
 /**
  * This interface defines the data access operations for the {@link Reservation} model.
- * It extends the {@link ModelDao} interface to provide basic CRUD operations with
+ * It extends the {@link Dao} interface to provide basic CRUD operations with
  * {@link ReservationNotFoundException} as the exception type for errors.
  * It provides additional methods for adding, deleting, retrieving, and saving reservation data.
  */
-public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoundException> {
+public interface ReservationDao extends Dao<Reservation, ReservationNotFoundException> {
 
     /**
      * Adds a new reservation to the data source.
      *
      * @param reservation the {@link Reservation} object to be added
      */
+    @Override
     void add(Reservation reservation);
 
     /**
@@ -26,6 +27,7 @@ public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoun
      * @param reservation the {@link Reservation} object to be deleted
      * @throws ReservationNotFoundException if the reservation cannot be found in the data source
      */
+    @Override
     void delete(Reservation reservation) throws ReservationNotFoundException;
 
     /**
@@ -35,6 +37,7 @@ public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoun
      * @return the {@link Reservation} object with the specified ID
      * @throws ReservationNotFoundException if the reservation with the given ID is not found
      */
+    @Override
     Reservation getById(Long reservationId) throws ReservationNotFoundException;
 
     /**
@@ -42,6 +45,7 @@ public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoun
      *
      * @return a list of all {@link Reservation} objects
      */
+    @Override
     List<Reservation> getAll();
 
     /**

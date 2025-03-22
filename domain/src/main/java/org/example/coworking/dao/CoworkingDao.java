@@ -6,17 +6,18 @@ import org.example.coworking.model.CoworkingSpace;
 import java.util.List;
 /**
  * This interface defines the data access operations for the {@link CoworkingSpace} model.
- * It extends the {@link ModelDao} interface to provide basic CRUD operations with
+ * It extends the {@link Dao} interface to provide basic CRUD operations with
  * {@link CoworkingNotFoundException} as the exception type for errors.
  * It provides additional methods for adding, deleting, retrieving, and saving coworking space data.
  */
-public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFoundException> {
+public interface CoworkingDao extends Dao<CoworkingSpace, CoworkingNotFoundException> {
 
     /**
      * Adds a new coworking space to the data source.
      *
      * @param coworkingSpace the {@link CoworkingSpace} object to be added
      */
+    @Override
     void add(CoworkingSpace coworkingSpace);
 
     /**
@@ -25,6 +26,7 @@ public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFound
      * @param coworking the {@link CoworkingSpace} object to be deleted
      * @throws CoworkingNotFoundException if the coworking space cannot be found in the data source
      */
+    @Override
     void delete(CoworkingSpace coworking) throws CoworkingNotFoundException;
 
     /**
@@ -34,6 +36,7 @@ public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFound
      * @return the {@link CoworkingSpace} object with the specified ID
      * @throws CoworkingNotFoundException if the coworking space with the given ID is not found
      */
+    @Override
     CoworkingSpace getById(Long id) throws CoworkingNotFoundException;
 
     /**
@@ -41,6 +44,7 @@ public interface CoworkingDao extends ModelDao<CoworkingSpace, CoworkingNotFound
      *
      * @return a list of all {@link CoworkingSpace} objects
      */
+    @Override
     List<CoworkingSpace> getAll();
 
     /**

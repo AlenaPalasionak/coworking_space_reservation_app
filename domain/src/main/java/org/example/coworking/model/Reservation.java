@@ -3,6 +3,7 @@ package org.example.coworking.model;
 import lombok.*;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 public class Reservation {

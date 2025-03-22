@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 public class CoworkingSpace {

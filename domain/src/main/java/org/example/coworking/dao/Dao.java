@@ -10,7 +10,7 @@ import java.util.List;
  * @param <T> the type of the model object to be managed by the DAO
  * @param <E> the type of exception that may be thrown by operations in this interface
  */
-public interface ModelDao<T, E extends Exception> {
+public interface Dao<T, E extends Exception> {
 
     /**
      * Adds a new model object to the data source.
@@ -42,15 +42,5 @@ public interface ModelDao<T, E extends Exception> {
      * @return a list of all model objects
      */
     List<T> getAll();
-
-    /**
-     * Loads the data from the data source. Typically used for initialization or data retrieval.
-     */
-    void load();
-
-    /**
-     * Saves the current state of the data to the data source.
-     */
-    void save();
 }
 
