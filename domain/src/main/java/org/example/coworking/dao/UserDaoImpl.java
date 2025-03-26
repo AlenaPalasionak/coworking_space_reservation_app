@@ -1,34 +1,40 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.loader.Loader;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
 
-import java.io.FileNotFoundException;
+import java.sql.Connection;
 import java.util.List;
 
-import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
-
 public class UserDaoImpl implements UserDao {
-    private final Loader<User> userLoader;
-    private List<User> usersCache;
 
-    public UserDaoImpl(Loader<User> userLoader) {
-        this.userLoader = userLoader;
-    }
     @Override
-    public List<User> load() {
-        if (usersCache == null) {
-            loadFromStorage();
-        }
-        return usersCache;
+    public void add(User object) {
+
     }
 
-    private void loadFromStorage() {
-        try {
-            usersCache = userLoader.load(User.class);
-        } catch (FileNotFoundException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
+    @Override
+    public void delete(User object) throws EntityNotFoundException {
+
+    }
+
+    @Override
+    public User getById(Long id) throws EntityNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return null;
+    }
+
+    @Override
+    public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) {
+        return null;
+    }
+
+    @Override
+    public User getById(Long id, Connection connection) {
+        throw new UnsupportedOperationException("Use getById(Long id");
     }
 }

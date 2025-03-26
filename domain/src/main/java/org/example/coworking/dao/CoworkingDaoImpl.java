@@ -1,14 +1,11 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.dao.exception.DaoErrorCode;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.CoworkingSpace;
 
-import java.io.FileNotFoundException;
 import java.util.List;
-
-import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 public class CoworkingDaoImpl implements CoworkingDao {
     private static List<CoworkingSpace> coworkingSpacesCache;
@@ -35,10 +32,10 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public void delete(CoworkingSpace coworkingSpace) throws CoworkingNotFoundException {
+    public void delete(CoworkingSpace coworkingSpace) throws EntityNotFoundException {
         Long coworkingId = coworkingSpace.getId();
         if (checkIfNotExist(coworkingId)) {
-            throw new CoworkingNotFoundException("Coworking with id: " + coworkingId + " is not found"
+            throw new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found"
                     , DaoErrorCode.COWORKING_IS_NOT_FOUND);
         }
         coworkingSpacesCache
@@ -46,11 +43,11 @@ public class CoworkingDaoImpl implements CoworkingDao {
     }
 
     @Override
-    public CoworkingSpace getById(Long coworkingId) throws CoworkingNotFoundException {
+    public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         return coworkingSpacesCache.stream()
                 .filter(c -> c.getId().equals(coworkingId))
                 .findFirst()
-                .orElseThrow(() -> new CoworkingNotFoundException("Coworking with id: " + coworkingId + " is not found"
+                .orElseThrow(() -> new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found"
                         , DaoErrorCode.COWORKING_IS_NOT_FOUND));
     }
 
@@ -59,30 +56,8 @@ public class CoworkingDaoImpl implements CoworkingDao {
         return coworkingSpacesCache;
     }
 
-    @Override
-    public void load() {
-        if (coworkingSpacesCache == null) {
-            coworkingSpacesCache = getFromStorage();
-        }
-    }
-
-    @Override
-    public void save() {
-        coworkingSpaceLoader.save(coworkingSpacesCache);
-    }
-
     private boolean checkIfNotExist(Long id) {
         return coworkingSpacesCache.stream()
                 .noneMatch(c -> c.getId().equals(id));
-    }
-
-    private List<CoworkingSpace> getFromStorage() {
-        try {
-            coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
-        } catch (FileNotFoundException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
-        return coworkingSpacesCache;
     }
 }

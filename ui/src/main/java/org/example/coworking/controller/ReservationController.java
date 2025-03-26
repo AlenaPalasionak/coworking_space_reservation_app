@@ -2,8 +2,7 @@ package org.example.coworking.controller;
 
 import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
-import org.example.coworking.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.dao.exception.ReservationNotFoundException;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.ReservationMapper;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
@@ -51,20 +50,6 @@ public class ReservationController {
     }
 
     /**
-     * Loads the reservations from the storage.
-     */
-    public void load() {
-        reservationService.load();
-    }
-
-    /**
-     * Saves the current reservations to the storage.
-     */
-    public void save() {
-        reservationService.save();
-    }
-
-    /**
      * Allows a customer to add a reservation for a coworking space by specifying the start and end times.
      * Prompts the user for input and validates the entered values.
      *
@@ -98,7 +83,7 @@ public class ReservationController {
             } catch (InvalidInputException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (CoworkingNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
@@ -127,7 +112,7 @@ public class ReservationController {
         try {
             reservationService.add(customer, startTime, endTime, coworkingId);
             USER_OUTPUT_LOGGER.info("You've just made a reservation:\n" + startTime + endTime);
-        } catch (CoworkingNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             USER_OUTPUT_LOGGER.warn(e.getErrorCode());
             TECHNICAL_LOGGER.warn(e.getMessage());
         } catch (ReservationTimeException e) {
@@ -159,7 +144,7 @@ public class ReservationController {
      * @param reader the BufferedReader for user input
      * @param customer the customer deleting the reservation
      */
-    public void delete(BufferedReader reader, User customer){
+    public void delete(BufferedReader reader, User customer) {
         String reservationIdInput;
         Long reservationId;
         List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
@@ -184,7 +169,7 @@ public class ReservationController {
             } catch (InvalidInputException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (ReservationNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             } catch (ForbiddenActionException e) {

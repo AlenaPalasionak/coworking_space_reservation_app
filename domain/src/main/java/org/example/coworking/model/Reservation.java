@@ -7,13 +7,20 @@ import lombok.*;
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 public class Reservation {
-    @Setter
+
     private Long id;
     private final User customer;
     private final ReservationPeriod period;
     private final CoworkingSpace coworkingSpace;
 
     public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        this.customer = customer;
+        this.period = period;
+        this.coworkingSpace = coworkingSpace;
+    }
+
+    public Reservation(Long id, User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        this.id = id;
         this.customer = customer;
         this.period = period;
         this.coworkingSpace = coworkingSpace;

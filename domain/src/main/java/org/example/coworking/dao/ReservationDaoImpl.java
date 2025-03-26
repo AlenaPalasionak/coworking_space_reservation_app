@@ -1,14 +1,15 @@
 package org.example.coworking.dao;
 
 import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.ReservationNotFoundException;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
+import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 
-import java.io.FileNotFoundException;
 import java.util.List;
-
-import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ReservationDaoImpl implements ReservationDao {
     private static List<Reservation> reservationsCache;
@@ -16,18 +17,6 @@ public class ReservationDaoImpl implements ReservationDao {
 
     public ReservationDaoImpl(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
-    }
-
-    @Override
-    public void load() {
-        if (reservationsCache == null) {
-            reservationsCache = getFromStorage();
-        }
-    }
-
-    @Override
-    public void save() {
-        reservationLoader.save(reservationsCache);
     }
 
     @Override
@@ -42,25 +31,26 @@ public class ReservationDaoImpl implements ReservationDao {
         } while (isUniqueIdGenerated);
 
         reservation.setId(generatedId);
-        reservation.getCoworkingSpace().getReservationsPeriods().add(reservation.getPeriod());
+        addPeriodToCoworking(reservation.getPeriod(), reservation.getCoworkingSpace());
         reservationsCache.add(reservation);
     }
 
     @Override
-    public void delete(Reservation reservation) throws ReservationNotFoundException {
+    public void delete(Reservation reservation) throws EntityNotFoundException {
         if (checkIfNotExist(reservation.getId())) {
-            throw new ReservationNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
+            throw new EntityNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
                     , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
+        removePeriod(reservation.getPeriod(), reservation.getCoworkingSpace());
         reservationsCache.remove(reservation);
-        reservation.getCoworkingSpace().getReservationsPeriods().remove(reservation.getPeriod());
     }
 
-    public Reservation getById(Long reservationId) throws ReservationNotFoundException {
+    @Override
+    public Reservation getById(Long reservationId) throws EntityNotFoundException {
         return reservationsCache.stream()
                 .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
-                .orElseThrow(() -> new ReservationNotFoundException("Reservation with id: " + reservationId + " is not found. "
+                .orElseThrow(() -> new EntityNotFoundException("Reservation with id: " + reservationId + " is not found. "
                         , DaoErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
@@ -69,18 +59,30 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
+    @Override
+    public void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        boolean isUniqueIdGenerated;
+        Long generatedId;
+        do {
+            generatedId = IdGenerator.generatePeriodId();
+            Long finalGeneratedId = generatedId;
+            Set<ReservationPeriod> periods = reservationsCache.stream()
+                    .map(Reservation::getPeriod)
+                    .collect(Collectors.toSet());
+
+            isUniqueIdGenerated = periods.stream()
+                    .anyMatch(p -> p.getId().equals(finalGeneratedId));
+        } while (isUniqueIdGenerated);
+        period.setId(generatedId);
+        coworkingSpace.getReservationsPeriods().add(period);
+    }
+
+    private void removePeriod(ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        coworkingSpace.getReservationsPeriods().remove(period);
+    }
+
     private boolean checkIfNotExist(Long id) {
         return reservationsCache.stream()
                 .noneMatch(r -> r.getId().equals(id));
-    }
-
-    private List<Reservation> getFromStorage() {
-        try {
-            reservationsCache = reservationLoader.load(Reservation.class);
-        } catch (FileNotFoundException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
-        }
-        return reservationsCache;
     }
 }

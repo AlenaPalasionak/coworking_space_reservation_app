@@ -48,6 +48,6 @@ public class MenuServiceImpl implements MenuService {
         Optional<Menu> possibleMenu = menuDao.getMenuByName(name);
         if (possibleMenu.isPresent()) {
             return possibleMenu.get();
-        } else throw new MenuNotFoundException("Menu " + name + " is not found.", DaoErrorCode.MENU_NOT_IS_FOUND);
+        } else throw new MenuNotFoundException("Menu " + name + " is not found.", DaoErrorCode.MENU_IS_NOT_FOUND);
     }
 }

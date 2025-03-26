@@ -1,9 +1,8 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.ReservationDao;
-import org.example.coworking.dao.exception.CoworkingNotFoundException;
 import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.ReservationNotFoundException;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
@@ -36,62 +35,52 @@ class ReservationServiceImplTest {
     ReservationServiceImpl reservationService;
 
     @Test
-    void testLoad() {
-        reservationService.load();
-        verify(reservationDao, times(1)).load();
-    }
-
-    @Test
-    void testSave() {
-        reservationService.save();
-        verify(reservationDao, times(1)).save();
-    }
-
-    @Test
-    void testAddReservationSuccessfully() throws ReservationTimeException, CoworkingNotFoundException {
+    void testAddReservationSuccessfully() throws ReservationTimeException, EntityNotFoundException {
         User customer = new Customer(2L, "Custer", "321");
         Long coworkingSpaceId = 10L;
         LocalDateTime startTime = LocalDateTime.of(2030, 1, 2, 12, 0);
-        LocalDateTime endTime = LocalDateTime.of(2031, 1, 2, 12, 0);
+        LocalDateTime endTime = LocalDateTime.of(2030, 1, 2, 14, 0); // Исправлено: разумный интервал
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-
         when(coworkingService.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
         doNothing().when(timeLogicValidator).validateReservation(startTime, endTime);
-        when(coworkingService.getCoworkingSpacePeriod(coworkingSpace)).thenReturn(new TreeSet<>());
+        when(coworkingService.getCoworkingSpacePeriod(coworkingSpace))
+                .thenReturn(new TreeSet<>()); // Нет пересекающихся периодов
 
         reservationService.add(customer, startTime, endTime, coworkingSpaceId);
 
-        ArgumentCaptor<Reservation> captor = ArgumentCaptor.forClass(Reservation.class);
-        verify(reservationDao, times(1)).add(captor.capture());
-        verify(coworkingService, times(1)).getById(coworkingSpaceId);
-        verify(timeLogicValidator, times(1)).validateReservation(startTime, endTime);
-        verify(coworkingService, times(1)).getCoworkingSpacePeriod(coworkingSpace);
-        Reservation capturedReservation = captor.getValue();
-        assertThat(capturedReservation).hasFieldOrPropertyWithValue("customer", customer);
-        assertThat(capturedReservation.getPeriod())
-                .extracting("startTime", "endTime")
-                .containsExactly(startTime, endTime);
 
+        ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
+        verify(reservationDao).add(reservationCaptor.capture());
+
+        Reservation capturedReservation = reservationCaptor.getValue();
+
+        assertThat(capturedReservation.getCustomer()).isEqualTo(customer);
         assertThat(capturedReservation.getCoworkingSpace()).isEqualTo(coworkingSpace);
+        assertThat(capturedReservation.getPeriod().getStartTime()).isEqualTo(startTime);
+        assertThat(capturedReservation.getPeriod().getEndTime()).isEqualTo(endTime);
+        verify(coworkingService).getById(coworkingSpaceId);
+        verify(timeLogicValidator).validateReservation(startTime, endTime);
+        verify(coworkingService).getCoworkingSpacePeriod(coworkingSpace);
+        verify(reservationDao).add(any(Reservation.class));
     }
 
     @Test
-    void testAddReservationWhenCoworkingSpaceNotFound() throws CoworkingNotFoundException {
+    void testAddReservationWhenCoworkingSpaceNotFound() throws EntityNotFoundException {
         User customer = new Customer(2L, "Custer", "321");
         Long coworkingSpaceId = 999L;
         LocalDateTime startTime = Mockito.mock(LocalDateTime.class);
         LocalDateTime endTime = Mockito.mock(LocalDateTime.class);
 
-        when(coworkingService.getById(coworkingSpaceId)).thenThrow(new CoworkingNotFoundException("Coworking with id: "
+        when(coworkingService.getById(coworkingSpaceId)).thenThrow(new EntityNotFoundException("Coworking with id: "
                 + coworkingSpaceId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> reservationService.add(customer, startTime, endTime, coworkingSpaceId))
-                .isInstanceOf(CoworkingNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
         verify(reservationDao, never()).add(any());
     }
 
     @Test
-    void testAddReservationWhenTimeOverlaps() throws CoworkingNotFoundException, ReservationTimeException {
+    void testAddReservationWhenTimeOverlaps() throws EntityNotFoundException, ReservationTimeException {
         User customer = new Customer(2L, "Custer", "321");
         Long coworkingSpaceId = 10L;
         LocalDateTime startTime = LocalDateTime.of(2030, 1, 2, 12, 0);
@@ -108,10 +97,12 @@ class ReservationServiceImplTest {
                 .isInstanceOf(ReservationTimeException.class);
 
         verify(reservationDao, never()).add(any(Reservation.class));
+        verify(reservationDao, never()).addPeriodToCoworking(any(ReservationPeriod.class), any(CoworkingSpace.class));
+
     }
 
     @Test
-    void testDeleteReservationWhenUserIsOwner() throws ReservationNotFoundException, ForbiddenActionException {
+    void testDeleteReservationWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
         User customer = new Customer(2L, "Custer", "321");
         Long reservationId = 10L;
         ReservationPeriod period = Mockito.mock(ReservationPeriod.class);
@@ -125,6 +116,7 @@ class ReservationServiceImplTest {
 
         verify(reservationDao, times(1)).getById(reservationId);
         verify(reservationDao, times(1)).delete(captor.capture());
+
         Reservation capturedReservation = captor.getValue();
         assertThat(capturedReservation.getId()).isEqualTo(reservationId);
         assertThat(capturedReservation.getCustomer()).isEqualTo(customer);
@@ -132,7 +124,7 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void testDeleteReservationWhenUserIsNotOwner() throws ReservationNotFoundException {
+    void testDeleteReservationWhenUserIsNotOwner() throws EntityNotFoundException {
         User customer = new Customer(2L, "Custer", "321");
         User anotherCustomer = new Customer(99L, "Bob", "789");
         ReservationPeriod period = Mockito.mock(ReservationPeriod.class);
@@ -150,14 +142,14 @@ class ReservationServiceImplTest {
 
 
     @Test
-    void testDeleteReservationWhenCoworkingNotFound() throws ReservationNotFoundException {
+    void testDeleteReservationWhenCoworkingNotFound() throws EntityNotFoundException {
         Long reservationId = 99L;
         User customer = new Customer(2L, "Custer", "321");
-        when(reservationDao.getById(reservationId)).thenThrow(new ReservationNotFoundException("Coworking with id: " + reservationId + " is not found"
+        when(reservationDao.getById(reservationId)).thenThrow(new EntityNotFoundException("Coworking with id: " + reservationId + " is not found"
                 , DaoErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> reservationService.delete(customer, reservationId))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
 
         verify(reservationDao, never()).delete(any());
     }
@@ -195,7 +187,7 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void testGetByIdReturnsReservationWhenExists() throws ReservationNotFoundException {
+    void testGetByIdReturnsReservationWhenExists() throws EntityNotFoundException {
         Long reservationId = 10L;
         Reservation reservation = new Reservation(Mockito.mock(Customer.class), Mockito.mock(ReservationPeriod.class), Mockito.mock(CoworkingSpace.class));
         reservation.setId(reservationId);
@@ -207,15 +199,15 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void testGetByIdThrowsReservationNotFoundExceptionWhenNotFound() throws ReservationNotFoundException {
+    void testGetByIdThrowsReservationNotFoundExceptionWhenNotFound() throws EntityNotFoundException {
         Long reservationId = 99L;
         Reservation reservation = new Reservation(Mockito.mock(Customer.class), Mockito.mock(ReservationPeriod.class), Mockito.mock(CoworkingSpace.class));
         reservation.setId(reservationId);
 
-        when(reservationDao.getById(reservationId)).thenThrow(new ReservationNotFoundException
+        when(reservationDao.getById(reservationId)).thenThrow(new EntityNotFoundException
                 ("Reservation with id: " + reservation.getId() + " is not found. ", DaoErrorCode.RESERVATION_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> reservationService.getById(reservationId))
-                .isInstanceOf(ReservationNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class);
     }
 }

@@ -1,5 +1,7 @@
 package org.example.coworking.dao;
 
+import org.example.coworking.dao.exception.EntityNotFoundException;
+
 import java.util.List;
 
 /**
@@ -8,9 +10,8 @@ import java.util.List;
  * Additionally, it defines methods for loading and saving data from storage.
  *
  * @param <T> the type of the model object to be managed by the DAO
- * @param <E> the type of exception that may be thrown by operations in this interface
  */
-public interface Dao<T, E extends Exception> {
+public interface Dao<T> {
 
     /**
      * Adds a new model object to the data source.
@@ -23,18 +24,18 @@ public interface Dao<T, E extends Exception> {
      * Deletes the specified model object from the data source.
      *
      * @param object the model object to be deleted
-     * @throws E if an error occurs during the delete operation
+     * @throws EntityNotFoundException if an error occurs during the delete operation
      */
-    void delete(T object) throws E;
+    void delete(T object) throws EntityNotFoundException;
 
     /**
      * Retrieves a model object by its unique identifier.
      *
      * @param id the ID of the model object to be retrieved
      * @return the model object with the specified ID
-     * @throws E if an error occurs while retrieving the object
+     * @throws EntityNotFoundException if an error occurs while retrieving the object
      */
-    T getById(Long id) throws E;
+    T getById(Long id) throws EntityNotFoundException;
 
     /**
      * Retrieves all model objects from the data source.

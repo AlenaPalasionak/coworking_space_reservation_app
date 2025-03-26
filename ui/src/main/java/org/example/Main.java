@@ -25,14 +25,12 @@ public class Main {
     private static final String CUSTOMER = "2";
 
     public static void main(String[] args) {
-        AppFactory appFactory = new AppFactory();
+        AppFactory appFactory = new AppFactory("DB");
         ReservationController reservationController = appFactory.createReservationController();
         AuthorizationController authorizationController = appFactory.createAuthorizationController();
         CoworkingController coworkingController = appFactory.createCoworkingController();
         MenuController menuController = appFactory.createMenuController();
 
-        coworkingController.load();
-        reservationController.load();
         menuController.getMenusFromStorage();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {

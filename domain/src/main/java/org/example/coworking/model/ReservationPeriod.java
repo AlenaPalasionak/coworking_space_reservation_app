@@ -6,20 +6,30 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReservationPeriod implements Comparable <ReservationPeriod> {
+public class ReservationPeriod implements Comparable<ReservationPeriod> {
 
+    private Long id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endTime;
+
+    public ReservationPeriod(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    public ReservationPeriod(Long id, LocalDateTime startTime, LocalDateTime endTime) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
     @Override
     public int compareTo(ReservationPeriod other) {

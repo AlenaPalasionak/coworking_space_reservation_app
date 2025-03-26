@@ -124,7 +124,7 @@ public class MenuController {
                 case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, user);
                 case GET_ALL_RESERVATIONS -> reservationController.getAllReservations(user);
             }
-            logOut = shouldLogOut(menuController, coworkingController, reservationController, reader);
+            logOut = shouldLogOut(menuController, reader);
         }
     }
 
@@ -154,7 +154,7 @@ public class MenuController {
                 case GET_RESERVATIONS -> reservationController.getAllReservations(user);
                 case DELETE_RESERVATION -> reservationController.delete(reader, user);
             }
-            logOut = shouldLogOut(menuController, coworkingController, reservationController, reader);
+            logOut = shouldLogOut(menuController, reader);
         }
     }
 
@@ -163,22 +163,17 @@ public class MenuController {
      * should log out.
      *
      * @param menuController The controller used to handle menus.
-     * @param coworkingController The controller used to manage coworking spaces.
-     * @param reservationController The controller used to manage reservations.
      * @param reader The {@code BufferedReader} used to read user input.
      * @return {@code true} if the user chose to log out, {@code false} otherwise.
      * @throws IOException If an I/O error occurs during user interaction.
      */
-    public boolean shouldLogOut(MenuController menuController, CoworkingController coworkingController,
-                                ReservationController reservationController, BufferedReader reader) throws IOException {
+    public boolean shouldLogOut(MenuController menuController, BufferedReader reader) throws IOException {
         Menu nextStepMenu = menuController.getMenuByName(NEXT_STEP_MENU_KEY);
         menuController.showMenu(nextStepMenu.getMenuName());
         String nextStep = menuController.getUserChoice(reader, nextStepMenu);
         if (nextStep.equals(LOG_OUT)) {
             return true;
         } else if (nextStep.equals(EXIT)) {
-            coworkingController.save();
-            reservationController.save();
             System.exit(0);
         }
         return false;

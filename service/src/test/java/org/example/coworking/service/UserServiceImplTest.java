@@ -1,6 +1,8 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.UserDao;
+import org.example.coworking.dao.exception.DaoErrorCode;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
@@ -10,9 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,26 +24,32 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Test
-    void testLoadReturnsUsers() {
-        List<User> expectedUsers = List.of(
-                new Admin(1L, "Aden", "123"),
-                new Customer(2L, "Custer", "321")
-        );
-        when(userDao.load()).thenReturn(expectedUsers);
+    void testGetUserByNamePasswordAndRoleReturnsUser() throws EntityNotFoundException {
+        String name = "Aden";
+        String password = "123";
+        Class<? extends User> roleClass = Admin.class;
+        User expectedUser = new Admin(1L, name, password);
 
-        List<User> actualUsers = userService.load();
+        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenReturn(expectedUser);
 
-        assertEquals(expectedUsers, actualUsers);
-        verify(userDao, times(1)).load();
+        User actualUser = userService.getUserByNamePasswordAndAndRole(name, password, roleClass);
+
+        assertEquals(expectedUser, actualUser);
+        verify(userDao, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
     }
 
     @Test
-    void testLoadReturnsEmptyListWhenNoUsers() {
-        when(userDao.load()).thenReturn(List.of());
+    void testGetUserByNamePasswordAndRoleThrowsException() throws EntityNotFoundException {
+        String name = "Unknown";
+        String password = "wrongPass";
+        Class<? extends User> roleClass = Customer.class;
 
-        List<User> actualUsers = userService.load();
+        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenThrow(new EntityNotFoundException
+                ("User is not found", DaoErrorCode.USER_IS_NOT_FOUND));
 
-        assertEquals(0, actualUsers.size());
-        verify(userDao, times(1)).load();
+        assertThrows(EntityNotFoundException.class, () ->
+                userService.getUserByNamePasswordAndAndRole(name, password, roleClass));
+
+        verify(userDao, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
     }
 }

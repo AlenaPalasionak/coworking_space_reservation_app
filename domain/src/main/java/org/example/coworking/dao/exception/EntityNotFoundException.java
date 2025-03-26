@@ -3,10 +3,10 @@ package org.example.coworking.dao.exception;
 import lombok.Getter;
 
 @Getter
-public class ReservationNotFoundException extends Exception {
+public class EntityNotFoundException extends Exception {
     private final DaoErrorCode errorCode;
 
-    public ReservationNotFoundException(String message, DaoErrorCode errorCode) {
+    public EntityNotFoundException(String message, DaoErrorCode errorCode) {
         super(message);
         this.errorCode = errorCode;
     }

@@ -2,7 +2,7 @@ package org.example.coworking.controller;
 
 import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
-import org.example.coworking.dao.exception.CoworkingNotFoundException;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.CoworkingMapper;
 import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
 import org.example.coworking.mapper.exception.FacilityIndexException;
@@ -31,9 +31,9 @@ public class CoworkingController {
 
     public static final String COWORKING_TYPE_MENU = """
             Choose the coworkingSpace type (press only one of the numbers):
-            Open space coworkingSpace - 0
+            Open Space - 0
             Private Office - 1
-            Coworking+Co-living - 2
+            Co Living - 2
             """;
 
     public static final String FACILITY_MENU = """
@@ -59,20 +59,6 @@ public class CoworkingController {
     public CoworkingController(CoworkingService coworkingService, CoworkingMapper coworkingMapper) {
         this.coworkingService = coworkingService;
         this.coworkingMapper = coworkingMapper;
-    }
-
-    /**
-     * Loads the coworking spaces from the service.
-     */
-    public void load() {
-        coworkingService.load();
-    }
-
-    /**
-     * Saves the coworking spaces to the service.
-     */
-    public void save() {
-        coworkingService.save();
     }
 
     /**
@@ -170,7 +156,7 @@ public class CoworkingController {
             } catch (ForbiddenActionException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (CoworkingNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
