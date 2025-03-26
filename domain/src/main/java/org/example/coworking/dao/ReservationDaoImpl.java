@@ -7,6 +7,7 @@ import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,8 +60,7 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
-    @Override
-    public void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace) {
+    private void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace) {
         boolean isUniqueIdGenerated;
         Long generatedId;
         do {
@@ -84,5 +84,11 @@ public class ReservationDaoImpl implements ReservationDao {
     private boolean checkIfNotExist(Long id) {
         return reservationsCache.stream()
                 .noneMatch(r -> r.getId().equals(id));
+    }
+
+    @Override
+    public Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException {
+        throw new UnsupportedOperationException("Use method public Reservation getById(Long reservationId)");
+
     }
 }

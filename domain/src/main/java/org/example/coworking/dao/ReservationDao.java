@@ -1,9 +1,9 @@
 package org.example.coworking.dao;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
+
+import java.sql.Connection;
 
 /**
  * This interface defines the data access operations for the {@link Reservation} model.
@@ -13,8 +13,6 @@ import org.example.coworking.model.ReservationPeriod;
  */
 public interface ReservationDao extends Dao<Reservation> {
 
-    void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace);
-
-
+    Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException;
 }
 

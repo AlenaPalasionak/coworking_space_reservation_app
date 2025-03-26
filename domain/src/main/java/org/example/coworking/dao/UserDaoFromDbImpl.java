@@ -4,6 +4,7 @@ import org.example.coworking.config.DataSourceConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.dao.exception.ObjectFieldNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
@@ -13,10 +14,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+
+import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 public class UserDaoFromDbImpl implements UserDao {
-
     private final DataSource dataSource;
 
     public UserDaoFromDbImpl() {
@@ -24,84 +25,65 @@ public class UserDaoFromDbImpl implements UserDao {
     }
 
     @Override
-    public void add(User object) {
-
-    }
-
-    @Override
-    public void delete(User object) {
-
-    }
-
-    @Override
-    public User getById(Long id) {
-        return null;
-    }
-
-    @Override
     public User getById(Long id, Connection connection) {
         User user = null;
-        String sqlQuery = "SELECT name, password, role " +
+        String selectUserQuery = "SELECT name, password, role " +
                 "FROM public.users  " +
                 "WHERE id = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setLong(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new EntityNotFoundException("Failure to find user with id " + id, DaoErrorCode.USER_IS_NOT_FOUND);
+        try (PreparedStatement selectUserStatement = connection.prepareStatement(selectUserQuery)) {
+            selectUserStatement.setLong(1, id);
+            try (ResultSet UserResultSet = selectUserStatement.executeQuery()) {
+                if (!UserResultSet.next()) {
+                    throw new ObjectFieldNotFoundException("Failure to find user with id " + id);
                 }
-                String userName = resultSet.getString(1);
-                String password = resultSet.getString(2);
-                String role = resultSet.getString(3);
+                String userName = UserResultSet.getString(1);
+                String password = UserResultSet.getString(2);
+                String role = UserResultSet.getString(3);
                 switch (role) {
                     case "ADMIN" -> user = new Admin(id, userName, password);
                     case "CUSTOMER" -> user = new Customer(id, userName, password);
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
             return user;
         } catch (SQLException e) {
-            throw new DataExcessException("Failure to establish connection when getting user by id: " + id);
+            throw new DataExcessException("Database error occurred while fetching user by id: " + id);
         }
     }
 
     @Override
     public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
         String role = roleClass == Admin.class ? "ADMIN" : "CUSTOMER";
-        String sqlQuery = "SELECT id, name, password, role " +
+        String selectUserQuery = "SELECT id, name, password, role " +
                 "FROM users " +
                 "WHERE name = ? AND password = crypt(?, password) AND role = CAST(? AS user_role)";
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
+             PreparedStatement selectUserStatement = connection.prepareStatement(selectUserQuery)) {
 
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, password);
-            preparedStatement.setString(3, role);
+            selectUserStatement.setString(1, name);
+            selectUserStatement.setString(2, password);
+            selectUserStatement.setString(3, role);
 
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                if (!rs.next()) {
-                    throw new EntityNotFoundException("User with the name  " + name + "is not found", DaoErrorCode.USER_IS_NOT_FOUND);
+            try (ResultSet selectUserResultSet = selectUserStatement.executeQuery()) {
+                if (!selectUserResultSet.next()) {
+                    throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
                 } else {
                     return role.equals("ADMIN") ?
-                            new Admin(rs.getLong("id"), rs.getString("name")
-                                    , rs.getString("password")) :
-                            new Customer(rs.getLong("id"), rs.getString("name")
-                                    , rs.getString("password"));
+                            new Admin(selectUserResultSet.getLong("id"), selectUserResultSet.getString("name")
+                                    , selectUserResultSet.getString("password")) :
+                            new Customer(selectUserResultSet.getLong("id"), selectUserResultSet.getString("name")
+                                    , selectUserResultSet.getString("password"));
                 }
-
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DataExcessException("Database error occurred while fetching user with the name: " + name);
         }
     }
 
     @Override
-    public List<User> getAll() {
-        return null;
+    public User getById(Long id) {
+        throw new UnsupportedOperationException("Use getById(Long id, Connection connection)");
     }
 }

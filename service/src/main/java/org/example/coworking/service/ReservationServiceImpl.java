@@ -41,7 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
         Reservation reservation = getById(reservationId);
-        if (reservation.getCustomer().equals(user)) {
+        if (reservation.getCustomer().getId().equals(user.getId())) {
             reservationDao.delete(reservation);
         } else {
             throw new ForbiddenActionException("Action is forbidden for the user: " + user.getName()

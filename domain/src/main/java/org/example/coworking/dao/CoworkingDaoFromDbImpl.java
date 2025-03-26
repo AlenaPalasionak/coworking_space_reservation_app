@@ -43,8 +43,6 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
                 try (ResultSet coworkingIdResultSet = insertCoworkingSpaceStatement.getGeneratedKeys()) {
                     if (coworkingIdResultSet.next()) {
                         coworkingSpaceId = coworkingIdResultSet.getLong(1);
-                    } else {
-                        throw new ObjectFieldNotFoundException("Failure to find coworking id " + coworkingSpaceId);
                     }
                 }
 
@@ -65,7 +63,7 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when adding coworking.");
+            throw new DataExcessException("Database error occurred while adding coworking.");
         }
     }
 
@@ -84,21 +82,18 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when deleting coworking space: " + coworkingSpace);
+            throw new DataExcessException("Database error occurred while deleting coworking space: " + coworkingSpace);
         }
     }
 
     @Override
-    public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
+    public CoworkingSpace getById(Long coworkingId, Connection connection) throws EntityNotFoundException {
         String selectCoworkingSpaceQuery = "SELECT cs.id, cs.admin_id, cs.price, ct.description " +
                 "FROM public.coworking_spaces cs " +
                 "JOIN public.coworking_types ct ON cs.type_id = ct.id " +
                 "WHERE cs.id = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement selectCoworkingStatement = connection.prepareStatement(selectCoworkingSpaceQuery)) {
-            connection.setAutoCommit(false);
-
+        try (PreparedStatement selectCoworkingStatement = connection.prepareStatement(selectCoworkingSpaceQuery)) {
             selectCoworkingStatement.setLong(1, coworkingId);
 
             try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
@@ -118,13 +113,48 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
                 List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
                 Set<ReservationPeriod> reservationPeriods = getReservationPeriodsForCoworkingSpace(coworkingId, connection);
 
-                connection.commit();
+                return new CoworkingSpace(coworkingId, admin, price, coworkingType, facilities, reservationPeriods);
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DataExcessException("Database error occurred while fetching coworking space by id: "
+                    + coworkingId);
+        }
+    }
+
+    @Override
+    public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
+        String selectCoworkingSpaceQuery = "SELECT cs.id, cs.admin_id, cs.price, ct.description " +
+                "FROM public.coworking_spaces cs " +
+                "JOIN public.coworking_types ct ON cs.type_id = ct.id " +
+                "WHERE cs.id = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement selectCoworkingStatement = connection.prepareStatement(selectCoworkingSpaceQuery)) {
+            selectCoworkingStatement.setLong(1, coworkingId);
+
+            try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
+                if (!coworkingResultSet.next()) {
+                    throw new EntityNotFoundException("Failure to find coworking space with id: " + coworkingId,
+                            DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                }
+
+                Long adminId = coworkingResultSet.getLong("admin_id");
+                double price = coworkingResultSet.getDouble("price");
+                String typeDescription = coworkingResultSet.getString("description");
+
+                CoworkingType coworkingType = CoworkingType.valueOf(
+                        typeDescription.replace(" ", "_").toUpperCase());
+
+                User admin = userDaoFromDb.getById(adminId, connection);
+                List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
+                Set<ReservationPeriod> reservationPeriods = getReservationPeriodsForCoworkingSpace(coworkingId, connection);
 
                 return new CoworkingSpace(coworkingId, admin, price, coworkingType, facilities, reservationPeriods);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting coworking space by id: "
+            throw new DataExcessException("Database error occurred while fetching coworking space by id: "
                     + coworkingId);
         }
     }
@@ -157,12 +187,15 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
             return coworkingSpaces;
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting coworking spaces");
+            throw new DataExcessException("Database error occurred while fetching coworking spaces");
         }
     }
 
-
     private List<Facility> getFacilitiesForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
+        if (coworkingSpaceId == null) {
+            TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
+            throw new IllegalArgumentException("CoworkingSpaceId cannot be null");
+        }
         List<Facility> facilities = new ArrayList<>();
         String selectFacilitiesQuery = "SELECT f.description " +
                 "FROM public.coworking_space_facilities cf " +
@@ -180,13 +213,17 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting facilities List of coworking with id: "
+            throw new DataExcessException("Database error occurred while fetching facilities List of coworking with id: "
                     + coworkingSpaceId);
         }
         return facilities;
     }
 
     private Set<ReservationPeriod> getReservationPeriodsForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
+        if (coworkingSpaceId == null) {
+            TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
+            throw new IllegalArgumentException("CoworkingSpaceId cannot be null");
+        }
         Set<ReservationPeriod> reservationPeriods = new TreeSet<>();
         String selectPeriodsQuery = "SELECT rp.id, rp.start_time, rp.end_time " +
                 "FROM public.reservation_periods rp " +
@@ -204,31 +241,41 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting Reservation Periods for coworking with id: " +
+            throw new DataExcessException("Database error occurred while fetching Reservation Periods for coworking with id: " +
                     coworkingSpaceId);
         }
         return reservationPeriods;
     }
 
     private long getCoworkingTypeId(CoworkingType type, Connection connection) {
-        String selectCoworkingTypeIdQuery = "SELECT id FROM public.coworking_types WHERE description = ?";
-        try (PreparedStatement selectCoworkingTypeIdStatement = connection.prepareStatement(selectCoworkingTypeIdQuery)) {
-            selectCoworkingTypeIdStatement.setString(1, type.getDescription());
-            try (ResultSet coworkingTypeIdResultSet = selectCoworkingTypeIdStatement.executeQuery()) {
-                if (coworkingTypeIdResultSet.next()) {
-                    return coworkingTypeIdResultSet.getLong("id");
+        if (type == null || type.getDescription() == null) {
+            throw new IllegalArgumentException("CoworkingType or description cannot be null");
+        }
+
+        String query = "SELECT id FROM public.coworking_types WHERE description = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, type.getDescription());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getLong("id");
                 } else {
-                    throw new ObjectFieldNotFoundException("Failure to find coworking type with description " + type.getDescription());
+                    throw new ObjectFieldNotFoundException("Failure to find coworking type for description: " + type.getDescription());
                 }
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting coworking type id for description: "
-                    + type.getDescription());
+            TECHNICAL_LOGGER.error("Database error when fetching coworking type ID for description '{}': {}",
+                    type.getDescription(), e.getMessage(), e);
+            throw new DataExcessException("Database error occurred while fetching coworking type ID.");
         }
     }
 
     private long getFacilityId(Facility facility, Connection connection) {
+        if (facility == null || facility.getDescription() == null) {
+            TECHNICAL_LOGGER.error("Facility or facility description is null");
+            throw new IllegalArgumentException("Facility or description cannot be null");
+        }
         String selectFacilityIdQuery = "SELECT id FROM facilities WHERE description = ?";
         try (PreparedStatement selectFacilityIdStatement = connection.prepareStatement(selectFacilityIdQuery)) {
             selectFacilityIdStatement.setString(1, facility.getDescription());
@@ -236,13 +283,13 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
                 if (facilityIdResultSet.next()) {
                     return facilityIdResultSet.getLong("id");
                 } else {
-                    throw new ObjectFieldNotFoundException("Failure to find facility id: " + facility.getDescription());
+                    TECHNICAL_LOGGER.error("Failure to find facility id for facility: " + facility.getDescription());
+                    throw new ObjectFieldNotFoundException("Failure to find facility id for facility: " + facility.getDescription());
                 }
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting facility id: "
-                    + facility);
+            throw new DataExcessException("Database error occurred while getting facility id.");
         }
     }
 }

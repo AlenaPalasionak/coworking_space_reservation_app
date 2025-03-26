@@ -97,7 +97,6 @@ class ReservationServiceImplTest {
                 .isInstanceOf(ReservationTimeException.class);
 
         verify(reservationDao, never()).add(any(Reservation.class));
-        verify(reservationDao, never()).addPeriodToCoworking(any(ReservationPeriod.class), any(CoworkingSpace.class));
 
     }
 

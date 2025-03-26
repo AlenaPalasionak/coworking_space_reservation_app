@@ -4,6 +4,7 @@ import org.example.coworking.config.DataSourceConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.dao.exception.ObjectFieldNotFoundException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
@@ -32,47 +33,44 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
     public void add(Reservation reservation) {
         Long customerId = reservation.getCustomer().getId();
         Long coworkingId = reservation.getCoworkingSpace().getId();
-        addPeriodToCoworking(reservation.getPeriod(), reservation.getCoworkingSpace());
-        Long periodId = reservation.getPeriod().getId();
 
-        String insertReservationQuery = "INSERT INTO public.reservations" +
-                "(customer_id, coworking_space_id, period_id) " +
-                "VALUES (?, ?, ?)";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement insertReservationStatement = connection.prepareStatement(insertReservationQuery)) {
-            insertReservationStatement.setLong(1, customerId);
-            insertReservationStatement.setLong(2, coworkingId);
-            insertReservationStatement.setLong(3, periodId);
+        String insertReservationQuery = "INSERT INTO public.reservations " +
+                "(customer_id, coworking_space_id) " +
+                "VALUES (?, ?) RETURNING id";
 
-            insertReservationStatement.executeUpdate();
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when adding a new reservation: " + reservation);
-        }
-    }
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
 
-    @Override
-    public void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace) {
-        String insertPeriodQuery = "INSERT INTO public.reservation_periods (coworking_space_id, start_time, end_time) " +
-                "VALUES (?, ?, ?) RETURNING id";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement insertPeriodStatement = connection.prepareStatement(insertPeriodQuery)) {
+            try (PreparedStatement insertReservationStatement = connection.prepareStatement(
+                    insertReservationQuery,
+                    Statement.RETURN_GENERATED_KEYS)) {
 
-            insertPeriodStatement.setLong(1, coworkingSpace.getId());
-            insertPeriodStatement.setTimestamp(2, Timestamp.valueOf(period.getStartTime()));
-            insertPeriodStatement.setTimestamp(3, Timestamp.valueOf(period.getEndTime()));
+                insertReservationStatement.setLong(1, customerId);
+                insertReservationStatement.setLong(2, coworkingId);
+                insertReservationStatement.executeUpdate();
 
-            try (ResultSet periodIdResultSet = insertPeriodStatement.executeQuery()) {
-                if (periodIdResultSet.next()) {
-                    period.setId(periodIdResultSet.getLong("id"));
+                try (ResultSet generatedKeys = insertReservationStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        Long reservationId = generatedKeys.getLong(1);
+                        reservation.setId(reservationId);
+
+                        addPeriodToReservation(reservation, connection);
+                    } else {
+                        throw new DataExcessException("Failed to get generated reservation ID for reservation: " + reservation);
+                    }
                 }
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                TECHNICAL_LOGGER.error(e.getMessage());
+                throw new DataExcessException("Database error occurred while adding a new reservation: " + reservation);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when adding a new reservation period." + period);
+            throw new DataExcessException("Database error occurred while adding a new reservation: " + reservation);
         }
     }
-
 
     @Override
     public void delete(Reservation reservation) throws EntityNotFoundException {
@@ -84,15 +82,48 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
             int rowsAffected = deleteReservationStatement.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new EntityNotFoundException("Reservation with ID " + reservation.getId() + " not found"
+                throw new EntityNotFoundException("Failure to find reservation with ID " + reservation.getId()
                         , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when adding reservation: " + reservation);
+            throw new DataExcessException("Database error occurred while adding reservation: " + reservation);
         }
     }
 
+    @Override
+    public Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException {
+        String selectReservationQuery = "SELECT id, customer_id, coworking_space_id, period_id " +
+                "FROM public.reservations  " +
+                "WHERE id = ?";
+
+        try (PreparedStatement selectReservationStatement = connection.prepareStatement(selectReservationQuery)) {
+            selectReservationStatement.setLong(1, reservationId);
+
+            try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
+                if (!reservationResultSet.next()) {
+                    throw new EntityNotFoundException("Failure to find reservation with ID " + reservationId
+                            , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                }
+
+                Long customerId = reservationResultSet.getLong("customer_id");
+                Long coworkingId = reservationResultSet.getLong("coworking_space_id");
+                Long periodId = reservationResultSet.getLong("period_id");
+
+                User customer = userDaoFromDb.getById(customerId, connection);
+                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingId, connection);
+                ReservationPeriod period = getReservationPeriodById(periodId, connection);
+
+                return new Reservation(reservationId, customer, period, coworkingSpace);
+            } catch (EntityNotFoundException e) {
+                throw new EntityNotFoundException("Failure to find Reservation with ID " + reservationId
+                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DataExcessException("Database error occurred while fetching reservation by  id : " + reservationId);
+        }
+    }
 
     @Override
     public Reservation getById(Long reservationId) throws EntityNotFoundException {
@@ -102,30 +133,30 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectReservationStatement = connection.prepareStatement(selectReservationQuery)) {
-
             selectReservationStatement.setLong(1, reservationId);
 
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
-                    throw new EntityNotFoundException("Reservation with ID " + reservationId + " not found",
-                            DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                    throw new EntityNotFoundException("Failure to find reservation with ID " + reservationId
+                            , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 Long customerId = reservationResultSet.getLong("customer_id");
                 Long coworkingId = reservationResultSet.getLong("coworking_space_id");
                 Long periodId = reservationResultSet.getLong("period_id");
 
-                User customer = userDaoFromDb.getById(customerId);
-                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingId);
+                User customer = userDaoFromDb.getById(customerId, connection);
+                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingId, connection);
                 ReservationPeriod period = getReservationPeriodById(periodId, connection);
 
                 return new Reservation(reservationId, customer, period, coworkingSpace);
             } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new EntityNotFoundException("Failure to find Reservation with ID " + reservationId
+                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting reservation by  id : " + reservationId);
+            throw new DataExcessException("Database error occurred while fetching reservation by id : " + reservationId);
         }
     }
 
@@ -134,29 +165,31 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
         List<Reservation> reservations = new ArrayList<>();
         String selectReservationsQuery = "SELECT id, customer_id, coworking_space_id, period_id " +
                 "FROM public.reservations ";
+        Long coworkingSpaceId = null;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectReservationsStatement = connection.prepareStatement(selectReservationsQuery);
              ResultSet reservationsResultSet = selectReservationsStatement.executeQuery()) {
 
             while (reservationsResultSet.next()) {
-                Long reservationId = reservationsResultSet.getLong("id");
+                Long reservationId = reservationsResultSet.getLong(1);
                 Long customerId = reservationsResultSet.getLong("customer_id");
-                Long coworkingSpaceId = reservationsResultSet.getLong("coworking_space_id");
+                coworkingSpaceId = reservationsResultSet.getLong("coworking_space_id");
                 Long periodId = reservationsResultSet.getLong("period_id");
 
                 User customer = userDaoFromDb.getById(customerId, connection);
-                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingSpaceId);
+                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingSpaceId, connection);
                 ReservationPeriod reservationPeriod = getReservationPeriodById(periodId, connection);
 
                 Reservation reservation = new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
                 reservations.add(reservation);
             }
         } catch (EntityNotFoundException e) {
-            throw new RuntimeException(e);
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new ObjectFieldNotFoundException("Failure to find coworkingSpace with ID " + coworkingSpaceId);
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting all reservations.");
+            throw new DataExcessException("Database error occurred while fetching all reservations.");
         }
         return reservations;
     }
@@ -180,8 +213,46 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Failure to establish connection when getting a reservation period.");
+            throw new DataExcessException("Database error occurred while fetching a reservation period.");
         }
         return reservationPeriod;
+    }
+
+    private void addPeriodToReservation(Reservation reservation, Connection connection) {
+        String insertPeriodQuery = "INSERT INTO public.reservation_periods " +
+                "(reservation_id, coworking_space_id, start_time, end_time) " +
+                "VALUES (?, ?, ?, ?) RETURNING id";
+
+        try (PreparedStatement insertPeriodStatement = connection.prepareStatement(insertPeriodQuery)) {
+            ReservationPeriod period = reservation.getPeriod();
+
+            insertPeriodStatement.setLong(1, reservation.getId());
+            insertPeriodStatement.setLong(2, reservation.getCoworkingSpace().getId());
+            insertPeriodStatement.setTimestamp(3, Timestamp.valueOf(period.getStartTime()));
+            insertPeriodStatement.setTimestamp(4, Timestamp.valueOf(period.getEndTime()));
+
+            try (ResultSet resultSet = insertPeriodStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    period.setId(resultSet.getLong("id"));
+                    updateReservationWithPeriodId(reservation.getId(), period.getId(), connection);
+                }
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DataExcessException("Database error occurred while adding reservation period: " + reservation.getPeriod());
+        }
+    }
+
+    private void updateReservationWithPeriodId(Long reservationId, Long periodId, Connection connection) {
+        String updateQuery = "UPDATE public.reservations SET period_id = ? WHERE id = ?";
+
+        try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            updateStatement.setLong(1, periodId);
+            updateStatement.setLong(2, reservationId);
+            updateStatement.executeUpdate();
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error(e.getMessage());
+            throw new DataExcessException("Database error occurred while updating reservation with period ID: " + periodId);
+        }
     }
 }
