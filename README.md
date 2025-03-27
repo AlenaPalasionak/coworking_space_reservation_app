@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-### 1. Create PostgresSQL database named:
+### 1. Create a PostgreSQL database named:
 
 ```sh
 coworking_reservation_app
@@ -14,7 +14,7 @@ coworking_reservation_app
 application.properties
 ```
 
-### 3. The file application.properties should contain (enter your personal data):
+### 3. The file application.properties should contain (enter your data):
 
 ```sh
 database.url=jdbc:postgresql://localhost:5432/coworking_reservation_app
@@ -22,7 +22,7 @@ database.username=your_username
 database.password=your_password
 ```
 
-### 4. Run scheme.sql located in domain module in resources package.
+### 4. Run scheme.sql located in the domain module in the resources package.
 
 ## Run the project in Terminal
 
