@@ -18,6 +18,9 @@ import java.util.List;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+/**
+ * Class provides functionality for interaction with database and processing Reservation object
+ */
 public class ReservationDaoFromDbImpl implements ReservationDao {
     private final DataSource dataSource;
     private final UserDao userDaoFromDb;
@@ -194,6 +197,14 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
         return reservations;
     }
 
+    /**
+     * Retrieves a reservation period by its ID from the database.
+     *
+     * @param periodId   The ID of the reservation period to fetch.
+     * @param connection The database connection to be used for executing the query.
+     * @return A {@link ReservationPeriod} object if found, otherwise {@code null}.
+     * @throws DataExcessException If a database error occurs during the query.
+     */
     private ReservationPeriod getReservationPeriodById(Long periodId, Connection connection) {
         ReservationPeriod reservationPeriod = null;
         String selectPeriodQuery = "SELECT id, coworking_space_id, start_time, end_time " +
@@ -218,6 +229,14 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
         return reservationPeriod;
     }
 
+    /**
+     * Adds a reservation period to a given reservation in the database.
+     * The newly created period's ID is retrieved and used to update the reservation.
+     *
+     * @param reservation The reservation to which the period should be added.
+     * @param connection  The database connection to be used for executing the query.
+     * @throws DataExcessException If a database error occurs during insertion.
+     */
     private void addPeriodToReservation(Reservation reservation, Connection connection) {
         String insertPeriodQuery = "INSERT INTO public.reservation_periods " +
                 "(reservation_id, coworking_space_id, start_time, end_time) " +
@@ -243,6 +262,14 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
         }
     }
 
+    /**
+     * Updates the reservation record with the associated period ID.
+     *
+     * @param reservationId The ID of the reservation to update.
+     * @param periodId      The ID of the reservation period to associate with the reservation.
+     * @param connection    The database connection to be used for executing the query.
+     * @throws DataExcessException If a database error occurs during the update.
+     */
     private void updateReservationWithPeriodId(Long reservationId, Long periodId, Connection connection) {
         String updateQuery = "UPDATE public.reservations SET period_id = ? WHERE id = ?";
 

@@ -6,13 +6,19 @@ import org.example.coworking.model.Reservation;
 import java.sql.Connection;
 
 /**
- * This interface defines the data access operations for the {@link Reservation} model.
- * It extends the {@link Dao} interface to provide basic CRUD operations with
- * {@link EntityNotFoundException} as the exception type for errors.
- * It provides additional methods for adding, deleting, retrieving, and saving reservation data.
+ * Data Access Object (DAO) interface for managing {@link Reservation} entities.
  */
 public interface ReservationDao extends Dao<Reservation> {
 
+    /**
+     * Retrieves a reservation by its ID using the provided database connection.
+     *
+     * @param reservationId the ID of the reservation to retrieve
+     * @param connection the database connection to use for the query
+     * @return the found {@link Reservation} entity
+     * @throws EntityNotFoundException if no reservation is found with the given ID
+     */
     Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException;
 }
+
 

@@ -17,6 +17,10 @@ import java.sql.SQLException;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+/**
+ * Implementation of {@link UserDao} that interacts with the database
+ * to manage user retrieval operations.
+ */
 public class UserDaoFromDbImpl implements UserDao {
     private final DataSource dataSource;
 

@@ -2,31 +2,15 @@
 
 ## Getting Started
 
-### 1. Clone the project
+### 1. Create PostgresSQL database named coworking_reservation_app
 
-```sh
-git clone https://github.com/AlenaPalasionak/coworking_space_reservation_app.git
-cd coworking_space_reservation_app
-git checkout feature-branch-6
-```
+### 2. Add application.properties to resources package in domain module. It should contain:
 
-### 2. Build the project
+#### database.url=jdbc:postgresql://localhost:5432/coworking_reservation_app
+#### database.username=your_username
+#### database.password=your_password
 
-```sh
-mvn clean install
-```
-
-### 3. Navigate to the target directory
-
-```sh
-cd ui/target
-```
-
-### 4. Run the application
-
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
-```
+### 3. Run scheme.sql located in domain module in resources package.
 
 
 

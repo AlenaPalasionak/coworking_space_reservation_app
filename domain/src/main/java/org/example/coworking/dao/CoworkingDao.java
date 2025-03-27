@@ -13,6 +13,14 @@ import java.sql.Connection;
  */
 public interface CoworkingDao extends Dao<CoworkingSpace> {
 
+    /**
+     * Retrieves a coworking space by its ID.
+     *
+     * @param coworkingId The ID of the coworking space.
+     * @param connection  The database connection to use.
+     * @return The found {@link CoworkingSpace}.
+     * @throws EntityNotFoundException if no coworking space is found with the given ID.
+     */
     CoworkingSpace getById(Long coworkingId, Connection connection) throws EntityNotFoundException;
 
 }

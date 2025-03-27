@@ -14,6 +14,9 @@ import java.util.TreeSet;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+/**
+ * Class provides functionality for interaction with database and processing Coworking object
+ */
 public class CoworkingDaoFromDbImpl implements CoworkingDao {
 
     private final DataSource dataSource;
@@ -191,6 +194,15 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
         }
     }
 
+    /**
+     * Retrieves the list of facilities associated with a given coworking space.
+     *
+     * @param coworkingSpaceId The ID of the coworking space.
+     * @param connection       The database connection.
+     * @return A list of {@link Facility} objects.
+     * @throws IllegalArgumentException If coworkingSpaceId is null.
+     * @throws DataExcessException      If a database error occurs.
+     */
     private List<Facility> getFacilitiesForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
         if (coworkingSpaceId == null) {
             TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
@@ -219,6 +231,15 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
         return facilities;
     }
 
+    /**
+     * Retrieves the set of reservation periods for a given coworking space.
+     *
+     * @param coworkingSpaceId The ID of the coworking space.
+     * @param connection       The database connection.
+     * @return A sorted set of {@link ReservationPeriod} objects.
+     * @throws IllegalArgumentException If coworkingSpaceId is null.
+     * @throws DataExcessException      If a database error occurs.
+     */
     private Set<ReservationPeriod> getReservationPeriodsForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
         if (coworkingSpaceId == null) {
             TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
@@ -247,6 +268,16 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
         return reservationPeriods;
     }
 
+    /**
+     * Retrieves the ID of a coworking type based on its description.
+     *
+     * @param type       The {@link CoworkingType}.
+     * @param connection The database connection.
+     * @return The coworking type ID.
+     * @throws IllegalArgumentException     If type or its description is null.
+     * @throws ObjectFieldNotFoundException If no matching coworking type is found.
+     * @throws DataExcessException          If a database error occurs.
+     */
     private long getCoworkingTypeId(CoworkingType type, Connection connection) {
         if (type == null || type.getDescription() == null) {
             throw new IllegalArgumentException("CoworkingType or description cannot be null");
@@ -271,6 +302,16 @@ public class CoworkingDaoFromDbImpl implements CoworkingDao {
         }
     }
 
+    /**
+     * Retrieves the ID of a facility based on its description.
+     *
+     * @param facility   The {@link Facility}.
+     * @param connection The database connection.
+     * @return The facility ID.
+     * @throws IllegalArgumentException     If facility or its description is null.
+     * @throws ObjectFieldNotFoundException If no matching facility is found.
+     * @throws DataExcessException          If a database error occurs.
+     */
     private long getFacilityId(Facility facility, Connection connection) {
         if (facility == null || facility.getDescription() == null) {
             TECHNICAL_LOGGER.error("Facility or facility description is null");

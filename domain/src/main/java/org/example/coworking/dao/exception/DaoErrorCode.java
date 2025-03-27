@@ -2,24 +2,47 @@ package org.example.coworking.dao.exception;
 
 import lombok.Getter;
 
+/**
+ * Enum representing various DAO (Data Access Object) error codes.
+ */
 @Getter
 public enum DaoErrorCode {
+    /**
+     * Error when coworking space is not found.
+     */
     COWORKING_IS_NOT_FOUND("Coworking is not found. Try again."),
+
+    /**
+     * Error when reservation is not found.
+     */
     RESERVATION_IS_NOT_FOUND("Reservation is not found. Try again."),
+
+    /**
+     * Error when menu is not found.
+     */
     MENU_IS_NOT_FOUND("Menu is not found."),
-    USER_IS_NOT_FOUND("User is not found. Try again."),
-    COWORKING_SPACE_INSERTION_FAILURE("Failed to add coworking space"),
-    COWORKING_TYPE_ID_GETTING_FAILURE("Failed to get coworking type id"),
-    COWORKING_SPACE_ID_GETTING_FAILURE("Failed to get a new coworking space Id"),
-    OBJECT_FIELD_IS_NOT_FOUND("Element is not found"),
-    CONNECTION_FAILURE("Connection failure");
+
+    /**
+     * Error when user is not found.
+     */
+    USER_IS_NOT_FOUND("User is not found. Try again.");
 
     private final String errorCode;
 
+    /**
+     * Constructor for DaoErrorCode.
+     *
+     * @param errorCode The error message associated with the error code.
+     */
     DaoErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
 
+    /**
+     * Returns the error message as a string.
+     *
+     * @return The error message.
+     */
     @Override
     public String toString() {
         return this.errorCode;
