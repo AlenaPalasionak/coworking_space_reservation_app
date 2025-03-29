@@ -5,14 +5,14 @@ import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.CoworkingSpace;
 
-import java.sql.Connection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class CoworkingDaoImpl implements CoworkingDao {
+public class FileCoworkingDao implements CoworkingDao {
     private static List<CoworkingSpace> coworkingSpacesCache;
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
-    public CoworkingDaoImpl(Loader<CoworkingSpace> coworkingSpaceLoader) {
+    public FileCoworkingDao(Loader<CoworkingSpace> coworkingSpaceLoader) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
     }
 
@@ -57,13 +57,15 @@ public class CoworkingDaoImpl implements CoworkingDao {
         return coworkingSpacesCache;
     }
 
+
+    @Override
+    public List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId) {
+        return coworkingSpacesCache.stream().filter(coworkingSpace -> coworkingSpace.getAdmin().getId().equals(adminId))
+                .collect(Collectors.toList());
+    }
+
     private boolean checkIfNotExist(Long id) {
         return coworkingSpacesCache.stream()
                 .noneMatch(c -> c.getId().equals(id));
-    }
-
-    @Override
-    public CoworkingSpace getById(Long coworkingId, Connection connection) throws EntityNotFoundException {
-        throw new UnsupportedOperationException("Use method public CoworkingSpace getById(Long coworkingId)");
     }
 }

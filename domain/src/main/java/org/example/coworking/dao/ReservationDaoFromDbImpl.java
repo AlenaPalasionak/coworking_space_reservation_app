@@ -36,18 +36,15 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
     public void add(Reservation reservation) {
         Long customerId = reservation.getCustomer().getId();
         Long coworkingId = reservation.getCoworkingSpace().getId();
-
         String insertReservationQuery = "INSERT INTO public.reservations " +
                 "(customer_id, coworking_space_id) " +
                 "VALUES (?, ?) RETURNING id";
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
-
             try (PreparedStatement insertReservationStatement = connection.prepareStatement(
                     insertReservationQuery,
                     Statement.RETURN_GENERATED_KEYS)) {
-
                 insertReservationStatement.setLong(1, customerId);
                 insertReservationStatement.setLong(2, coworkingId);
                 insertReservationStatement.executeUpdate();
@@ -56,13 +53,11 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
                     if (generatedKeys.next()) {
                         Long reservationId = generatedKeys.getLong(1);
                         reservation.setId(reservationId);
-
                         addPeriodToReservation(reservation, connection);
                     } else {
                         throw new DataExcessException("Failed to get generated reservation ID for reservation: " + reservation);
                     }
                 }
-
                 connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
@@ -95,44 +90,16 @@ public class ReservationDaoFromDbImpl implements ReservationDao {
     }
 
     @Override
-    public Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException {
-        String selectReservationQuery = "SELECT id, customer_id, coworking_space_id, period_id " +
-                "FROM public.reservations  " +
-                "WHERE id = ?";
-
-        try (PreparedStatement selectReservationStatement = connection.prepareStatement(selectReservationQuery)) {
-            selectReservationStatement.setLong(1, reservationId);
-
-            try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
-                if (!reservationResultSet.next()) {
-                    throw new EntityNotFoundException("Failure to find reservation with ID " + reservationId
-                            , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-                }
-
-                Long customerId = reservationResultSet.getLong("customer_id");
-                Long coworkingId = reservationResultSet.getLong("coworking_space_id");
-                Long periodId = reservationResultSet.getLong("period_id");
-
-                User customer = userDaoFromDb.getById(customerId, connection);
-                CoworkingSpace coworkingSpace = coworkingDaoFromDb.getById(coworkingId, connection);
-                ReservationPeriod period = getReservationPeriodById(periodId, connection);
-
-                return new Reservation(reservationId, customer, period, coworkingSpace);
-            } catch (EntityNotFoundException e) {
-                throw new EntityNotFoundException("Failure to find Reservation with ID " + reservationId
-                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-            }
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching reservation by  id : " + reservationId);
-        }
-    }
-
-    @Override
     public Reservation getById(Long reservationId) throws EntityNotFoundException {
-        String selectReservationQuery = "SELECT id, customer_id, coworking_space_id, period_id " +
-                "FROM public.reservations  " +
+        String selectReservationQuery = "SELECT pr.id, pr.customer_id, pr.coworking_space_id, pr.period_id" +
+                ", cs.id, cs.admin_id, cs.price, ct.description" +
+                "FROM public.reservations  pr JOIN " +
                 "WHERE id = ?";
+
+        SELECT " +
+        "FROM public.coworking_spaces cs " +
+                "JOIN public.coworking_types ct ON cs.type_id = ct.id " +
+                "WHERE cs.id = ?
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectReservationStatement = connection.prepareStatement(selectReservationQuery)) {

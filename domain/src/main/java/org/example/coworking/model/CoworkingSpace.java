@@ -16,27 +16,18 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(force = true)
 public class CoworkingSpace {
     private Long id;
-    private final User admin;
-    private final double price;
-    private final CoworkingType coworkingType;
-    private final List<Facility> facilities;
-    private final Set<ReservationPeriod> reservationsPeriods;
+    private User admin;
+    private double price;
+    private CoworkingType coworkingType;
+    private List<Facility> facilities;
+    private Set<Reservation> reservations;
 
     public CoworkingSpace(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
         this.admin = admin;
         this.price = price;
         this.coworkingType = coworkingType;
         this.facilities = facilities;
-        this.reservationsPeriods = new TreeSet<>();
-    }
-
-    public CoworkingSpace(Long id, User admin, double price, CoworkingType coworkingType, List<Facility> facilities, Set<ReservationPeriod> reservationsPeriods) {
-        this.id = id;
-        this.admin = admin;
-        this.price = price;
-        this.coworkingType = coworkingType;
-        this.facilities = facilities;
-        this.reservationsPeriods = reservationsPeriods;
+        this.reservations = new TreeSet<>();
     }
 
     @Override
@@ -47,9 +38,9 @@ public class CoworkingSpace {
                 ", price=" + price +
                 ", coworkingType=" + coworkingType +
                 ", facilities=" + facilities + "\n" +
-                (reservationsPeriods != null ? reservationsPeriods.stream()
-                        .map(ReservationPeriod::toString)
-                        .collect(Collectors.joining("\n")) : "No reservations available") +
+                (reservations != null ? reservations.stream()
+                        .map(reservation -> reservation.getPeriod().toString())
+                        .collect(Collectors.joining("\n")) : "Reservations set is empty") +
                 '}' + "\n";
     }
 }

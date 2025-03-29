@@ -1,11 +1,13 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.*;
+import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.model.CoworkingType;
+import org.example.coworking.model.Facility;
+import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * This interface defines the operations for managing coworking spaces in the system.
@@ -21,7 +23,7 @@ public interface CoworkingService {
      * @param coworkingType the type of the coworking space
      * @param facilities    a list of facilities available in the coworking space
      */
-    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities);
+    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) ;
 
     /**
      * Deletes a coworking space for the specified user by its ID.
@@ -50,5 +52,4 @@ public interface CoworkingService {
      */
     CoworkingSpace getById(Long id) throws EntityNotFoundException;
 
-    Set<ReservationPeriod> getCoworkingSpacePeriod(CoworkingSpace coworkingSpace);
 }

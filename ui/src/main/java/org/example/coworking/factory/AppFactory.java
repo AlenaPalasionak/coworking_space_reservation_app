@@ -27,6 +27,8 @@ import org.example.coworking.service.validator.TimeLogicValidator;
  */
 public class AppFactory {
 
+    private final String storageType;
+
     private final String menuPath = "menu.json";
     private final String userPath = "users.json";
     private final String coworkingPlacesPath = "coworking_places.json";
@@ -58,6 +60,7 @@ public class AppFactory {
      * @param storageType The type of storage to be used ("DB" or "FILE").
      */
     public AppFactory(String storageType) {
+        this.storageType = storageType;
 
         this.userLoader = new UserLoader(userPath);
         this.coworkingSpaceLoader = new CoworkingSpaceLoader(coworkingPlacesPath);
@@ -65,17 +68,20 @@ public class AppFactory {
         this.menuLoader = new MenuLoader(menuPath);
 
         this.menuDao = new MenuDaoImpl(menuLoader);
-
-        if ("DB".equalsIgnoreCase(storageType)) {
-            this.userDao = new UserDaoFromDbImpl();
-            this.coworkingDao = new CoworkingDaoFromDbImpl(userDao);
-            this.reservationDao = new ReservationDaoFromDbImpl(userDao,coworkingDao);
-        } else {
-            this.userDao = new UserDaoImpl();
-            this.coworkingDao = new CoworkingDaoImpl(coworkingSpaceLoader);
-            this.reservationDao = new ReservationDaoImpl(reservationLoader);
+        switch (storageType) {
+            case "DB":
+                this.userDao = new UserDaoFromDbImpl();
+                this.coworkingDao = new JdbcCoworkingDao();
+                this.reservationDao = new JdbcReservationDao();
+                break;
+            case "FILE":
+                this.userDao = new UserDaoImpl();
+                this.coworkingDao = new FileCoworkingDao(coworkingSpaceLoader);
+                this.reservationDao = new FileReservationDao(reservationLoader);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown storage type: " + storageType);
         }
-
         this.timeLogicValidator = new TimeLogicValidator();
         this.userService = new UserServiceImpl(userDao);
         this.coworkingService = new CoworkingServiceImpl(coworkingDao);
@@ -85,6 +91,7 @@ public class AppFactory {
         this.coworkingMapper = new CoworkingMapper();
         this.reservationMapper = new ReservationMapper();
         this.menuService = new MenuServiceImpl(menuDao);
+
     }
 
     /**

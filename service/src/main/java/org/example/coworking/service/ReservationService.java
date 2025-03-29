@@ -2,12 +2,14 @@ package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This interface defines the operations for managing reservations in the system.
@@ -23,8 +25,8 @@ public interface ReservationService {
      * @param startTime        the start time of the reservation
      * @param endTime          the end time of the reservation
      * @param coworkingSpaceId the ID of the coworking space being reserved
-     * @throws ReservationTimeException   if the reservation times are invalid (e.g., overlapping with existing reservations)
-     * @throws EntityNotFoundException if the coworking space with the given ID is not found
+     * @throws ReservationTimeException if the reservation times are invalid (e.g., overlapping with existing reservations)
+     * @throws EntityNotFoundException  if the coworking space with the given ID is not found
      */
     void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId)
             throws ReservationTimeException, EntityNotFoundException;
@@ -34,8 +36,8 @@ public interface ReservationService {
      *
      * @param user          the user who is deleting the reservation
      * @param reservationId the ID of the reservation to be deleted
-     * @throws ForbiddenActionException     if the user is not allowed to delete the reservation
-     * @throws EntityNotFoundException if the reservation with the given ID is not found
+     * @throws ForbiddenActionException if the user is not allowed to delete the reservation
+     * @throws EntityNotFoundException  if the reservation with the given ID is not found
      */
     void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
 
@@ -55,4 +57,7 @@ public interface ReservationService {
      * @throws EntityNotFoundException if no reservation with the given ID is found
      */
     Reservation getById(Long reservationId) throws EntityNotFoundException;
+
+    Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
+
 }

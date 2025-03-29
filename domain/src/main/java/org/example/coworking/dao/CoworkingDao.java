@@ -3,7 +3,7 @@ package org.example.coworking.dao;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.CoworkingSpace;
 
-import java.sql.Connection;
+import java.util.List;
 
 /**
  * This interface defines the data access operations for the {@link CoworkingSpace} model.
@@ -13,14 +13,6 @@ import java.sql.Connection;
  */
 public interface CoworkingDao extends Dao<CoworkingSpace> {
 
-    /**
-     * Retrieves a coworking space by its ID.
-     *
-     * @param coworkingId The ID of the coworking space.
-     * @param connection  The database connection to use.
-     * @return The found {@link CoworkingSpace}.
-     * @throws EntityNotFoundException if no coworking space is found with the given ID.
-     */
-    CoworkingSpace getById(Long coworkingId, Connection connection) throws EntityNotFoundException;
+    List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId);
 
 }

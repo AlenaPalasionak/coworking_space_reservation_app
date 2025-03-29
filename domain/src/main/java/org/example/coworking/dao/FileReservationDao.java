@@ -7,16 +7,16 @@ import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
 
-import java.sql.Connection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ReservationDaoImpl implements ReservationDao {
+public class FileReservationDao implements ReservationDao {
     private static List<Reservation> reservationsCache;
     private final Loader<Reservation> reservationLoader;
 
-    public ReservationDaoImpl(Loader<Reservation> reservationLoader) {
+    public FileReservationDao(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
     }
 
@@ -32,8 +32,8 @@ public class ReservationDaoImpl implements ReservationDao {
         } while (isUniqueIdGenerated);
 
         reservation.setId(generatedId);
-        addPeriodToCoworking(reservation.getPeriod(), reservation.getCoworkingSpace());
         reservationsCache.add(reservation);
+        addReservationToCoworking(reservation, reservation.getCoworkingSpace());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ReservationDaoImpl implements ReservationDao {
             throw new EntityNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
                     , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
-        removePeriod(reservation.getPeriod(), reservation.getCoworkingSpace());
+        removeReservationFromCoworking(reservation, reservation.getCoworkingSpace());
         reservationsCache.remove(reservation);
     }
 
@@ -60,25 +60,18 @@ public class ReservationDaoImpl implements ReservationDao {
         return reservationsCache;
     }
 
-    private void addPeriodToCoworking(ReservationPeriod period, CoworkingSpace coworkingSpace) {
-        boolean isUniqueIdGenerated;
-        Long generatedId;
-        do {
-            generatedId = IdGenerator.generatePeriodId();
-            Long finalGeneratedId = generatedId;
-            Set<ReservationPeriod> periods = reservationsCache.stream()
-                    .map(Reservation::getPeriod)
-                    .collect(Collectors.toSet());
-
-            isUniqueIdGenerated = periods.stream()
-                    .anyMatch(p -> p.getId().equals(finalGeneratedId));
-        } while (isUniqueIdGenerated);
-        period.setId(generatedId);
-        coworkingSpace.getReservationsPeriods().add(period);
+    private void removeReservationFromCoworking(Reservation reservation, CoworkingSpace coworkingSpace) throws EntityNotFoundException {
+        Optional<Reservation> possibleReservation = coworkingSpace.getReservations().stream()
+                .filter(r -> r.equals(reservation))
+                .findFirst();
+        if (possibleReservation.isPresent())
+            coworkingSpace.getReservations().remove(possibleReservation.get());
+        else throw new EntityNotFoundException("Failure to find reservation with id : " + reservation.getId()
+                , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
     }
 
-    private void removePeriod(ReservationPeriod period, CoworkingSpace coworkingSpace) {
-        coworkingSpace.getReservationsPeriods().remove(period);
+    private void addReservationToCoworking(Reservation reservation, CoworkingSpace coworkingSpace) {
+        coworkingSpace.getReservations().add(reservation);
     }
 
     private boolean checkIfNotExist(Long id) {
@@ -87,8 +80,27 @@ public class ReservationDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Reservation getById(Long reservationId, Connection connection) throws EntityNotFoundException {
-        throw new UnsupportedOperationException("Use method public Reservation getById(Long reservationId)");
+    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
+        List<Reservation> coworkingSpaces = reservationsCache.stream()
+                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId))
+                .collect(Collectors.toList());
+        return coworkingSpaces.stream()
+                .map(reservation -> reservation.getPeriod())
+                .collect(Collectors.toSet());
 
+    }
+
+    @Override
+    public List<Reservation> getAllReservationsByCustomer(Long customerId) {
+        return reservationsCache.stream()
+                .filter(reservation -> reservation.getCoworkingSpace().getAdmin().getId().equals(customerId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Reservation> getAllReservationsByAdmin(Long adminId) {
+        return reservationsCache.stream()
+                .filter(reservation -> reservation.getCustomer().equals(adminId))
+                .collect(Collectors.toList());
     }
 }

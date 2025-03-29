@@ -12,7 +12,6 @@ import org.example.coworking.service.validator.TimeLogicValidator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationDao reservationDao;
@@ -30,8 +29,8 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationPeriod period = new ReservationPeriod(startTime, endTime);
         CoworkingSpace coworkingSpace = coworkingService.getById(coworkingSpaceId);
         timeLogicValidator.validateReservation(startTime, endTime);
-        Set<ReservationPeriod> existingPeriods = coworkingService.getCoworkingSpacePeriod(coworkingSpace);
-        if (OccupationTimeValidator.isTimeOverlapping(period, existingPeriods)) {
+        Set<ReservationPeriod> existingPeriodsOfACoworking = getAllReservationPeriodsByCoworking(coworkingSpaceId);
+        if (OccupationTimeValidator.isTimeOverlapping(period, existingPeriodsOfACoworking)) {
             throw new ReservationTimeException(startTime + " - " + endTime + " overlaps with existing period", ServiceErrorCode.TIME_OVERLAPS);
         }
         Reservation reservation = new Reservation(customer, period, coworkingSpace);
@@ -52,19 +51,19 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getAllByUser(User user) {
         if (user.getClass() == Customer.class) {
-            return reservationDao.getAll().stream()
-                    .filter(reservation -> reservation.getCustomer().getId().equals(user.getId()))
-                    .collect(Collectors.toList());
+            return reservationDao.getAllReservationsByCustomer(user.getId());
         } else if (user.getClass() == Admin.class) {
-            return reservationDao.getAll().stream()
-                    .filter(reservation -> reservation.getCoworkingSpace().getAdmin().equals(user))
-                    .collect(Collectors.toList());
-        }
-        return List.of();
+            return reservationDao.getAllReservationsByAdmin(user.getId());
+        } else throw new IllegalArgumentException("Unexpected user type: " + user.getClass().getSimpleName());
     }
 
     @Override
     public Reservation getById(Long reservationId) throws EntityNotFoundException {
         return reservationDao.getById(reservationId);
+    }
+
+    @Override
+    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
+        return reservationDao.getAllReservationPeriodsByCoworking(coworkingId);
     }
 }
