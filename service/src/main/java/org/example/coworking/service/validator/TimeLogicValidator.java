@@ -25,18 +25,18 @@ public class TimeLogicValidator {
     private void validateDatesNotInPast(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         LocalDateTime now = LocalDateTime.now();
         if (startTime.isBefore(now)) {
-            throw new ReservationTimeException("StartTime: *" + startTime + "* is already in the past"
+            throw new ReservationTimeException(String.format("StartTime: *%s* is already in the past", startTime)
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
         if (endTime.isBefore(now)) {
-            throw new ReservationTimeException("EndTime: *" + endTime + "* is already in the past"
+            throw new ReservationTimeException(String.format("EndTime: *%s* is already in the past", endTime)
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }
 
     private void validateStartNotAfterEnd(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
         if (startTime.isAfter(endTime)) {
-            throw new ReservationTimeException("StartTime: *" + startTime + "*  is after endTime: *" + endTime + "*"
+            throw new ReservationTimeException(String.format("StartTime: *%s*  is after endTime: *%s*", startTime, endTime)
                     , ServiceErrorCode.INVALID_TIME_LOGIC);
         }
     }

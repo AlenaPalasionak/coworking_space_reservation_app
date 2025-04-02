@@ -43,7 +43,7 @@ public class FileCoworkingDao implements CoworkingDao {
     public void delete(CoworkingSpace coworkingSpace) throws EntityNotFoundException {
         Long coworkingId = coworkingSpace.getId();
         if (checkIfNotExist(coworkingId)) {
-            throw new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found"
+            throw new EntityNotFoundException(String.format("Failure to delete Coworking with id: %d. Coworking is not found.", coworkingId)
                     , DaoErrorCode.COWORKING_IS_NOT_FOUND);
         }
         coworkingSpacesCache
@@ -56,7 +56,7 @@ public class FileCoworkingDao implements CoworkingDao {
         return coworkingSpacesCache.stream()
                 .filter(c -> c.getId().equals(coworkingId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found"
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to find Coworking with id: %d", coworkingId)
                         , DaoErrorCode.COWORKING_IS_NOT_FOUND));
     }
 
@@ -86,8 +86,8 @@ public class FileCoworkingDao implements CoworkingDao {
             try {
                 coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
             } catch (FileNotFoundException e) {
-                TECHNICAL_LOGGER.error("Failure to load Coworking Space List" + e.getMessage());
-                throw new RuntimeException(e.getMessage());
+                TECHNICAL_LOGGER.error("Failure to load Coworking Space List", e);
+                throw new RuntimeException("Failure to load Coworking Space List", e);
             }
         }
     }

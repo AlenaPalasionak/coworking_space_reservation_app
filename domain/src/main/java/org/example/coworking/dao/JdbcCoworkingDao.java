@@ -56,7 +56,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     if (coworkingIdResultSet.next()) {
                         coworkingSpaceId = coworkingIdResultSet.getLong(1);
                     } else {
-                        throw new DataExcessException("Failure to create coworking space, no ID obtained.");
+                        throw new DataExcessException("Failure to create Coworking space, no ID obtained.");
                     }
                 }
 
@@ -70,10 +70,14 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     insertFacilityLinkStatement.executeBatch();
                 }
                 connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                TECHNICAL_LOGGER.error("Database error occurred while creating Coworking: {}", coworkingSpace, e);
+                throw new DataExcessException(String.format("Database error occurred while creating Coworking: %s", coworkingSpace), e);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while adding coworking." + e.getMessage());
+            TECHNICAL_LOGGER.error("Failure to establish connection while creating a new Coworking: {}", coworkingSpace, e);
+            throw new DataExcessException(String.format("Failure to establish connection while creating a new Coworking: %s", coworkingSpace), e);
         }
     }
 
@@ -90,12 +94,12 @@ public class JdbcCoworkingDao implements CoworkingDao {
             int rowsAffected = deleteCoworkingStatement.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new EntityNotFoundException("Failure to find coworking with ID " + coworkingSpace.getId()
+                throw new EntityNotFoundException(String.format("Failure to delete Coworking with ID: %d. Coworking is not found", coworkingSpace.getId())
                         , DaoErrorCode.COWORKING_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while deleting coworking space: " + coworkingSpace + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while deleting Coworking space: {}", coworkingSpace, e);
+            throw new DataExcessException(String.format("Database error occurred while deleting Coworking space: %s", coworkingSpace), e);
         }
     }
 
@@ -113,8 +117,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
             try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
                 if (!coworkingResultSet.next()) {
-                    throw new EntityNotFoundException("Failure to find coworking space with id: " + coworkingId
-                            , DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                    throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d"
+                            , coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
                 }
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
                 Long adminId;
@@ -139,9 +143,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 return coworkingSpace;
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching coworking space by id: "
-                    + coworkingId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting coworking space by ID: {}", coworkingId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting coworking space by ID: %d ", coworkingId), e);
         }
     }
 
@@ -182,7 +185,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
             return coworkingSpaces;
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching coworking spaces. " + e.getMessage());
+            throw new DataExcessException("Database error occurred while getting coworking spaces. ", e);
         }
     }
 
@@ -200,7 +203,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
             selectCoworkingStatement.setLong(1, adminId);
 
             try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
-                while (coworkingResultSet.next()) {  // Используем while вместо if
+                while (coworkingResultSet.next()) {
                     CoworkingSpace coworkingSpace = new CoworkingSpace();
                     User admin = new Admin();
                     admin.setId(adminId);
@@ -210,7 +213,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     String type = coworkingResultSet.getString("type");
                     CoworkingType coworkingType = CoworkingType.valueOf(type.replace(" ", "_").toUpperCase());
 
-                    List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);  // Используем правильный ID
+                    List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
                     coworkingSpace.setId(coworkingId);
                     coworkingSpace.setAdmin(admin);
@@ -222,9 +225,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 }
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching coworking spaces by admin id: "
-                    + adminId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting Coworking spaces by admin ID: %d: {}", adminId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting Coworking spaces by admin ID: %d ", adminId), e);
         }
         return coworkingSpaces;
     }
@@ -261,9 +263,10 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 }
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching facilities List of coworking with id: "
-                    + coworkingSpaceId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting facilities List of Coworking with ID: %d: {}"
+                    , coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting facilities List of Coworking with ID: %d "
+                    , coworkingSpaceId), e);
         }
         return facilities;
     }
@@ -293,13 +296,16 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 if (facilityIdResultSet.next()) {
                     return facilityIdResultSet.getLong("id");
                 } else {
-                    TECHNICAL_LOGGER.error("Failure to find facility id for facility: " + facility.getDescription());
-                    throw new ObjectFieldNotFoundException("Failure to find facility id for facility: " + facility.getDescription());
+                    TECHNICAL_LOGGER.error("Failure to find Facility ID for facility: " + facility.getDescription());
+                    throw new ObjectFieldNotFoundException(String.format("Failure to find Facility ID for Facility: %s"
+                            , facility.getDescription()));
                 }
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while getting facility id." + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting facilities List of Coworking with ID: %d: {}"
+                    , facility.getDescription(), e);
+            throw new DataExcessException(String.format("Database error occurred while getting ID of Facility: %s."
+                    , facility), e);
         }
     }
 }

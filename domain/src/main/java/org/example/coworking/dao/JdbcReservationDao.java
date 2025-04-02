@@ -53,19 +53,17 @@ public class JdbcReservationDao implements ReservationDao {
                     if (generatedKeys.next()) {
                         Long reservationId = generatedKeys.getLong(1);
                         reservation.setId(reservationId);
-                    } else {
-                        throw new DataExcessException("Failure to create reservation: " + reservation + ", no ID obtained.");
                     }
                 }
                 connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
-                TECHNICAL_LOGGER.error(e.getMessage());
-                throw new DataExcessException("Database error occurred while adding a new reservation: " + reservation + e.getMessage());
+                TECHNICAL_LOGGER.error("Database error occurred while creating reservation: {}", reservation, e);
+                throw new DataExcessException(String.format("Database error occurred while creating reservation: %s", reservation), e);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while adding a new reservation: " + reservation + e.getMessage());
+            TECHNICAL_LOGGER.error("Failure to establish connection while creating a new reservation: {}.", reservation, e);
+            throw new DataExcessException(String.format("Failure to establish connection while creating a new reservation: %s", reservation), e);
         }
     }
 
@@ -83,12 +81,12 @@ public class JdbcReservationDao implements ReservationDao {
             int rowsAffected = deleteReservationStatement.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new EntityNotFoundException("Failure to find reservation with ID " + reservation.getId()
-                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                throw new EntityNotFoundException(String.format("Failure to delete Reservation with ID: %d. Reservation is not found."
+                        , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while adding reservation: " + reservation + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while deleting reservation: {}.", reservation, e);
+            throw new DataExcessException(String.format("Database error occurred while deleting reservation: %s.", reservation), e);
         }
     }
 
@@ -106,8 +104,8 @@ public class JdbcReservationDao implements ReservationDao {
 
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
-                    throw new EntityNotFoundException("Failure to find reservation with ID " + reservationId
-                            , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                    throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d."
+                            , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 User customer = new Customer();
@@ -126,8 +124,8 @@ public class JdbcReservationDao implements ReservationDao {
                 return new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching reservation by id : " + reservationId);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservation by ID: {}.", reservationId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservation by ID: %d.", reservationId), e);
         }
     }
 
@@ -164,8 +162,8 @@ public class JdbcReservationDao implements ReservationDao {
             }
 
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching all reservations." + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting all reservations.", e);
+            throw new DataExcessException("Database error occurred while getting all reservations.", e);
         }
         return reservations;
     }
@@ -194,8 +192,10 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching reservations by coworking id : " + coworkingSpaceId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}."
+                    , coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d."
+                    , coworkingSpaceId), e);
         }
     }
 
@@ -230,8 +230,10 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching reservations by customer id : " + customerId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}."
+                    , customerId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
+                    , customerId), e);
         }
     }
 
@@ -270,8 +272,10 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching reservations by admin id : " + adminId + e.getMessage());
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations reservations by admin ID: {}."
+                    , adminId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by admin id: %d ",
+                    adminId), e);
         }
     }
 }

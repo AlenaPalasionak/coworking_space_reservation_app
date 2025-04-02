@@ -26,7 +26,7 @@ public class CoworkingServiceImpl implements CoworkingService {
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
             coworkingDao.delete(coworkingSpace);
         } else {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName()
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", admin.getName())
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -37,7 +37,8 @@ public class CoworkingServiceImpl implements CoworkingService {
             return coworkingDao.getAll();
         } else if (user.getClass() == Admin.class) {
             return coworkingDao.getAllCoworkingSpacesByAdmin(user.getId());
-        } else throw new IllegalArgumentException("Unexpected user type: " + user.getClass().getSimpleName());
+        } else
+            throw new IllegalArgumentException(String.format("Unexpected user type: %s", user.getClass().getSimpleName()));
     }
 
     @Override

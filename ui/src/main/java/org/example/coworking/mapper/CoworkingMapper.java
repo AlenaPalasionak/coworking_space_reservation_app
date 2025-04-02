@@ -38,7 +38,8 @@ public class CoworkingMapper {
     public CoworkingType getCoworkingType(String coworkingTypeInput) throws CoworkingTypeIndexException {
         int coworkingTypeIndex = Integer.parseInt(coworkingTypeInput);
         if (isIndexOutOfBound(coworkingTypeIndex, CoworkingType.class)) {
-            throw new CoworkingTypeIndexException("Index: " + coworkingTypeIndex + " is out of bound in enum CoworkingType.");
+            throw new CoworkingTypeIndexException(String.format("Index: %d is out of bound in enum CoworkingType."
+                    , coworkingTypeIndex), MapperErrorCode.INVALID_COWORKING_TYPE_INDEX);
         } else {
             return CoworkingType.values()[coworkingTypeIndex];
         }
@@ -65,7 +66,8 @@ public class CoworkingMapper {
                 .map(Integer::parseInt)
                 .map(index -> {
                     if (isIndexOutOfBound(index, Facility.class)) {
-                        throw new FacilityIndexException("Index: " + index + " is out of bound in enum Facility.", MapperErrorCode.INVALID_FACILITY_INDEX);
+                        throw new FacilityIndexException(String.format("Index: %d is out of bound in enum Facility."
+                                , index), MapperErrorCode.INVALID_FACILITY_INDEX);
                     }
                     return Facility.values()[index];
                 })
@@ -77,7 +79,7 @@ public class CoworkingMapper {
      *
      * @param enumIndex the index to check
      * @param enumClass the class of the enum to check the index against
-     * @param <T> the type of the enum
+     * @param <T>       the type of the enum
      * @return true if the index is out of bounds, false otherwise
      */
     private static <T extends Enum<T>> boolean isIndexOutOfBound(int enumIndex, Class<T> enumClass) {

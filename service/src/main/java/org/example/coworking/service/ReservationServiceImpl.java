@@ -31,7 +31,8 @@ public class ReservationServiceImpl implements ReservationService {
         timeLogicValidator.validateReservation(startTime, endTime);
         Set<ReservationPeriod> existingPeriodsOfACoworking = getAllReservationPeriodsByCoworking(coworkingSpaceId);
         if (OccupationTimeValidator.isTimeOverlapping(period, existingPeriodsOfACoworking)) {
-            throw new ReservationTimeException(startTime + " - " + endTime + " overlaps with existing period", ServiceErrorCode.TIME_OVERLAPS);
+            throw new ReservationTimeException(String.format("%s - %s overlaps with existing period", startTime, endTime),
+                    ServiceErrorCode.TIME_OVERLAPS);
         }
         Reservation reservation = new Reservation(customer, period, coworkingSpace);
         reservationDao.create(reservation);
@@ -43,7 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getCustomer().getId().equals(user.getId())) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + user.getName()
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getName())
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -54,7 +55,8 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationDao.getAllReservationsByCustomer(user.getId());
         } else if (user.getClass() == Admin.class) {
             return reservationDao.getAllReservationsByAdmin(user.getId());
-        } else throw new IllegalArgumentException("Unexpected user type: " + user.getClass().getSimpleName());
+        } else
+            throw new IllegalArgumentException(String.format("Unexpected user type: %s", user.getClass().getSimpleName()));
     }
 
     @Override

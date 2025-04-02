@@ -41,8 +41,8 @@ public class FileReservationDao implements ReservationDao {
     @Override
     public void delete(Reservation reservation) throws EntityNotFoundException {
         if (checkIfNotExist(reservation.getId())) {
-            throw new EntityNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
-                    , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to delete Reservation with id: %d. Reservation is not found."
+                    , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
         reservationsCache.remove(reservation);
     }
@@ -52,8 +52,8 @@ public class FileReservationDao implements ReservationDao {
         return reservationsCache.stream()
                 .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Reservation with id: " + reservationId + " is not found. "
-                        , DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d"
+                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
     @Override
@@ -104,8 +104,8 @@ public class FileReservationDao implements ReservationDao {
             try {
                 reservationsCache = reservationLoader.load(Reservation.class);
             } catch (FileNotFoundException e) {
-                TECHNICAL_LOGGER.error("Failure to load Reservation List" + e.getMessage());
-                throw new RuntimeException(e.getMessage());
+                TECHNICAL_LOGGER.error("Failure to load Reservation List", e);
+                throw new RuntimeException("Failure to load Reservation List", e);
             }
         }
     }
