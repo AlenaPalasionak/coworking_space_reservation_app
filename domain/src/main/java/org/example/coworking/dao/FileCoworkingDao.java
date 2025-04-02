@@ -24,7 +24,7 @@ public class FileCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void add(CoworkingSpace coworkingSpace) {
+    public void create(CoworkingSpace coworkingSpace) {
         Long generatedId;
         boolean isUniqueIdGenerated;
 

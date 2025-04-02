@@ -34,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationTimeException(startTime + " - " + endTime + " overlaps with existing period", ServiceErrorCode.TIME_OVERLAPS);
         }
         Reservation reservation = new Reservation(customer, period, coworkingSpace);
-        reservationDao.add(reservation);
+        reservationDao.create(reservation);
     }
 
     @Override

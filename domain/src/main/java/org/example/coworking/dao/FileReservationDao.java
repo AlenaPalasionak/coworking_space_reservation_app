@@ -24,7 +24,7 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public void add(Reservation reservation) {
+    public void create(Reservation reservation) {
         boolean isUniqueIdGenerated;
         Long generatedId;
         do {

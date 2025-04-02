@@ -32,7 +32,6 @@ public class FileUserDao implements UserDao {
         } else {
             return possibleUser.get();
         }
-
     }
 
     private void loadFromJson() {

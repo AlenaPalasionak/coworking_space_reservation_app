@@ -1,6 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.MenuDao;
+import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -74,7 +74,7 @@ class MenuServiceImplTest {
     @Test
     void testGetMenuByNameReturnsMenu() throws MenuNotFoundException {
         Menu expectedMenu = new Menu("Welcome menu", "Welcome menu text", new String[]{"1", "2"});
-        when(menuDao.getMenuByName("Welcome menu")).thenReturn(Optional.of(expectedMenu));
+        when(menuDao.getMenuByName("Welcome menu")).thenReturn(expectedMenu);
 
         Menu actualMenu = menuService.getMenuByName("Welcome menu");
 
@@ -82,9 +82,13 @@ class MenuServiceImplTest {
     }
 
     @Test
-    void testGetMenuByNameThrowsExceptionWhenNotFound() {
-        when(menuDao.getMenuByName("Non Existing menu")).thenReturn(Optional.empty());
+    void testGetMenuByNameThrowsExceptionWhenMenuNotFound() throws MenuNotFoundException {
+        when(menuDao.getMenuByName("Non Existing Menu"))
+                .thenThrow(new MenuNotFoundException("Failure to find menu with the name: Non Existing Menu"
+                        , DaoErrorCode.MENU_IS_NOT_FOUND));
 
-        assertThrows(MenuNotFoundException.class, () -> menuService.getMenuByName("Non Existing menu"));
+        assertThrows(MenuNotFoundException.class, () -> menuService.getMenuByName("Non Existing Menu"));
+
+        verify(menuDao, times(1)).getMenuByName("Non Existing Menu");
     }
 }

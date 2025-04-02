@@ -1,9 +1,9 @@
 package org.example.coworking.dao;
 
+import org.example.coworking.dao.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Interface for managing menus.
@@ -24,5 +24,5 @@ public interface MenuDao {
      * @param name the name of the menu to retrieve.
      * @return an Optional containing the menu if found, or empty if not found.
      */
-    Optional<Menu> getMenuByName(String name);
+    Menu getMenuByName(String name) throws MenuNotFoundException;
 }

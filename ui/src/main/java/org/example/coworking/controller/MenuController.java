@@ -20,10 +20,8 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * making reservations, and logging out.
  */
 public class MenuController {
-
     private User user = null;
     private final MenuService menuService;
-    private static final String EXIT = "0";
     private static final String LOG_OUT = "2";
     private static final String ADD_COWORKING_SPACE = "1";
     private static final String DELETE_COWORKING_SPACE = "2";
@@ -57,22 +55,23 @@ public class MenuController {
     }
 
     /**
-     * Reads and validates the user's choice from the input, ensuring it matches one of the possible choices for the menu.
+     * Reads the user's input and validates it against the possible choices of the given menu.
+     * If the input is invalid, prompts the user to try again until a valid choice is entered.
      *
-     * @param reader The {@code BufferedReader} used to read user input.
-     * @param menu The menu to check the user choice against.
-     * @return The validated user choice.
-     * @throws IOException If an I/O error occurs while reading the user input.
+     * @param reader the {@code BufferedReader} used to read user input
+     * @param menu   the {@code Menu} containing the valid choices
+     * @return the validated user choice
+     * @throws IOException if an I/O error occurs while reading user input
      */
     public String getUserChoice(BufferedReader reader, Menu menu) throws IOException {
         String userChoice;
-        do {
+        while (true) {
             userChoice = reader.readLine();
-            if (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
-                USER_OUTPUT_LOGGER.warn("You entered the wrong symbol: " + userChoice + ". Try again\n");
+            if (menuService.isMatchingOneOfPossibleChoices(menu, userChoice)) {
+                return userChoice;
             }
-        } while (!menuService.isMatchingOneOfPossibleChoices(menu, userChoice));
-        return userChoice;
+            USER_OUTPUT_LOGGER.warn("You entered the wrong symbol: " + userChoice + ". Try again\n");
+        }
     }
 
     /**
@@ -104,10 +103,10 @@ public class MenuController {
      * and viewing reservations.
      *
      * @param authorizationController The controller used for user authentication.
-     * @param menuController The controller used to handle menus.
-     * @param coworkingController The controller used to manage coworking spaces.
-     * @param reservationController The controller used to manage reservations.
-     * @param reader The {@code BufferedReader} used to read user input.
+     * @param menuController          The controller used to handle menus.
+     * @param coworkingController     The controller used to manage coworking spaces.
+     * @param reservationController   The controller used to manage reservations.
+     * @param reader                  The {@code BufferedReader} used to read user input.
      * @throws IOException If an I/O error occurs during user interaction.
      */
     public void handleAdminFlow(AuthorizationController authorizationController, MenuController menuController,
@@ -133,10 +132,10 @@ public class MenuController {
      * adding and managing reservations.
      *
      * @param authorizationController The controller used for user authentication.
-     * @param menuController The controller used to handle menus.
-     * @param coworkingController The controller used to manage coworking spaces.
-     * @param reservationController The controller used to manage reservations.
-     * @param reader The {@code BufferedReader} used to read user input.
+     * @param menuController          The controller used to handle menus.
+     * @param coworkingController     The controller used to manage coworking spaces.
+     * @param reservationController   The controller used to manage reservations.
+     * @param reader                  The {@code BufferedReader} used to read user input.
      * @throws IOException If an I/O error occurs during user interaction.
      */
     public void handleCustomerFlow(AuthorizationController authorizationController, MenuController menuController,
@@ -159,23 +158,18 @@ public class MenuController {
     }
 
     /**
-     * Prompts the user with the next step options (log out or exit) and returns a boolean indicating whether the user
+     * Prompts the user with the next step options (log out or stay) and returns a boolean indicating whether the user
      * should log out.
      *
      * @param menuController The controller used to handle menus.
-     * @param reader The {@code BufferedReader} used to read user input.
+     * @param reader         The {@code BufferedReader} used to read user input.
      * @return {@code true} if the user chose to log out, {@code false} otherwise.
      * @throws IOException If an I/O error occurs during user interaction.
      */
-    public boolean shouldLogOut(MenuController menuController, BufferedReader reader) throws IOException {
+    private boolean shouldLogOut(MenuController menuController, BufferedReader reader) throws IOException {
         Menu nextStepMenu = menuController.getMenuByName(NEXT_STEP_MENU_KEY);
         menuController.showMenu(nextStepMenu.getMenuName());
         String nextStep = menuController.getUserChoice(reader, nextStepMenu);
-        if (nextStep.equals(LOG_OUT)) {
-            return true;
-        } else if (nextStep.equals(EXIT)) {
-            System.exit(0);
-        }
-        return false;
+        return nextStep.equals(LOG_OUT);
     }
 }

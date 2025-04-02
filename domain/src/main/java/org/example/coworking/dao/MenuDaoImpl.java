@@ -1,5 +1,7 @@
 package org.example.coworking.dao;
 
+import org.example.coworking.dao.exception.DaoErrorCode;
+import org.example.coworking.dao.exception.MenuNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.Menu;
 
@@ -25,11 +27,6 @@ public class MenuDaoImpl implements MenuDao {
         this.menuLoader = menuLoader;
     }
 
-    /**
-     * Retrieves the list of menus from storage. Loads the data if not already cached.
-     *
-     * @return a list of {@link Menu} objects
-     */
     @Override
     public List<Menu> getMenusFromStorage() {
         if (menus == null) {
@@ -38,17 +35,16 @@ public class MenuDaoImpl implements MenuDao {
         return menus;
     }
 
-    /**
-     * Finds a menu by its name.
-     *
-     * @param name the name of the menu to search for
-     * @return an {@link Optional} containing the found menu, or empty if not found
-     */
     @Override
-    public Optional<Menu> getMenuByName(String name) {
-        return menus.stream()
+    public Menu getMenuByName(String name) throws MenuNotFoundException {
+        Optional<Menu> possibleMenu = menus.stream()
                 .filter(m -> m.getMenuName().equals(name))
                 .findFirst();
+        if (possibleMenu.isEmpty()) {
+            throw new MenuNotFoundException("Failure to find menu with the name: " + name, DaoErrorCode.MENU_IS_NOT_FOUND);
+        } else {
+            return possibleMenu.get();
+        }
     }
 
     /**

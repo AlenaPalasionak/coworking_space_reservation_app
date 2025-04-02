@@ -36,7 +36,7 @@ class CoworkingServiceImplTest {
         coworkingService.add(admin, price, type, facilities);
 
         ArgumentCaptor<CoworkingSpace> captor = ArgumentCaptor.forClass(CoworkingSpace.class);
-        verify(coworkingDao).add(captor.capture());
+        verify(coworkingDao).create(captor.capture());
         CoworkingSpace capturedSpace = captor.getValue();
         assertThat(capturedSpace)
                 .hasFieldOrPropertyWithValue("admin", admin)

@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Data Access Object (DAO) interface for managing {@link Reservation} entities.
  */
-public interface ReservationDao extends Dao<Reservation> {
+public interface ReservationDao extends ModelDao<Reservation> {
 
     /**
      * Retrieves all reservation periods for a given coworking space.

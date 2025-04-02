@@ -20,11 +20,10 @@
   },
   {
     "menuName": "Next Step Menu",
-    "menuText": "Log out?\nNo - press 1\nYes - press 2\nCancel the program - press 0\n",
+    "menuText": "Log out?\nNo - press 1\nYes - press 2\n",
     "possibleChoices": [
       "1",
-      "2",
-      "0"
+      "2"
     ]
   },
   {

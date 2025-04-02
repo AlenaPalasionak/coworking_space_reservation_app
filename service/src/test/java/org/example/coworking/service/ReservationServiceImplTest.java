@@ -49,7 +49,7 @@ class ReservationServiceImplTest {
         reservationService.add(customer, startTime, endTime, coworkingSpaceId);
 
         ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
-        verify(reservationDao).add(reservationCaptor.capture());
+        verify(reservationDao).create(reservationCaptor.capture());
 
         Reservation capturedReservation = reservationCaptor.getValue();
 
@@ -60,7 +60,7 @@ class ReservationServiceImplTest {
 
         verify(coworkingService).getById(coworkingSpaceId);
         verify(timeLogicValidator).validateReservation(startTime, endTime);
-        verify(reservationDao).add(any(Reservation.class));
+        verify(reservationDao).create(any(Reservation.class));
     }
 
     @Test
@@ -75,7 +75,7 @@ class ReservationServiceImplTest {
 
         assertThatThrownBy(() -> reservationService.add(customer, startTime, endTime, coworkingSpaceId))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(reservationDao, never()).add(any());
+        verify(reservationDao, never()).create(any());
     }
 
     @Test

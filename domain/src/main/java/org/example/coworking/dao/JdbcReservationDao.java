@@ -27,7 +27,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void add(Reservation reservation) {
+    public void create(Reservation reservation) {
         Long customerId = reservation.getCustomer().getId();
         Long coworkingId = reservation.getCoworkingSpace().getId();
         LocalDateTime startTime = reservation.getPeriod().getStartTime();
@@ -54,7 +54,7 @@ public class JdbcReservationDao implements ReservationDao {
                         Long reservationId = generatedKeys.getLong(1);
                         reservation.setId(reservationId);
                     } else {
-                        throw new DataExcessException("Failure to create reservation, no ID obtained.");
+                        throw new DataExcessException("Failure to create reservation: " + reservation + ", no ID obtained.");
                     }
                 }
                 connection.commit();
@@ -88,7 +88,7 @@ public class JdbcReservationDao implements ReservationDao {
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while adding reservation: " + reservation);
+            throw new DataExcessException("Database error occurred while adding reservation: " + reservation + e.getMessage());
         }
     }
 

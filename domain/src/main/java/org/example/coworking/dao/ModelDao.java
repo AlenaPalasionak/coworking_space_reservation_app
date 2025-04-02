@@ -11,14 +11,14 @@ import java.util.List;
  *
  * @param <T> the type of the model object to be managed by the DAO
  */
-public interface Dao<T> {
+public interface ModelDao<T> {
 
     /**
-     * Adds a new model object to the data source.
+     * Creates a new model object in the data source.
      *
-     * @param object the model object to be added
+     * @param object the model object to be created
      */
-    void add(T object);
+    void create(T object);
 
     /**
      * Deletes the specified model object from the data source.

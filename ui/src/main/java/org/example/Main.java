@@ -20,12 +20,12 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
  */
 public class Main {
     private static final String WELCOME_MENU_KEY = "Welcome Menu";
-    private static final String EXIT = "0";
     private static final String ADMIN = "1";
     private static final String CUSTOMER = "2";
+    private static final String EXIT = "0";
 
     public static void main(String[] args) {
-        AppFactory appFactory = new AppFactory("DB");
+        AppFactory appFactory = new AppFactory("FILE");
         ReservationController reservationController = appFactory.createReservationController();
         AuthorizationController authorizationController = appFactory.createAuthorizationController();
         CoworkingController coworkingController = appFactory.createCoworkingController();
@@ -39,19 +39,21 @@ public class Main {
                 Menu welcomeMenu = menuController.getMenuByName(WELCOME_MENU_KEY);
                 menuController.showMenu(welcomeMenu.getMenuName());
                 String userRoleIdentifier = menuController.getUserChoice(reader, welcomeMenu);
+
                 switch (userRoleIdentifier) {
-                    case EXIT:
+                    case ADMIN ->
+                            menuController.handleAdminFlow(authorizationController, menuController, coworkingController,
+                                    reservationController, reader);
+                    case CUSTOMER ->
+                            menuController.handleCustomerFlow(authorizationController, menuController, coworkingController,
+                                    reservationController, reader);
+                    case EXIT -> {
+                        System.exit(0);
                         break label;
-                    case ADMIN:
-                        menuController.handleAdminFlow(authorizationController, menuController, coworkingController
-                                , reservationController, reader);
-                        break;
-                    case CUSTOMER:
-                        menuController.handleCustomerFlow(authorizationController, menuController, coworkingController
-                                , reservationController, reader);
-                        break;
+                    }
                 }
             }
+
         } catch (IOException e) {
             TECHNICAL_LOGGER.error("Error while reading from console. " + e.getMessage());
             throw new RuntimeException(e.getMessage());

@@ -17,7 +17,7 @@ public class CoworkingServiceImpl implements CoworkingService {
 
     @Override
     public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
-        coworkingDao.add(new CoworkingSpace(admin, price, coworkingType, facilities));
+        coworkingDao.create(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 
     @Override

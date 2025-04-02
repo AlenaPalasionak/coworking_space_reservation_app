@@ -25,7 +25,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void add(CoworkingSpace coworkingSpace) {
+    public void create(CoworkingSpace coworkingSpace) {
 
         String insertCoworkingSpaceQuery = """
                 INSERT INTO public.coworking_spaces (admin_id, price, type)
