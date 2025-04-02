@@ -11,9 +11,27 @@ import java.util.Set;
  */
 public interface ReservationDao extends Dao<Reservation> {
 
+    /**
+     * Retrieves all reservation periods for a given coworking space.
+     *
+     * @param coworkingId the ID of the coworking space
+     * @return a set of {@code ReservationPeriod} objects
+     */
     Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
+
+    /**
+     * Retrieves all reservations made by a specific customer.
+     *
+     * @param userId the ID of the customer
+     * @return a list of {@code Reservation} objects
+     */
     List<Reservation> getAllReservationsByCustomer(Long userId);
+
+    /**
+     * Retrieves all reservations managed by a specific admin.
+     *
+     * @param adminId the ID of the admin
+     * @return a list of {@code Reservation} objects
+     */
     List<Reservation> getAllReservationsByAdmin(Long adminId);
 }
-
-

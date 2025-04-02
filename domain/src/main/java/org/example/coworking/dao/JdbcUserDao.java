@@ -4,7 +4,6 @@ import org.example.coworking.config.DataSourceConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.dao.exception.ObjectFieldNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
@@ -21,38 +20,11 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
  * Implementation of {@link UserDao} that interacts with the database
  * to manage user retrieval operations.
  */
-public class UserDaoFromDbImpl implements UserDao {
+public class JdbcUserDao implements UserDao {
     private final DataSource dataSource;
 
-    public UserDaoFromDbImpl() {
+    public JdbcUserDao() {
         this.dataSource = DataSourceConfig.getDataSource();
-    }
-
-    @Override
-    public User getById(Long id, Connection connection) {
-        User user = null;
-        String selectUserQuery = "SELECT name, password, role " +
-                "FROM public.users  " +
-                "WHERE id = ?";
-
-        try (PreparedStatement selectUserStatement = connection.prepareStatement(selectUserQuery)) {
-            selectUserStatement.setLong(1, id);
-            try (ResultSet UserResultSet = selectUserStatement.executeQuery()) {
-                if (!UserResultSet.next()) {
-                    throw new ObjectFieldNotFoundException("Failure to find user with id " + id);
-                }
-                String userName = UserResultSet.getString(1);
-                String password = UserResultSet.getString(2);
-                String role = UserResultSet.getString(3);
-                switch (role) {
-                    case "ADMIN" -> user = new Admin(id, userName, password);
-                    case "CUSTOMER" -> user = new Customer(id, userName, password);
-                }
-            }
-            return user;
-        } catch (SQLException e) {
-            throw new DataExcessException("Database error occurred while fetching user by id: " + id);
-        }
     }
 
     @Override
@@ -84,10 +56,5 @@ public class UserDaoFromDbImpl implements UserDao {
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new DataExcessException("Database error occurred while fetching user with the name: " + name);
         }
-    }
-
-    @Override
-    public User getById(Long id) {
-        throw new UnsupportedOperationException("Use getById(Long id, Connection connection)");
     }
 }

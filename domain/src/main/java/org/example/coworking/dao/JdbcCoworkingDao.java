@@ -302,6 +302,4 @@ public class JdbcCoworkingDao implements CoworkingDao {
             throw new DataExcessException("Database error occurred while getting facility id." + e.getMessage());
         }
     }
-
-
 }

@@ -3,14 +3,16 @@ package org.example.coworking.dao;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
-import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.Reservation;
 import org.example.coworking.model.ReservationPeriod;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 public class FileReservationDao implements ReservationDao {
     private static List<Reservation> reservationsCache;
@@ -18,6 +20,7 @@ public class FileReservationDao implements ReservationDao {
 
     public FileReservationDao(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
+        loadFromJson();
     }
 
     @Override
@@ -33,7 +36,6 @@ public class FileReservationDao implements ReservationDao {
 
         reservation.setId(generatedId);
         reservationsCache.add(reservation);
-        addReservationToCoworking(reservation, reservation.getCoworkingSpace());
     }
 
     @Override
@@ -42,7 +44,6 @@ public class FileReservationDao implements ReservationDao {
             throw new EntityNotFoundException("Reservation with id: " + reservation.getId() + " is not found. "
                     , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
-        removeReservationFromCoworking(reservation, reservation.getCoworkingSpace());
         reservationsCache.remove(reservation);
     }
 
@@ -60,32 +61,12 @@ public class FileReservationDao implements ReservationDao {
         return reservationsCache;
     }
 
-    private void removeReservationFromCoworking(Reservation reservation, CoworkingSpace coworkingSpace) throws EntityNotFoundException {
-        Optional<Reservation> possibleReservation = coworkingSpace.getReservations().stream()
-                .filter(r -> r.equals(reservation))
-                .findFirst();
-        if (possibleReservation.isPresent())
-            coworkingSpace.getReservations().remove(possibleReservation.get());
-        else throw new EntityNotFoundException("Failure to find reservation with id : " + reservation.getId()
-                , DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-    }
-
-    private void addReservationToCoworking(Reservation reservation, CoworkingSpace coworkingSpace) {
-        coworkingSpace.getReservations().add(reservation);
-    }
-
-    private boolean checkIfNotExist(Long id) {
-        return reservationsCache.stream()
-                .noneMatch(r -> r.getId().equals(id));
-    }
-
     @Override
     public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
         List<Reservation> coworkingSpaces = reservationsCache.stream()
-                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId))
-                .collect(Collectors.toList());
+                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId)).toList();
         return coworkingSpaces.stream()
-                .map(reservation -> reservation.getPeriod())
+                .map(Reservation::getPeriod)
                 .collect(Collectors.toSet());
 
     }
@@ -93,14 +74,39 @@ public class FileReservationDao implements ReservationDao {
     @Override
     public List<Reservation> getAllReservationsByCustomer(Long customerId) {
         return reservationsCache.stream()
-                .filter(reservation -> reservation.getCoworkingSpace().getAdmin().getId().equals(customerId))
+                .filter(reservation -> reservation.getCustomer().getId().equals(customerId))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<Reservation> getAllReservationsByAdmin(Long adminId) {
+        List<Reservation> reservations = new ArrayList<>();
+        if (reservationsCache.isEmpty()) {
+            return reservations;
+        } else {
+            return reservationsCache.stream()
+                    .filter(reservation -> reservation.getCoworkingSpace().getAdmin().getId().equals(adminId))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private boolean checkIfNotExist(Long id) {
         return reservationsCache.stream()
-                .filter(reservation -> reservation.getCustomer().equals(adminId))
-                .collect(Collectors.toList());
+                .noneMatch(r -> r.getId().equals(id));
+    }
+
+    public void shutdown() {
+        reservationLoader.save(reservationsCache);
+    }
+
+    private void loadFromJson() {
+        if (reservationsCache == null) {
+            try {
+                reservationsCache = reservationLoader.load(Reservation.class);
+            } catch (FileNotFoundException e) {
+                TECHNICAL_LOGGER.error("Failure to load Reservation List" + e.getMessage());
+                throw new RuntimeException(e.getMessage());
+            }
+        }
     }
 }

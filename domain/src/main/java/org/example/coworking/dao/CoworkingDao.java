@@ -13,6 +13,12 @@ import java.util.List;
  */
 public interface CoworkingDao extends Dao<CoworkingSpace> {
 
+    /**
+     * Retrieves all coworking spaces managed by a specific admin.
+     *
+     * @param adminId the ID of the admin
+     * @return a list of {@code CoworkingSpace} objects managed by the admin
+     */
     List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId);
 
 }
