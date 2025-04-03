@@ -1,10 +1,11 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityIndexException;
+import org.example.coworking.mapper.exception.FacilityTypeIndexException;
 import org.example.coworking.mapper.exception.MapperErrorCode;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
+import org.example.coworking.model.FacilityType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,9 +53,9 @@ public class CoworkingMapper {
      *
      * @param facilityIndexesInput the string of comma-separated facility indexes
      * @return a list of corresponding Facility enum values
-     * @throws FacilityIndexException if any facility index is invalid or out of bounds
+     * @throws FacilityTypeIndexException if any facility index is invalid or out of bounds
      */
-    public List<Facility> getFacility(String facilityIndexesInput) throws FacilityIndexException {
+    public List<Facility> getFacility(String facilityIndexesInput) throws FacilityTypeIndexException {
         if (facilityIndexesInput.isBlank()) {
             return List.of();
         }
@@ -65,11 +66,11 @@ public class CoworkingMapper {
                 .sorted()
                 .map(Integer::parseInt)
                 .map(index -> {
-                    if (isIndexOutOfBound(index, Facility.class)) {
-                        throw new FacilityIndexException(String.format("Index: %d is out of bound in enum Facility."
+                    if (isIndexOutOfBound(index, FacilityType.class)) {
+                        throw new FacilityTypeIndexException(String.format("Index: %d is out of bound in enum FacilityType."
                                 , index), MapperErrorCode.INVALID_FACILITY_INDEX);
                     }
-                    return Facility.values()[index];
+                    return new Facility(FacilityType.values()[index]);
                 })
                 .collect(Collectors.toList());
     }

@@ -30,7 +30,13 @@ class CoworkingServiceImplTest {
     void testAdd() {
         User admin = new Admin(1L, "Aden", "123");
         CoworkingType type = CoworkingType.PRIVATE_OFFICE;
-        List<Facility> facilities = List.of(Facility.WIFI, Facility.CONDITIONING, Facility.KITCHEN, Facility.PARKING, Facility.PRINTER);
+        List<Facility> facilities = List.of(
+                new Facility(FacilityType.WIFI),
+                new Facility(FacilityType.CONDITIONING),
+                new Facility(FacilityType.KITCHEN),
+                new Facility(FacilityType.PARKING),
+                new Facility(FacilityType.PRINTER));
+
         double price = 100.0;
 
         coworkingService.add(admin, price, type, facilities);

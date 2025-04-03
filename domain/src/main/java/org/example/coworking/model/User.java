@@ -2,6 +2,7 @@ package org.example.coworking.model;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -14,7 +15,12 @@ import lombok.*;
         @JsonSubTypes.Type(value = Admin.class, name = "admin"),
         @JsonSubTypes.Type(value = Customer.class, name = "customer")
 })
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String password;

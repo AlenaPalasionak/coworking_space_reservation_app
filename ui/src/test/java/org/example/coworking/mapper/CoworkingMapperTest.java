@@ -1,9 +1,10 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityIndexException;
+import org.example.coworking.mapper.exception.FacilityTypeIndexException;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
+import org.example.coworking.model.FacilityType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -39,14 +40,20 @@ class CoworkingMapperTest {
     }
 
     @Test
-    public void testGetFacilityValidInput() throws FacilityIndexException {
+    public void testGetFacilityValidInput() throws FacilityTypeIndexException {
         List<Facility> facilities = coworkingMapper.getFacility("0,1,2");
         assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+                .containsExactlyInAnyOrder(
+                        new Facility(FacilityType.values()[0])
+                        , new Facility(FacilityType.values()[1])
+                        , new Facility(FacilityType.values()[2]));
 
         facilities = coworkingMapper.getFacility("2,1,0");
         assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+                .containsExactlyInAnyOrder(
+                        new Facility(FacilityType.values()[0])
+                        , new Facility(FacilityType.values()[1])
+                        , new Facility(FacilityType.values()[2]));
     }
 
     @Test
@@ -58,16 +65,19 @@ class CoworkingMapperTest {
     @Test
     public void testGetFacilityInvalidInput() {
         assertThatThrownBy(() -> coworkingMapper.getFacility("0,10"))
-                .isInstanceOf(FacilityIndexException.class);
+                .isInstanceOf(FacilityTypeIndexException.class);
 
         assertThatThrownBy(() -> coworkingMapper.getFacility("1,-1"))
-                .isInstanceOf(FacilityIndexException.class);
+                .isInstanceOf(FacilityTypeIndexException.class);
     }
 
     @Test
-    public void testGetFacilityWithDuplicates() throws FacilityIndexException {
+    public void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
         List<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
         assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+                .containsExactlyInAnyOrder(
+                        new Facility(FacilityType.values()[0])
+                        , new Facility(FacilityType.values()[1])
+                        , new Facility(FacilityType.values()[2]));
     }
 }

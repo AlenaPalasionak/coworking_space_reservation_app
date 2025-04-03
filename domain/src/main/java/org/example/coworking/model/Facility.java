@@ -1,20 +1,33 @@
 package org.example.coworking.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "facility")
+public class Facility {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@ToString
-public enum Facility {
-    PARKING("parking"), WIFI("wifi"), KITCHEN("kitchen"), PRINTER("printer"), CONDITIONING("conditioning");
-    private final String description;
+    @Column(unique = true, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FacilityType type;
 
-    Facility(String description) {
-        this.description = description;
+    public Facility(FacilityType type) {
+        this.type = type;
     }
 
-    @JsonValue
-    public String getDescription() {
-        return description;
+    @Override
+    public String toString() {
+        return "Facility{type=" + type + "}";
     }
 }
+

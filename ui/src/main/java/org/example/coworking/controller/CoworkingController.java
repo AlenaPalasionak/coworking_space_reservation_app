@@ -5,7 +5,7 @@ import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.CoworkingMapper;
 import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityIndexException;
+import org.example.coworking.mapper.exception.FacilityTypeIndexException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
@@ -112,7 +112,7 @@ public class CoworkingController {
             } catch (InvalidInputException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (FacilityIndexException e) {
+            } catch (FacilityTypeIndexException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }

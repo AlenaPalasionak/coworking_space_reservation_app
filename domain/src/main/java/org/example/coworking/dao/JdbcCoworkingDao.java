@@ -258,7 +258,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
             try (ResultSet facilitiesResultSet = selectFacilitiesStatement.executeQuery()) {
                 while (facilitiesResultSet.next()) {
                     String facilityDescription = facilitiesResultSet.getString("description");
-                    Facility facility = Facility.valueOf(facilityDescription.toUpperCase());
+                    Facility facility = new Facility(FacilityType.valueOf(facilityDescription.toUpperCase()));
                     facilities.add(facility);
                 }
             }
@@ -282,28 +282,28 @@ public class JdbcCoworkingDao implements CoworkingDao {
      * @throws DataExcessException          If a database error occurs.
      */
     private long getFacilityId(Facility facility, Connection connection) {
-        if (facility == null || facility.getDescription() == null) {
-            TECHNICAL_LOGGER.error("Facility or facility description is null");
-            throw new IllegalArgumentException("Facility or description cannot be null");
+        if (facility == null || facility.getType() == null) {
+            TECHNICAL_LOGGER.error("Facility or facility type is null");
+            throw new IllegalArgumentException("Facility or type cannot be null");
         }
         String selectFacilityIdQuery = """
                 SELECT id FROM facilities
                 WHERE description = ?
                 """;
         try (PreparedStatement selectFacilityIdStatement = connection.prepareStatement(selectFacilityIdQuery)) {
-            selectFacilityIdStatement.setString(1, facility.getDescription());
+            selectFacilityIdStatement.setString(1, facility.getType().toString());
             try (ResultSet facilityIdResultSet = selectFacilityIdStatement.executeQuery()) {
                 if (facilityIdResultSet.next()) {
                     return facilityIdResultSet.getLong("id");
                 } else {
-                    TECHNICAL_LOGGER.error("Failure to find Facility ID for facility: " + facility.getDescription());
+                    TECHNICAL_LOGGER.error("Failure to find Facility ID for facility: " + facility.getType());
                     throw new ObjectFieldNotFoundException(String.format("Failure to find Facility ID for Facility: %s"
-                            , facility.getDescription()));
+                            , facility.getType()));
                 }
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting facilities List of Coworking with ID: %d: {}"
-                    , facility.getDescription(), e);
+                    , facility.getType(), e);
             throw new DataExcessException(String.format("Database error occurred while getting ID of Facility: %s."
                     , facility), e);
         }

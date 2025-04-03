@@ -9,12 +9,23 @@
         <File name="TechnicalLog" fileName="logs/app.log" append="false">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %msg%n"/>
         </File>
+
+        <appender name="SQL_LOG" class="ch.qos.logback.core.FileAppender">
+            <file>/path/to/your/sql.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%logger{36}] %msg%n</pattern>
+            </encoder>
+        </appender>
     </Appenders>
 
     <Loggers>
         <Logger name="UserOutputLogger" level="info" additivity="false">
             <AppenderRef ref="UserOutputLog"/>
         </Logger>
+
+        <logger name="org.hibernate.SQL" level="DEBUG">
+            <appender-ref ref="SQL_LOG"/>
+        </logger>
 
         <Root level="warn">
             <AppenderRef ref="TechnicalLog"/>

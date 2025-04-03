@@ -44,11 +44,11 @@ CREATE TABLE public.reservations
 );
 
 INSERT INTO public.facilities (description)
-VALUES ('parking'),
-       ('wifi'),
-       ('kitchen'),
-       ('printer'),
-       ('conditioning');
+VALUES ('PARKING'),
+       ('WIFI'),
+       ('KITCHEN'),
+       ('PRINTER'),
+       ('CONDITIONING');
 
 INSERT INTO public.users (name, password, role)
 VALUES ('a', crypt('1', gen_salt('bf')), 'ADMIN'),
