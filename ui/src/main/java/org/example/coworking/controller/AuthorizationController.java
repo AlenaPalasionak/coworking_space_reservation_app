@@ -2,9 +2,9 @@ package org.example.coworking.controller;
 
 import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
-import org.example.coworking.dao.exception.UserNotFoundException;
 
 import java.io.BufferedReader;
 
@@ -53,7 +53,7 @@ public class AuthorizationController {
                 User user = authorizationService.authenticate(nameInput, passwordInput, userType);
                 USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                 return user;
-            } catch (UserNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }

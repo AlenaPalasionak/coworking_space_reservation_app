@@ -44,7 +44,7 @@ public class ValidatedInputSupplier {
         consumer.accept(message);
         String input = supplier.get();
         if (!validator.test(input)) {
-            throw new InvalidInputException("Wrong input: " + input, ControllerErrorCode.INVALID_INPUT);
+            throw new InvalidInputException(String.format("Wrong input: %s", input), ControllerErrorCode.INVALID_INPUT);
         }
         return input;
     }

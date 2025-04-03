@@ -1,14 +1,15 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.CoworkingNotFoundException;
-import org.example.coworking.dao.exception.ReservationNotFoundException;
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This interface defines the operations for managing reservations in the system.
@@ -17,38 +18,28 @@ import java.util.List;
 public interface ReservationService {
 
     /**
-     * Loads the reservations from a data source.
-     */
-    void load();
-
-    /**
-     * Saves the current state of reservations to a data source.
-     */
-    void save();
-
-    /**
      * Adds a new reservation for the specified customer with the given start and end times
      * and the associated coworking space ID.
      *
-     * @param customer the user who is making the reservation
-     * @param startTime the start time of the reservation
-     * @param endTime the end time of the reservation
+     * @param customer         the user who is making the reservation
+     * @param startTime        the start time of the reservation
+     * @param endTime          the end time of the reservation
      * @param coworkingSpaceId the ID of the coworking space being reserved
      * @throws ReservationTimeException if the reservation times are invalid (e.g., overlapping with existing reservations)
-     * @throws CoworkingNotFoundException if the coworking space with the given ID is not found
+     * @throws EntityNotFoundException  if the coworking space with the given ID is not found
      */
     void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId)
-            throws ReservationTimeException, CoworkingNotFoundException;
+            throws ReservationTimeException, EntityNotFoundException;
 
     /**
      * Deletes an existing reservation made by the specified user.
      *
-     * @param user the user who is deleting the reservation
+     * @param user          the user who is deleting the reservation
      * @param reservationId the ID of the reservation to be deleted
      * @throws ForbiddenActionException if the user is not allowed to delete the reservation
-     * @throws ReservationNotFoundException if the reservation with the given ID is not found
+     * @throws EntityNotFoundException  if the reservation with the given ID is not found
      */
-    void delete(User user, Long reservationId) throws ForbiddenActionException, ReservationNotFoundException;
+    void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
 
     /**
      * Retrieves all reservations associated with the specified user.
@@ -63,7 +54,16 @@ public interface ReservationService {
      *
      * @param reservationId the ID of the reservation to be retrieved
      * @return the {@link Reservation} object associated with the given ID
-     * @throws ReservationNotFoundException if no reservation with the given ID is found
+     * @throws EntityNotFoundException if no reservation with the given ID is found
      */
-    Reservation getById(Long reservationId) throws ReservationNotFoundException;
+    Reservation getById(Long reservationId) throws EntityNotFoundException;
+
+    /**
+     * Retrieves all reservation periods for a specific coworking space.
+     *
+     * @param coworkingId the ID of the coworking space
+     * @return a set of {@code ReservationPeriod} objects representing booked time slots
+     */
+    Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
+
 }

@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(force = true)
 public enum CoworkingType {
-    OPEN_SPACE("Open space coworkingSpace"), PRIVATE_OFFICE("Private Office"), CO_LIVING("CoworkingSpace + Co-living");
+    OPEN_SPACE("Open Space"), PRIVATE_OFFICE("Private Office"), CO_LIVING("Co Living");
 
     private final String description;
 

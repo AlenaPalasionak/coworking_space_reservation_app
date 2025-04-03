@@ -1,8 +1,7 @@
 package org.example.coworking.service;
 
+import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
-
-import java.util.List;
 
 /**
  * This interface defines the operations for managing users in the system.
@@ -11,10 +10,15 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * Loads the list of users from a data source.
+     * Retrieves a user by their name, password, and role.
      *
-     * @return a list of {@link User} objects representing all users loaded from the data source
+     * @param name      the username
+     * @param password  the user's password
+     * @param roleClass the expected role of the user (e.g., Admin, Customer)
+     * @return the authenticated {@code User} instance
+     * @throws EntityNotFoundException if the user is not found or credentials are incorrect
      */
-    List<User> load();
+    User getUserByNamePasswordAndAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException;
+
 }
 

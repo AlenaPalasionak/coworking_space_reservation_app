@@ -1,9 +1,8 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.MenuDao;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.model.Menu;
 import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.model.Menu;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,9 +44,6 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Menu getMenuByName(String name) throws MenuNotFoundException {
-        Optional<Menu> possibleMenu = menuDao.getMenuByName(name);
-        if (possibleMenu.isPresent()) {
-            return possibleMenu.get();
-        } else throw new MenuNotFoundException("Menu " + name + " is not found.", DaoErrorCode.MENU_NOT_IS_FOUND);
+        return menuDao.getMenuByName(name);
     }
 }

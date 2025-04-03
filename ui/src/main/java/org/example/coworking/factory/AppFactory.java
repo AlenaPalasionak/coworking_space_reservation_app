@@ -32,25 +32,64 @@ public class AppFactory {
     private final String coworkingPlacesPath = "coworking_places.json";
     private final String reservationPath = "reservations.json";
 
-    private final Loader<User> userLoader = new UserLoader(userPath);
-    private final Loader<CoworkingSpace> coworkingSpaceLoader = new CoworkingSpaceLoader(coworkingPlacesPath);
-    private final Loader<Reservation> reservationLoader = new ReservationLoader(reservationPath);
-    private final Loader<Menu> menuLoader = new MenuLoader(menuPath);
+    private final Loader<User> userLoader;
+    private final Loader<CoworkingSpace> coworkingSpaceLoader;
+    private final Loader<Reservation> reservationLoader;
+    private final Loader<Menu> menuLoader;
 
-    private final UserDao userDao = new UserDaoImpl(userLoader);
-    private final CoworkingDao coworkingDao = new CoworkingDaoImpl(coworkingSpaceLoader);
-    private final ReservationDao reservationDao = new ReservationDaoImpl(reservationLoader);
-    private final MenuDao menuDao = new MenuDaoImpl(menuLoader);
+    private final UserDao userDao;
+    private final CoworkingDao coworkingDao;
+    private final ReservationDao reservationDao;
+    private final MenuDao menuDao;
 
-    private final TimeLogicValidator timeLogicValidator = new TimeLogicValidator();
-    private final UserService userService = new UserServiceImpl(userDao);
-    private final CoworkingService coworkingService = new CoworkingServiceImpl(coworkingDao);
-    private final ReservationService reservationService = new ReservationServiceImpl(reservationDao, coworkingService, timeLogicValidator);
-    private final AuthorizationService authorizationService = new AuthorizationServiceImpl(userService);
+    private final TimeLogicValidator timeLogicValidator;
+    private final UserService userService;
+    private final CoworkingService coworkingService;
+    private final ReservationService reservationService;
+    private final AuthorizationService authorizationService;
 
-    private final CoworkingMapper coworkingMapper = new CoworkingMapper();
-    private final ReservationMapper reservationMapper = new ReservationMapper();
-    private final MenuService menuService = new MenuServiceImpl(menuDao);
+    private final CoworkingMapper coworkingMapper;
+    private final ReservationMapper reservationMapper;
+    private final MenuService menuService;
+
+    /**
+     * Constructs an AppFactory instance based on the given storage type.
+     *
+     * @param storageType The type of storage to be used ("DB" or "FILE").
+     */
+    public AppFactory(String storageType) {
+
+        this.userLoader = new UserLoader(userPath);
+        this.coworkingSpaceLoader = new CoworkingSpaceLoader(coworkingPlacesPath);
+        this.reservationLoader = new ReservationLoader(reservationPath);
+        this.menuLoader = new MenuLoader(menuPath);
+
+        this.menuDao = new MenuDaoImpl(menuLoader);
+        switch (storageType) {
+            case "DB" -> {
+                this.userDao = new JdbcUserDao();
+                this.coworkingDao = new JdbcCoworkingDao();
+                this.reservationDao = new JdbcReservationDao();
+            }
+            case "FILE" -> {
+                this.userDao = new FileUserDao(userLoader);
+                this.reservationDao = new FileReservationDao(reservationLoader);
+                this.coworkingDao = new FileCoworkingDao(coworkingSpaceLoader, reservationDao);
+                registerShutdownHook();
+            }
+            default -> throw new IllegalArgumentException("Unknown storage type: " + storageType);
+        }
+        this.timeLogicValidator = new TimeLogicValidator();
+        this.userService = new UserServiceImpl(userDao);
+        this.coworkingService = new CoworkingServiceImpl(coworkingDao);
+        this.reservationService = new ReservationServiceImpl(reservationDao, coworkingService, timeLogicValidator);
+        this.authorizationService = new AuthorizationServiceImpl(userService);
+
+        this.coworkingMapper = new CoworkingMapper();
+        this.reservationMapper = new ReservationMapper();
+        this.menuService = new MenuServiceImpl(menuDao);
+
+    }
 
     /**
      * Creates and returns an instance of the AuthorizationController, which handles user authorization.
@@ -86,5 +125,16 @@ public class AppFactory {
      */
     public MenuController createMenuController() {
         return new MenuController(menuService);
+    }
+
+    private void registerShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (coworkingDao instanceof FileCoworkingDao) {
+                ((FileCoworkingDao) coworkingDao).shutdown();
+            }
+            if (reservationDao instanceof FileReservationDao) {
+                ((FileReservationDao) reservationDao).shutdown();
+            }
+        }));
     }
 }

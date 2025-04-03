@@ -3,16 +3,23 @@ package org.example.coworking.model;
 import lombok.*;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
-public class Reservation {
-    @Setter
+public class Reservation implements Comparable<Reservation>{
     private Long id;
-    private final User customer;
-    private final ReservationPeriod period;
-    private final CoworkingSpace coworkingSpace;
+    private User customer;
+    private ReservationPeriod period;
+    private CoworkingSpace coworkingSpace;
 
     public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        this.customer = customer;
+        this.period = period;
+        this.coworkingSpace = coworkingSpace;
+    }
+
+    public Reservation(Long id, User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+        this.id = id;
         this.customer = customer;
         this.period = period;
         this.coworkingSpace = coworkingSpace;
@@ -26,5 +33,10 @@ public class Reservation {
                 ", period=" + period + "\n" +
                 ", coworkingSpace=" + coworkingSpace + "\n" +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Reservation other) {
+        return this.period.compareTo(other.period);
     }
 }

@@ -1,57 +1,37 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.dao.exception.ReservationNotFoundException;
 import org.example.coworking.model.Reservation;
+import org.example.coworking.model.ReservationPeriod;
 
 import java.util.List;
+import java.util.Set;
 
 /**
- * This interface defines the data access operations for the {@link Reservation} model.
- * It extends the {@link ModelDao} interface to provide basic CRUD operations with
- * {@link ReservationNotFoundException} as the exception type for errors.
- * It provides additional methods for adding, deleting, retrieving, and saving reservation data.
+ * Data Access Object (DAO) interface for managing {@link Reservation} entities.
  */
-public interface ReservationDao extends ModelDao<Reservation, ReservationNotFoundException> {
+public interface ReservationDao extends ModelDao<Reservation> {
 
     /**
-     * Adds a new reservation to the data source.
+     * Retrieves all reservation periods for a given coworking space.
      *
-     * @param reservation the {@link Reservation} object to be added
+     * @param coworkingId the ID of the coworking space
+     * @return a set of {@code ReservationPeriod} objects
      */
-    void add(Reservation reservation);
+    Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
 
     /**
-     * Deletes a specified reservation from the data source.
+     * Retrieves all reservations made by a specific customer.
      *
-     * @param reservation the {@link Reservation} object to be deleted
-     * @throws ReservationNotFoundException if the reservation cannot be found in the data source
+     * @param userId the ID of the customer
+     * @return a list of {@code Reservation} objects
      */
-    void delete(Reservation reservation) throws ReservationNotFoundException;
+    List<Reservation> getAllReservationsByCustomer(Long userId);
 
     /**
-     * Retrieves a reservation by its unique identifier.
+     * Retrieves all reservations managed by a specific admin.
      *
-     * @param reservationId the ID of the reservation to be retrieved
-     * @return the {@link Reservation} object with the specified ID
-     * @throws ReservationNotFoundException if the reservation with the given ID is not found
+     * @param adminId the ID of the admin
+     * @return a list of {@code Reservation} objects
      */
-    Reservation getById(Long reservationId) throws ReservationNotFoundException;
-
-    /**
-     * Retrieves all reservations from the data source.
-     *
-     * @return a list of all {@link Reservation} objects
-     */
-    List<Reservation> getAll();
-
-    /**
-     * Loads the data from the data source. Typically used for initialization or data retrieval.
-     */
-    void load();
-
-    /**
-     * Saves the current state of the reservations to the data source.
-     */
-    void save();
+    List<Reservation> getAllReservationsByAdmin(Long adminId);
 }
-

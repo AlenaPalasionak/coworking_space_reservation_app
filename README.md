@@ -2,15 +2,31 @@
 
 ## Getting Started
 
-### 1. Clone the project
+### 1. Create a PostgreSQL database named:
 
 ```sh
-git clone https://github.com/AlenaPalasionak/coworking_space_reservation_app.git
-cd coworking_space_reservation_app
-git checkout feature-branch-6
+coworking_reservation_app
 ```
 
-### 2. Build the project
+### 2. Add file to resources package in domain module:
+
+```sh
+application.properties
+```
+
+### 3. The file application.properties should contain (enter your data):
+
+```sh
+database.url=jdbc:postgresql://localhost:5432/coworking_reservation_app
+database.username=your_username
+database.password=your_password
+```
+
+### 4. Run scheme.sql located in the domain module in the resources package.
+
+## Run the project in Terminal
+
+### 1. Build the project
 
 ```sh
 mvn clean install

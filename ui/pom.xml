@@ -20,6 +20,7 @@
             <artifactId>service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -50,6 +51,7 @@
                                     <includes>
                                         <include>*.json</include>
                                         <include>log4j2.xml</include>
+                                        <include>schema.sql</include>
                                     </includes>
                                 </resource>
                             </resources>

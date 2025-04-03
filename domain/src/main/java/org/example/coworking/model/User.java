@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 
 @Getter
+@Setter
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class User {
     private Long id;
     private String name;
     private String password;
+
 
     @Override
     public String toString() {
