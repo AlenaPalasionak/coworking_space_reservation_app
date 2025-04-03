@@ -7,7 +7,7 @@ import org.example.coworking.model.Facility;
 import org.example.coworking.model.FacilityType;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,7 +41,7 @@ class CoworkingMapperTest {
 
     @Test
     public void testGetFacilityValidInput() throws FacilityTypeIndexException {
-        List<Facility> facilities = coworkingMapper.getFacility("0,1,2");
+        Set<Facility> facilities = coworkingMapper.getFacility("0,1,2");
         assertThat(facilities).hasSize(3)
                 .containsExactlyInAnyOrder(
                         new Facility(FacilityType.values()[0])
@@ -58,7 +58,7 @@ class CoworkingMapperTest {
 
     @Test
     public void testGetFacilityEmptyInput() {
-        List<Facility> facilities = coworkingMapper.getFacility("");
+        Set<Facility> facilities = coworkingMapper.getFacility("");
         assertThat(facilities).isEmpty();
     }
 
@@ -73,7 +73,7 @@ class CoworkingMapperTest {
 
     @Test
     public void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
-        List<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
+        Set<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
         assertThat(facilities).hasSize(3)
                 .containsExactlyInAnyOrder(
                         new Facility(FacilityType.values()[0])

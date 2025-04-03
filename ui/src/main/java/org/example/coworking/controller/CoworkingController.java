@@ -15,6 +15,7 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
 import java.util.List;
+import java.util.Set;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
@@ -71,7 +72,7 @@ public class CoworkingController {
     public void add(BufferedReader reader, User admin) {
         double price;
         CoworkingType coworkingType;
-        List<Facility> facilities;
+        Set<Facility> facilities;
 
         while (true) {
             String priceInput;

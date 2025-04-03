@@ -1,15 +1,26 @@
 package org.example.coworking.model;
 
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
-public class Reservation implements Comparable<Reservation>{
+@Entity
+@Table(name = "reservations")
+public class Reservation implements Comparable<Reservation> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
     private User customer;
+    @Embedded
     private ReservationPeriod period;
+    @ManyToOne
     private CoworkingSpace coworkingSpace;
 
     public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {

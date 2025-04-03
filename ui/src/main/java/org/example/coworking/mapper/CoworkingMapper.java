@@ -8,7 +8,7 @@ import org.example.coworking.model.Facility;
 import org.example.coworking.model.FacilityType;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +55,9 @@ public class CoworkingMapper {
      * @return a list of corresponding Facility enum values
      * @throws FacilityTypeIndexException if any facility index is invalid or out of bounds
      */
-    public List<Facility> getFacility(String facilityIndexesInput) throws FacilityTypeIndexException {
+    public Set<Facility> getFacility(String facilityIndexesInput) throws FacilityTypeIndexException {
         if (facilityIndexesInput.isBlank()) {
-            return List.of();
+            return Set.of();
         }
 
         return Arrays.stream(facilityIndexesInput.split(","))
@@ -72,7 +72,7 @@ public class CoworkingMapper {
                     }
                     return new Facility(FacilityType.values()[index]);
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     /**

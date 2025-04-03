@@ -7,6 +7,7 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 
 import java.util.List;
+import java.util.Set;
 
 public class CoworkingServiceImpl implements CoworkingService {
     private final CoworkingDao coworkingDao;
@@ -16,7 +17,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
+    public void add(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
         coworkingDao.create(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 

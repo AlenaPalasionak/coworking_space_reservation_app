@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,7 +31,7 @@ class CoworkingServiceImplTest {
     void testAdd() {
         User admin = new Admin(1L, "Aden", "123");
         CoworkingType type = CoworkingType.PRIVATE_OFFICE;
-        List<Facility> facilities = List.of(
+        Set<Facility> facilities = Set.of(
                 new Facility(FacilityType.WIFI),
                 new Facility(FacilityType.CONDITIONING),
                 new Facility(FacilityType.KITCHEN),
@@ -55,7 +56,7 @@ class CoworkingServiceImplTest {
     void testDeleteCoworkingSpaceWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
         Long coworkingSpaceId = 10L;
         User admin = new Admin(1L, "Aden", "123");
-        CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, List.of());
+        CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, Set.of());
         coworkingSpace.setId(coworkingSpaceId);
         when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
 
@@ -68,7 +69,7 @@ class CoworkingServiceImplTest {
     void testDeleteCoworkingSpaceWhenUserIsNotOwner() throws EntityNotFoundException {
         Long coworkingSpaceId = 10L;
         User admin = new Admin(1L, "Aden", "123");
-        CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, List.of());
+        CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, Set.of());
         coworkingSpace.setId(coworkingSpaceId);
         User anotherAdmin = new Admin(999L, "Bob", "99");
         when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
@@ -94,8 +95,8 @@ class CoworkingServiceImplTest {
     @Test
     void testGetAllByUserWhenUserIsAdmin() {
         User admin = new Admin(1L, "Aden", "123");
-        CoworkingSpace coworking1 = new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, List.of());
-        CoworkingSpace coworking2 = new CoworkingSpace(admin, 100.0, CoworkingType.PRIVATE_OFFICE, List.of());
+        CoworkingSpace coworking1 = new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, Set.of());
+        CoworkingSpace coworking2 = new CoworkingSpace(admin, 100.0, CoworkingType.PRIVATE_OFFICE, Set.of());
         when(coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId())).thenReturn(List.of(coworking1, coworking2));
 
         List<CoworkingSpace> actualCoworkingSpaces = coworkingService.getAllByUser(admin);
@@ -106,8 +107,8 @@ class CoworkingServiceImplTest {
     @Test
     void testGetAllByUserWhenUserIsCustomer() {
         User customer = new Customer(2L, "Customer", "321");
-        CoworkingSpace coworking1 = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, List.of());
-        CoworkingSpace coworking2 = new CoworkingSpace(new Admin(2L, "Bob", "124"), 200.0, CoworkingType.PRIVATE_OFFICE, List.of());
+        CoworkingSpace coworking1 = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of());
+        CoworkingSpace coworking2 = new CoworkingSpace(new Admin(2L, "Bob", "124"), 200.0, CoworkingType.PRIVATE_OFFICE, Set.of());
         when(coworkingDao.getAll()).thenReturn(List.of(coworking1, coworking2));
 
         List<CoworkingSpace> actualCoworkingSpaces = coworkingService.getAllByUser(customer);
@@ -118,7 +119,7 @@ class CoworkingServiceImplTest {
     @Test
     void testGetByIdReturnsCoworkingSpaceWhenExists() throws EntityNotFoundException {
         Long coworkingId = 1L;
-        CoworkingSpace expectedCoworkingSpace = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, List.of());
+        CoworkingSpace expectedCoworkingSpace = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of());
         when(coworkingDao.getById(coworkingId)).thenReturn(expectedCoworkingSpace);
 
         CoworkingSpace actualCoworkingSpace = coworkingService.getById(coworkingId);

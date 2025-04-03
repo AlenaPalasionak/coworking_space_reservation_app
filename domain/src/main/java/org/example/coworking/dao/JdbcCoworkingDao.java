@@ -10,7 +10,9 @@ import org.example.coworking.model.*;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
@@ -132,7 +134,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 coworkingType = CoworkingType.valueOf(
                         type.replace(" ", "_").toUpperCase());
 
-                List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
+                Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
                 coworkingSpace.setId(coworkingId);
                 admin.setId(adminId);
@@ -171,7 +173,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 CoworkingType coworkingType = CoworkingType.valueOf(
                         type.replace(" ", "_").toUpperCase());
 
-                List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
+                Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
                 coworkingSpace.setId(coworkingId);
                 admin.setId(adminId);
@@ -213,7 +215,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     String type = coworkingResultSet.getString("type");
                     CoworkingType coworkingType = CoworkingType.valueOf(type.replace(" ", "_").toUpperCase());
 
-                    List<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
+                    Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
                     coworkingSpace.setId(coworkingId);
                     coworkingSpace.setAdmin(admin);
@@ -240,12 +242,12 @@ public class JdbcCoworkingDao implements CoworkingDao {
      * @throws IllegalArgumentException If coworkingSpaceId is null.
      * @throws DataExcessException      If a database error occurs.
      */
-    private List<Facility> getFacilitiesForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
+    private Set<Facility> getFacilitiesForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
         if (coworkingSpaceId == null) {
             TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
             throw new IllegalArgumentException("CoworkingSpaceId cannot be null");
         }
-        List<Facility> facilities = new ArrayList<>();
+        Set<Facility> facilities = new HashSet<>();
         String selectFacilitiesQuery = """
                 SELECT f.description
                 FROM public.coworking_space_facilities cf

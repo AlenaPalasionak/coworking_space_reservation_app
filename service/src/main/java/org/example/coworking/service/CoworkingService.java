@@ -8,6 +8,7 @@ import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * This interface defines the operations for managing coworking spaces in the system.
@@ -23,7 +24,7 @@ public interface CoworkingService {
      * @param coworkingType the type of the coworking space
      * @param facilities    a list of facilities available in the coworking space
      */
-    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) ;
+    void add(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) ;
 
     /**
      * Deletes a coworking space for the specified user by its ID.

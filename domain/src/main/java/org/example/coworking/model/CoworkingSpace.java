@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 @Entity
+@Table(name="coworking_spaces")
 public class CoworkingSpace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +26,15 @@ public class CoworkingSpace {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CoworkingType coworkingType;
-
     @ManyToMany
     @JoinTable(
             name = "coworking_space_facilities",
             joinColumns = @JoinColumn(name = "coworking_space_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
-    private List<Facility> facilities;
+    private Set<Facility> facilities;
 
-    public CoworkingSpace(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
+    public CoworkingSpace(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
         this.admin = admin;
         this.price = price;
         this.coworkingType = coworkingType;
