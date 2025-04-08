@@ -50,7 +50,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
                 insertCoworkingSpaceStatement.setLong(1, adminId);
                 insertCoworkingSpaceStatement.setDouble(2, price);
-                insertCoworkingSpaceStatement.setString(3, coworkingType.getDescription());
+                insertCoworkingSpaceStatement.setString(3, coworkingType.name());
 
                 insertCoworkingSpaceStatement.executeUpdate();
 
@@ -130,8 +130,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 adminId = coworkingResultSet.getLong("admin_id");
                 price = coworkingResultSet.getDouble("price");
                 String type = coworkingResultSet.getString("type");
-                coworkingType = CoworkingType.valueOf(
-                        type.replace(" ", "_").toUpperCase());
+                coworkingType = CoworkingType.valueOf(type);
 
                 Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
@@ -169,8 +168,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 Long adminId = coworkingSpacesResultSet.getLong("admin_id");
                 double price = coworkingSpacesResultSet.getDouble("price");
                 String type = coworkingSpacesResultSet.getString("type");
-                CoworkingType coworkingType = CoworkingType.valueOf(
-                        type.replace(" ", "_").toUpperCase());
+                CoworkingType coworkingType = CoworkingType.valueOf(type);
 
                 Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
 
