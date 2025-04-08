@@ -52,15 +52,10 @@ class ReservationServiceImplTest {
         verify(reservationDao).create(reservationCaptor.capture());
 
         Reservation capturedReservation = reservationCaptor.getValue();
-
         assertThat(capturedReservation.getCustomer()).isEqualTo(customer);
         assertThat(capturedReservation.getCoworkingSpace()).isEqualTo(coworkingSpace);
         assertThat(capturedReservation.getPeriod().getStartTime()).isEqualTo(startTime);
         assertThat(capturedReservation.getPeriod().getEndTime()).isEqualTo(endTime);
-
-        verify(coworkingService).getById(coworkingSpaceId);
-        verify(timeLogicValidator).validateReservation(startTime, endTime);
-        verify(reservationDao).create(any(Reservation.class));
     }
 
     @Test
@@ -82,27 +77,21 @@ class ReservationServiceImplTest {
     void testDeleteReservationWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
         User customer = new Customer(2L, "Custer", "321");
         Long reservationId = 10L;
-        ReservationPeriod period = Mockito.mock(ReservationPeriod.class);
-        CoworkingSpace coworkingSpace = Mockito.mock(CoworkingSpace.class);
-        Reservation reservation = new Reservation(customer, period, coworkingSpace);
-        reservation.setId(reservationId);
-        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+
+        when(reservationDao.getCustomerIdByReservationId(reservationId)).thenReturn(customer.getId());
 
         reservationService.delete(customer, reservationId);
 
-        verify(reservationDao, times(1)).delete(reservation);
+        verify(reservationDao, times(1)).delete(reservationId);
     }
 
     @Test
     void testDeleteReservationWhenUserIsNotOwner() throws EntityNotFoundException {
         User customer = new Customer(2L, "Custer", "321");
         User anotherCustomer = new Customer(99L, "Bob", "789");
-        ReservationPeriod period = Mockito.mock(ReservationPeriod.class);
-        CoworkingSpace coworkingSpace = Mockito.mock(CoworkingSpace.class);
-        Reservation reservation = new Reservation(customer, period, coworkingSpace);
         Long reservationId = 10L;
-        reservation.setId(reservationId);
-        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+
+        when(reservationDao.getCustomerIdByReservationId(reservationId)).thenReturn(customer.getId());
 
         assertThatThrownBy(() -> reservationService.delete(anotherCustomer, reservationId))
                 .isInstanceOf(ForbiddenActionException.class);

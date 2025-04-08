@@ -72,12 +72,15 @@ class CoworkingMapperTest {
     }
 
     @Test
-    public void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
+    void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
         Set<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
-        assertThat(facilities).hasSize(3)
+        assertThat(facilities)
+                .hasSize(3)
+                .extracting(Facility::getType)
                 .containsExactlyInAnyOrder(
-                        new Facility(FacilityType.values()[0])
-                        , new Facility(FacilityType.values()[1])
-                        , new Facility(FacilityType.values()[2]));
+                        FacilityType.values()[0],
+                        FacilityType.values()[1],
+                        FacilityType.values()[2]
+                );
     }
 }

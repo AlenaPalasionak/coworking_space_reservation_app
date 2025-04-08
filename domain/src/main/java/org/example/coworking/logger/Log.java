@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
  * Both loggers are initialized with separate loggers, allowing for distinction between user output and technical logs.
  */
 public class Log {
-
     /**
      * Logger for user-facing messages, typically used for general application output or user notifications.
      */
@@ -23,4 +22,7 @@ public class Log {
      * Logger for technical messages, typically used for debugging, error reporting, and system logs.
      */
     public static final Logger TECHNICAL_LOGGER = LogManager.getLogger("TechnicalLog");
+
+    public static final Logger SQL_LOGGER = LogManager.getLogger("org.hibernate.SQL");
+
 }
