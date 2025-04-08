@@ -1,6 +1,6 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.DataSourceConfig;
+import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
@@ -23,7 +23,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
     private final DataSource dataSource;
 
     public JdbcCoworkingDao() {
-        this.dataSource = DataSourceConfig.getDataSource();
+        this.dataSource = JdbcConfig.getDataSource();
     }
 
     @Override
@@ -84,24 +84,23 @@ public class JdbcCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(CoworkingSpace coworkingSpace) throws EntityNotFoundException {
+    public void delete(Long coworkingSpaceId) throws EntityNotFoundException {
         String deleteCoworkingQuery = """
                 DELETE FROM public.coworking_spaces
                 WHERE id = ?
                 """;
-        Long coworkingSpaceId = coworkingSpace.getId();
         try (Connection connection = dataSource.getConnection();
              PreparedStatement deleteCoworkingStatement = connection.prepareStatement(deleteCoworkingQuery)) {
             deleteCoworkingStatement.setLong(1, coworkingSpaceId);
             int rowsAffected = deleteCoworkingStatement.executeUpdate();
 
             if (rowsAffected == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Coworking with ID: %d. Coworking is not found", coworkingSpace.getId())
-                        , DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                throw new EntityNotFoundException(String.format("Failure to delete Coworking with ID: %d. Coworking is not found"
+                        , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while deleting Coworking space: {}", coworkingSpace, e);
-            throw new DataExcessException(String.format("Database error occurred while deleting Coworking space: %s", coworkingSpace), e);
+            TECHNICAL_LOGGER.error("Database error occurred while deleting Coworking space with ID: {}", coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while deleting Coworking space with ID: %s", coworkingSpaceId), e);
         }
     }
 
@@ -210,7 +209,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     User admin = new Admin();
                     admin.setId(adminId);
 
-                    long coworkingId = coworkingResultSet.getLong("id");
+                    Long coworkingId = coworkingResultSet.getLong("id");
                     double price = coworkingResultSet.getDouble("price");
                     String type = coworkingResultSet.getString("type");
                     CoworkingType coworkingType = CoworkingType.valueOf(type.replace(" ", "_").toUpperCase());
@@ -233,6 +232,35 @@ public class JdbcCoworkingDao implements CoworkingDao {
         return coworkingSpaces;
     }
 
+    @Override
+    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {
+        Long adminId;
+        String selectAdminIdQuery = """
+                SELECT admin_id
+                FROM public.coworking_spaces
+                WHERE id = ?
+                """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement selectAdminIdStatement = connection.prepareStatement(selectAdminIdQuery)) {
+            selectAdminIdStatement.setLong(1, coworkingSpaceId);
+
+            try (ResultSet adminIdResultSet = selectAdminIdStatement.executeQuery()) {
+                if (adminIdResultSet.next()) {
+                    adminId = adminIdResultSet.getLong("admin_id");
+                } else {
+                    throw new EntityNotFoundException(String.format("Failure to find Coworking with id: %d"
+                            , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                }
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error("Database error occurred while getting Admin ID by coworking Space ID: %d: {}", coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting Admin ID by coworking Space ID: %d ", coworkingSpaceId), e);
+        }
+        return adminId;
+    }
+
+
     /**
      * Retrieves the list of facilities associated with a given coworking space.
      *
@@ -249,7 +277,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
         }
         Set<Facility> facilities = new HashSet<>();
         String selectFacilitiesQuery = """
-                SELECT f.description
+                SELECT f.type
                 FROM public.coworking_space_facilities cf
                 JOIN public.facilities f ON cf.facility_id = f.id
                 WHERE cf.coworking_space_id = ?
@@ -259,7 +287,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
             selectFacilitiesStatement.setLong(1, coworkingSpaceId);
             try (ResultSet facilitiesResultSet = selectFacilitiesStatement.executeQuery()) {
                 while (facilitiesResultSet.next()) {
-                    String facilityDescription = facilitiesResultSet.getString("description");
+                    String facilityDescription = facilitiesResultSet.getString("type");
                     Facility facility = new Facility(FacilityType.valueOf(facilityDescription.toUpperCase()));
                     facilities.add(facility);
                 }
@@ -290,7 +318,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
         }
         String selectFacilityIdQuery = """
                 SELECT id FROM facilities
-                WHERE description = ?
+                WHERE type = ?
                 """;
         try (PreparedStatement selectFacilityIdStatement = connection.prepareStatement(selectFacilityIdQuery)) {
             selectFacilityIdStatement.setString(1, facility.getType().toString());

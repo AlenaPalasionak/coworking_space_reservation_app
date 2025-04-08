@@ -16,11 +16,14 @@ public class Reservation implements Comparable<Reservation> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
     @Embedded
+    @Column(nullable = false)
     private ReservationPeriod period;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coworking_space_id", nullable = false)
     private CoworkingSpace coworkingSpace;
 
     public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
@@ -40,9 +43,9 @@ public class Reservation implements Comparable<Reservation> {
     public String toString() {
         return "Reservation{" +
                 "id=" + id +
-                ", customer=" + customer +
+                ", customer ID=" + getCustomer().getId() +
                 ", period=" + period + "\n" +
-                ", coworkingSpace=" + coworkingSpace + "\n" +
+                ", coworkingSpace ID=" + getCoworkingSpace().getId() + "\n" +
                 '}';
     }
 

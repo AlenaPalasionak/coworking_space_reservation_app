@@ -21,4 +21,17 @@ public interface CoworkingDao extends ModelDao<CoworkingSpace> {
      */
     List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId);
 
+    /**
+     * Retrieves the admin ID associated with a specific coworking space.
+     * <p>
+     * This method returns the ID of the admin who manages the coworking space identified
+     * by the given coworking space ID. If the coworking space is not found, an exception
+     * will be thrown.
+     *
+     * @param coworkingSpaceId the ID of the coworking space for which the admin ID is to be retrieved.
+     * @return the ID of the admin who manages the specified coworking space.
+     * @throws EntityNotFoundException if no coworking space with the given ID exists.
+     */
+    Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException;
+
 }

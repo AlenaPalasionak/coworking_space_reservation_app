@@ -23,11 +23,10 @@ public class CoworkingServiceImpl implements CoworkingService {
 
     @Override
     public void delete(User admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
-        CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
-        if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
-            coworkingDao.delete(coworkingSpace);
+        if (getAdminIdByCoworkingSpaceId(coworkingSpaceId).equals(admin.getId())) {
+            coworkingDao.delete(coworkingSpaceId);
         } else {
-            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", admin.getName())
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", admin.getId())
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -45,5 +44,10 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         return coworkingDao.getById(coworkingId);
+    }
+
+    @Override
+    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {
+        return coworkingDao.getAdminIdByCoworkingSpaceId(coworkingSpaceId);
     }
 }

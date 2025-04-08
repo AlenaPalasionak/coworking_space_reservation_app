@@ -1,6 +1,6 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.DataSourceConfig;
+import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
@@ -23,7 +23,7 @@ public class JdbcReservationDao implements ReservationDao {
     private final DataSource dataSource;
 
     public JdbcReservationDao() {
-        this.dataSource = DataSourceConfig.getDataSource();
+        this.dataSource = JdbcConfig.getDataSource();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Reservation reservation) throws EntityNotFoundException {
+    public void delete(Long reservationId) throws EntityNotFoundException {
         String deleteReservationQuery = """
                 DELETE FROM public.reservations
                 WHERE ID = ?
@@ -77,16 +77,16 @@ public class JdbcReservationDao implements ReservationDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement deleteReservationStatement = connection.prepareStatement(deleteReservationQuery)) {
 
-            deleteReservationStatement.setLong(1, reservation.getId());
+            deleteReservationStatement.setLong(1,reservationId);
             int rowsAffected = deleteReservationStatement.executeUpdate();
 
             if (rowsAffected == 0) {
                 throw new EntityNotFoundException(String.format("Failure to delete Reservation with ID: %d. Reservation is not found."
-                        , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while deleting reservation: {}.", reservation, e);
-            throw new DataExcessException(String.format("Database error occurred while deleting reservation: %s.", reservation), e);
+            TECHNICAL_LOGGER.error("Database error occurred while deleting reservation with ID: {}.", reservationId, e);
+            throw new DataExcessException(String.format("Database error occurred while deleting reservation with ID: %s.", reservationId), e);
         }
     }
 
@@ -277,5 +277,33 @@ public class JdbcReservationDao implements ReservationDao {
             throw new DataExcessException(String.format("Database error occurred while getting reservations by admin id: %d ",
                     adminId), e);
         }
+    }
+
+    @Override
+    public Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException {
+        Long customerId;
+        String selectCustomerIdQuery = """
+                SELECT customer_id
+                FROM public.reservations
+                WHERE id = ?
+                """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement selectCustomerIdStatement = connection.prepareStatement(selectCustomerIdQuery)) {
+            selectCustomerIdStatement.setLong(1, reservationId);
+
+            try (ResultSet customerIdResultSet = selectCustomerIdStatement.executeQuery()) {
+                if (customerIdResultSet.next()) {
+                    customerId = customerIdResultSet.getLong("customer_id");
+                } else {
+                    throw new EntityNotFoundException(String.format("Failure to find Customer id by reservation ID: %d"
+                            , reservationId), DaoErrorCode.USER_IS_NOT_FOUND);
+                }
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error("Database error occurred while getting Customer ID by Reservation ID: %d: {}", reservationId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting Customer ID by Reservation ID: %d ", reservationId), e);
+        }
+        return customerId;
     }
 }

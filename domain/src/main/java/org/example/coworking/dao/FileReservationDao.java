@@ -9,6 +9,7 @@ import org.example.coworking.model.ReservationPeriod;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,12 +40,13 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Reservation reservation) throws EntityNotFoundException {
-        if (checkIfNotExist(reservation.getId())) {
+    public void delete(Long reservationId) throws EntityNotFoundException {
+        if (checkIfNotExist(reservationId)) {
             throw new EntityNotFoundException(String.format("Failure to delete Reservation with id: %d. Reservation is not found."
-                    , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                    , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
         }
-        reservationsCache.remove(reservation);
+        reservationsCache
+                .removeIf(reservation -> reservation.getId().equals(reservationId));
     }
 
     @Override
@@ -87,6 +89,19 @@ public class FileReservationDao implements ReservationDao {
             return reservationsCache.stream()
                     .filter(reservation -> reservation.getCoworkingSpace().getAdmin().getId().equals(adminId))
                     .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException {
+        Optional<Reservation> possibleReservation = reservationsCache.stream()
+                .filter(reservation -> reservation.getId().equals(reservationId))
+                .findFirst();
+        if (possibleReservation.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Failure to find Reservation with id: %d"
+                    , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+        } else {
+            return possibleReservation.get().getCustomer().getId();
         }
     }
 

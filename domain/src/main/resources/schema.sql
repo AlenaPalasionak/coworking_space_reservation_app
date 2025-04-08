@@ -14,7 +14,7 @@ CREATE TABLE public.users
 CREATE TABLE public.facilities
 (
     id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    description VARCHAR(50) UNIQUE NOT NULL
+    type VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE public.coworking_spaces
@@ -43,7 +43,7 @@ CREATE TABLE public.reservations
     end_time           TIMESTAMP NOT NULL
 );
 
-INSERT INTO public.facilities (description)
+INSERT INTO public.facilities (type)
 VALUES ('PARKING'),
        ('WIFI'),
        ('KITCHEN'),

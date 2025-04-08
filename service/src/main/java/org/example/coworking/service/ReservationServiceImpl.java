@@ -40,11 +40,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
-        Reservation reservation = getById(reservationId);
-        if (reservation.getCustomer().getId().equals(user.getId())) {
-            reservationDao.delete(reservation);
+        if (getCustomerIdByReservationId(reservationId).equals(user.getId())) {
+            reservationDao.delete(reservationId);
         } else {
-            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getName())
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getId())
                     , ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -67,5 +66,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
         return reservationDao.getAllReservationPeriodsByCoworking(coworkingId);
+    }
+
+    @Override
+    public Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException {
+        return reservationDao.getCustomerIdByReservationId(reservationId);
     }
 }

@@ -24,7 +24,7 @@ public interface CoworkingService {
      * @param coworkingType the type of the coworking space
      * @param facilities    a list of facilities available in the coworking space
      */
-    void add(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) ;
+    void add(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities);
 
     /**
      * Deletes a coworking space for the specified user by its ID.
@@ -52,5 +52,7 @@ public interface CoworkingService {
      * @throws EntityNotFoundException if no coworking space with the given ID is found
      */
     CoworkingSpace getById(Long id) throws EntityNotFoundException;
+    Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException;
+
 
 }

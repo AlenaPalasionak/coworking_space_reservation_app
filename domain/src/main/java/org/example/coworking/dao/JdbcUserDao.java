@@ -1,6 +1,6 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.DataSourceConfig;
+import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
@@ -24,7 +24,7 @@ public class JdbcUserDao implements UserDao {
     private final DataSource dataSource;
 
     public JdbcUserDao() {
-        this.dataSource = DataSourceConfig.getDataSource();
+        this.dataSource = JdbcConfig.getDataSource();
     }
 
     @Override
@@ -53,8 +53,8 @@ public class JdbcUserDao implements UserDao {
                 }
             }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new DataExcessException("Database error occurred while fetching user with the name: " + name);
+            TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
+            throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
         }
     }
 }

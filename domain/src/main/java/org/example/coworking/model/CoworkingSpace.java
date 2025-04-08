@@ -13,20 +13,20 @@ import java.util.Set;
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
 @Entity
-@Table(name="coworking_spaces")
+@Table(name = "coworking_spaces")
 public class CoworkingSpace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false)
     private User admin;
     @Column(nullable = false)
     private double price;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private CoworkingType coworkingType;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "coworking_space_facilities",
             joinColumns = @JoinColumn(name = "coworking_space_id"),
@@ -45,7 +45,7 @@ public class CoworkingSpace {
     public String toString() {
         return "CoworkingSpace{" +
                 "id=" + id +
-                ", admin=" + admin +
+                ", admin ID=" + getAdmin().getId() +
                 ", price=" + price +
                 ", coworkingType=" + coworkingType +
                 ", facilities=" + facilities + "\n" +
