@@ -29,32 +29,35 @@ public class JdbcUserDao implements UserDao {
 
     @Override
     public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
-        String role = roleClass == Admin.class ? "ADMIN" : "CUSTOMER";
+        String userRole = roleClass == Admin.class ? "ADMIN" : "CUSTOMER"; // Убедитесь, что роли правильно указываются
         String selectUserQuery = "SELECT id, name, password, role " +
                 "FROM users " +
-                "WHERE name = ? AND password = crypt(?, password) AND role = CAST(? AS user_role)";
+                "WHERE name = ? AND password = crypt(?, password) AND role = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectUserStatement = connection.prepareStatement(selectUserQuery)) {
 
             selectUserStatement.setString(1, name);
             selectUserStatement.setString(2, password);
-            selectUserStatement.setString(3, role);
+            selectUserStatement.setString(3, userRole);
 
             try (ResultSet selectUserResultSet = selectUserStatement.executeQuery()) {
                 if (!selectUserResultSet.next()) {
                     throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
-                } else {
-                    return role.equals("ADMIN") ?
-                            new Admin(selectUserResultSet.getLong("id"), selectUserResultSet.getString("name")
-                                    , selectUserResultSet.getString("password")) :
-                            new Customer(selectUserResultSet.getLong("id"), selectUserResultSet.getString("name")
-                                    , selectUserResultSet.getString("password"));
                 }
+
+                Long id = selectUserResultSet.getLong("id");
+                String userName = selectUserResultSet.getString("name");
+                String userPassword = selectUserResultSet.getString("password");
+
+                return userRole.equals("ADMIN") ?
+                        new Admin(id, userName, userPassword) :
+                        new Customer(id, userName, userPassword);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
         }
     }
+
 }

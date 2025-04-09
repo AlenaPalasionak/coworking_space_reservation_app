@@ -1,15 +1,14 @@
 [
   {
-    "type": "admin",
+    "role": "ADMIN",
     "id": 1,
     "name": "a",
     "password": "1"
   },
   {
-    "type": "customer",
+    "role": "CUSTOMER",
     "id": 2,
     "name": "c",
     "password": "3"
-
   }
 ]

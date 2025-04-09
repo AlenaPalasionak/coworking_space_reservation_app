@@ -1,19 +1,17 @@
-
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TYPE public.user_role AS ENUM ('ADMIN', 'CUSTOMER');
 
 CREATE TABLE public.users
 (
     id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name     TEXT             NOT NULL,
-    password TEXT             NOT NULL,
-    role     public.user_role NOT NULL
+    name     TEXT NOT NULL,
+    password TEXT NOT NULL,
+    role     TEXT NOT NULL
 );
 
 CREATE TABLE public.facilities
 (
-    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type VARCHAR(50) UNIQUE NOT NULL
 );
 
