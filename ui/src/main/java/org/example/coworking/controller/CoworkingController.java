@@ -4,8 +4,8 @@ import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.CoworkingMapper;
-import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityTypeIndexException;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.model.CoworkingSpace;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
@@ -104,11 +104,11 @@ public class CoworkingController {
         }
 
         while (true) {
-            String facilitiesIndexesInput;
+            String facilityCodesInput;
             try {
-                facilitiesIndexesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
+                facilityCodesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
                         .supplier(FACILITY_MENU + "\nPlease enter numbers separated by commas.\n");
-                facilities = coworkingMapper.getFacility(facilitiesIndexesInput);
+                facilities = coworkingMapper.getFacility(facilityCodesInput);
                 break;
             } catch (InvalidInputException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());

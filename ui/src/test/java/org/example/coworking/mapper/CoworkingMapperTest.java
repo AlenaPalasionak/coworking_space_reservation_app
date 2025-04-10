@@ -1,7 +1,7 @@
 package org.example.coworking.mapper;
 
-import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityTypeIndexException;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 import org.junit.jupiter.api.Test;

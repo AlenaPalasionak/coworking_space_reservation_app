@@ -43,8 +43,8 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getCustomer().getId().equals(user.getId())) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getId())
-                    , ServiceErrorCode.FORBIDDEN_ACTION);
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getId()),
+                    ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
 

@@ -1,8 +1,8 @@
 package org.example.coworking.mapper;
 
-import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityTypeIndexException;
-import org.example.coworking.mapper.exception.MapperErrorCode;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.FacilityTypeIndexException;
+import org.example.coworking.model.exception.EnumErrorCode;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 
@@ -39,7 +39,7 @@ public class CoworkingMapper {
         int coworkingTypeIndex = Integer.parseInt(coworkingTypeInput);
         if (isIndexOutOfBound(coworkingTypeIndex, CoworkingType.class)) {
             throw new CoworkingTypeIndexException(String.format("Index: %d is out of bound in enum CoworkingType."
-                    , coworkingTypeIndex), MapperErrorCode.INVALID_COWORKING_TYPE_INDEX);
+                    , coworkingTypeIndex), EnumErrorCode.INVALID_COWORKING_TYPE_INDEX);
         } else {
             return CoworkingType.values()[coworkingTypeIndex];
         }
@@ -50,27 +50,21 @@ public class CoworkingMapper {
      * The string is split, trimmed, and parsed, and any invalid index will result in a FacilityIndexException.
      * If the input string is blank, an empty list is returned.
      *
-     * @param facilityIndexesInput the string of comma-separated facility indexes
+     * @param facilityCodesInput the string of comma-separated facility indexes
      * @return a list of corresponding Facility enum values
      * @throws FacilityTypeIndexException if any facility index is invalid or out of bounds
      */
-    public Set<Facility> getFacility(String facilityIndexesInput) throws FacilityTypeIndexException {
-        if (facilityIndexesInput.isBlank()) {
+    public Set<Facility> getFacility(String facilityCodesInput) throws FacilityTypeIndexException {
+        if (facilityCodesInput.isBlank()) {
             return Set.of();
         }
 
-        return Arrays.stream(facilityIndexesInput.split(","))
+        return Arrays.stream(facilityCodesInput.split(","))
                 .map(String::trim)
                 .distinct()
                 .sorted()
                 .map(Integer::parseInt)
-                .map(index -> {
-                    if (isIndexOutOfBound(index, Facility.class)) {
-                        throw new FacilityTypeIndexException(String.format("Index: %d is out of bound in enum FacilityType."
-                                , index), MapperErrorCode.INVALID_FACILITY_INDEX);
-                    }
-                    return Facility.values()[index];
-                })
+                .map(Facility::fromCode)
                 .collect(Collectors.toSet());
     }
 
@@ -85,4 +79,5 @@ public class CoworkingMapper {
     private static <T extends Enum<T>> boolean isIndexOutOfBound(int enumIndex, Class<T> enumClass) {
         return enumIndex < 0 || enumIndex >= enumClass.getEnumConstants().length;
     }
+
 }

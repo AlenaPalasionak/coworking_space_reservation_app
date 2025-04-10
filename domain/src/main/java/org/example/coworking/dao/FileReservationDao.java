@@ -47,8 +47,8 @@ public class FileReservationDao implements ReservationDao {
         return reservationsCache.stream()
                 .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d"
-                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d",
+                        reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
     @Override

@@ -50,8 +50,8 @@ public class FileCoworkingDao implements CoworkingDao {
         return coworkingSpacesCache.stream()
                 .filter(c -> c.getId().equals(coworkingId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to find Coworking with id: %d", coworkingId)
-                        , DaoErrorCode.COWORKING_IS_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to find Coworking with id: %d", coworkingId),
+                        DaoErrorCode.COWORKING_IS_NOT_FOUND));
     }
 
     @Override

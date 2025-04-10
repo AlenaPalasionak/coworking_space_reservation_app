@@ -86,8 +86,8 @@ public class JpaReservationDao implements ReservationDao {
                     .getSingleResult();
 
         } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d"
-                    , reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
+                    reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error while getting Reservation by ID: {}", reservationId, e);
             throw new DataExcessException(
@@ -130,10 +130,10 @@ public class JpaReservationDao implements ReservationDao {
                     .setParameter("coworkingSpaceId", coworkingSpaceId)
                     .getResultList());
         } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by Coworking Space ID: {}."
-                    , coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservations by Coworking Space ID: %d."
-                    , coworkingSpaceId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by Coworking Space ID: {}.",
+                    coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by Coworking Space ID: %d.",
+                    coworkingSpaceId), e);
         } finally {
             entityManager.close();
         }
@@ -154,10 +154,10 @@ public class JpaReservationDao implements ReservationDao {
                     .setParameter("customerId", customerId)
                     .getResultList();
         } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}."
-                    , customerId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
-                    , customerId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}.",
+                    customerId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d.",
+                    customerId), e);
         } finally {
             entityManager.close();
         }
@@ -178,10 +178,10 @@ public class JpaReservationDao implements ReservationDao {
                     .setParameter("adminId", adminId)
                     .getResultList();
         } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}."
-                    , adminId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
-                    , adminId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}.",
+                    adminId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d.",
+                    adminId), e);
         } finally {
             entityManager.close();
         }

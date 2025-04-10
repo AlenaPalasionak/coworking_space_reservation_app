@@ -27,8 +27,8 @@ public class CoworkingServiceImpl implements CoworkingService {
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
             coworkingDao.delete(coworkingSpace);
         } else {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName()
-                    , ServiceErrorCode.FORBIDDEN_ACTION);
+            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName(),
+                    ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
 

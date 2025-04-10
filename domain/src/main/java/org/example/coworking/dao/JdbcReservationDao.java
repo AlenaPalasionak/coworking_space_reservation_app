@@ -101,8 +101,8 @@ public class JdbcReservationDao implements ReservationDao {
 
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
-                    throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d."
-                            , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                    throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d.",
+                            reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 User customer = new Customer();
@@ -193,10 +193,10 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}."
-                    , coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d."
-                    , coworkingSpaceId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}.",
+                    coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d.",
+                    coworkingSpaceId), e);
         }
     }
 
@@ -229,10 +229,10 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}."
-                    , customerId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
-                    , customerId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}.",
+                    customerId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d.",
+                    customerId), e);
         }
     }
 
@@ -269,8 +269,8 @@ public class JdbcReservationDao implements ReservationDao {
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations reservations by admin ID: {}."
-                    , adminId, e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations reservations by admin ID: {}.",
+                    adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting reservations by admin id: %d ",
                     adminId), e);
         }

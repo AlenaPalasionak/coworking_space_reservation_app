@@ -84,8 +84,8 @@ public class JpaCoworkingDao implements CoworkingDao {
                     .getSingleResult();
 
         } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d"
-                    , coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d",
+                    coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error while getting coworking space by ID: {}", coworkingId, e);
             throw new DataExcessException(
