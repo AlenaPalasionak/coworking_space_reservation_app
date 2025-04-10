@@ -78,7 +78,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId) throws EntityNotFoundException {
+    public void delete(Long coworkingSpaceId) {
         String deleteCoworkingQuery = """
                 DELETE FROM public.coworking_spaces
                 WHERE id = ?
@@ -86,12 +86,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement deleteCoworkingStatement = connection.prepareStatement(deleteCoworkingQuery)) {
             deleteCoworkingStatement.setLong(1, coworkingSpaceId);
-            int rowsAffected = deleteCoworkingStatement.executeUpdate();
+            deleteCoworkingStatement.executeUpdate();
 
-            if (rowsAffected == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Coworking with ID: %d. Coworking is not found"
-                        , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-            }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while deleting Coworking space with ID: {}", coworkingSpaceId, e);
             throw new DataExcessException(String.format("Database error occurred while deleting Coworking space with ID: %s", coworkingSpaceId), e);

@@ -41,13 +41,8 @@ public class FileCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId) throws EntityNotFoundException {//
-        if (checkIfNotExist(coworkingSpaceId)) {
-            throw new EntityNotFoundException(String.format("Failure to delete Coworking with id: %d. Coworking is not found."
-                    , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-        }
-        coworkingSpacesCache
-                .removeIf(coworking -> coworking.getId().equals(coworkingSpaceId));
+    public void delete(Long coworkingSpaceId)  {
+        coworkingSpacesCache.removeIf(coworking -> coworking.getId().equals(coworkingSpaceId));
         reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpaceId));
     }
 
@@ -83,11 +78,6 @@ public class FileCoworkingDao implements CoworkingDao {
         } else {
             return possibleCoworkingSpace.get().getAdmin().getId();
         }
-    }
-
-    private boolean checkIfNotExist(Long id) {//service method
-        return coworkingSpacesCache.stream()
-                .noneMatch(c -> c.getId().equals(id));
     }
 
     public void shutdown() {

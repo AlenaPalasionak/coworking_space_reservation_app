@@ -41,7 +41,7 @@ public class JpaReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Long reservationId) throws EntityNotFoundException {
+    public void delete(Long reservationId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -50,15 +50,10 @@ public class JpaReservationDao implements ReservationDao {
                     DELETE FROM Reservation
                     WHERE id = :reservationId
                     """;
-            int deletedCount = entityManager
+            entityManager
                     .createQuery(deleteReservationQuery)
                     .setParameter("reservationId", reservationId)
                     .executeUpdate();
-
-            if (deletedCount == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Reservation with ID: %d. Reservation is not found."
-                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-            }
 
             transaction.commit();
         } catch (PersistenceException e) {

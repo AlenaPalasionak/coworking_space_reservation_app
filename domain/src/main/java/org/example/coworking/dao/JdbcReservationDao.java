@@ -68,7 +68,7 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Long reservationId) throws EntityNotFoundException {
+    public void delete(Long reservationId) {
         String deleteReservationQuery = """
                 DELETE FROM public.reservations
                 WHERE ID = ?
@@ -78,12 +78,8 @@ public class JdbcReservationDao implements ReservationDao {
              PreparedStatement deleteReservationStatement = connection.prepareStatement(deleteReservationQuery)) {
 
             deleteReservationStatement.setLong(1, reservationId);
-            int rowsAffected = deleteReservationStatement.executeUpdate();
+            deleteReservationStatement.executeUpdate();
 
-            if (rowsAffected == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Reservation with ID: %d. Reservation is not found."
-                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-            }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while deleting reservation with ID: {}.", reservationId, e);
             throw new DataExcessException(String.format("Database error occurred while deleting reservation with ID: %s.", reservationId), e);

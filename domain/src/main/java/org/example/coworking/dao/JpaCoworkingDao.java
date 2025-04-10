@@ -38,7 +38,7 @@ public class JpaCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId) throws EntityNotFoundException {
+    public void delete(Long coworkingSpaceId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -48,15 +48,11 @@ public class JpaCoworkingDao implements CoworkingDao {
                     WHERE id = :id
                     """;
 
-            int deletedCoworkingCount = entityManager
+            entityManager
                     .createQuery(deleteCoworkingQuery)
                     .setParameter("id", coworkingSpaceId)
                     .executeUpdate();
 
-            if (deletedCoworkingCount == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Coworking with ID: %d. Coworking is not found"
-                        , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-            }
             transaction.commit();
         } catch (PersistenceException e) {
             if (transaction.isActive()) {

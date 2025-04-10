@@ -39,13 +39,8 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Long reservationId) throws EntityNotFoundException {
-        if (checkIfNotExist(reservationId)) {
-            throw new EntityNotFoundException(String.format("Failure to delete Reservation with id: %d. Reservation is not found."
-                    , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-        }
-        reservationsCache
-                .removeIf(reservation -> reservation.getId().equals(reservationId));
+    public void delete(Long reservationId) {
+        reservationsCache.removeIf(reservation -> reservation.getId().equals(reservationId));
     }
 
     @Override
@@ -99,11 +94,6 @@ public class FileReservationDao implements ReservationDao {
         } else {
             return possibleReservation.get().getCustomer().getId();
         }
-    }
-
-    private boolean checkIfNotExist(Long id) {
-        return reservationsCache.stream()
-                .noneMatch(r -> r.getId().equals(id));
     }
 
     public void shutdown() {
