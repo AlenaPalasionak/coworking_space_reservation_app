@@ -68,7 +68,8 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Long reservationId) {
+    public void delete(Reservation reservation) {
+        Long reservationId = reservation.getId();
         String deleteReservationQuery = """
                 DELETE FROM public.reservations
                 WHERE ID = ?
@@ -273,33 +274,5 @@ public class JdbcReservationDao implements ReservationDao {
             throw new DataExcessException(String.format("Database error occurred while getting reservations by admin id: %d ",
                     adminId), e);
         }
-    }
-
-    @Override
-    public Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException {
-        Long customerId;
-        String selectCustomerIdQuery = """
-                SELECT customer_id
-                FROM public.reservations
-                WHERE id = ?
-                """;
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement selectCustomerIdStatement = connection.prepareStatement(selectCustomerIdQuery)) {
-            selectCustomerIdStatement.setLong(1, reservationId);
-
-            try (ResultSet customerIdResultSet = selectCustomerIdStatement.executeQuery()) {
-                if (customerIdResultSet.next()) {
-                    customerId = customerIdResultSet.getLong("customer_id");
-                } else {
-                    throw new EntityNotFoundException(String.format("Failure to find Customer id by reservation ID: %d"
-                            , reservationId), DaoErrorCode.USER_IS_NOT_FOUND);
-                }
-            }
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting Customer ID by Reservation ID: %d: {}", reservationId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting Customer ID by Reservation ID: %d ", reservationId), e);
-        }
-        return customerId;
     }
 }

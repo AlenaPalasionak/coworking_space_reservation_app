@@ -78,7 +78,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId) {
+    public void delete(CoworkingSpace coworkingSpace) {
+       Long coworkingSpaceId =  coworkingSpace.getId();
         String deleteCoworkingQuery = """
                 DELETE FROM public.coworking_spaces
                 WHERE id = ?
@@ -247,33 +248,5 @@ public class JdbcCoworkingDao implements CoworkingDao {
             TECHNICAL_LOGGER.error("Database error occurred while getting Coworking spaces by admin ID: %d: {}", adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting Coworking spaces by admin ID: %d ", adminId), e);
         }
-    }
-
-    @Override
-    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {//TODO delete or replace
-        Long adminId;
-        String selectAdminIdQuery = """
-                SELECT admin_id
-                FROM public.coworking_spaces
-                WHERE id = ?
-                """;
-
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement selectAdminIdStatement = connection.prepareStatement(selectAdminIdQuery)) {
-            selectAdminIdStatement.setLong(1, coworkingSpaceId);
-
-            try (ResultSet adminIdResultSet = selectAdminIdStatement.executeQuery()) {
-                if (adminIdResultSet.next()) {
-                    adminId = adminIdResultSet.getLong("admin_id");
-                } else {
-                    throw new EntityNotFoundException(String.format("Failure to find Coworking with id: %d"
-                            , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-                }
-            }
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting Admin ID by coworking Space ID: %d: {}", coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting Admin ID by coworking Space ID: %d ", coworkingSpaceId), e);
-        }
-        return adminId;
     }
 }

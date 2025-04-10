@@ -78,11 +78,13 @@ class ReservationServiceImplTest {
         User customer = new Customer(2L, "Custer", "321");
         Long reservationId = 10L;
 
-        when(reservationDao.getCustomerIdByReservationId(reservationId)).thenReturn(customer.getId());
+        Reservation reservation = Mockito.mock(Reservation.class);
+        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+        when(reservation.getCustomer()).thenReturn(customer);
 
         reservationService.delete(customer, reservationId);
 
-        verify(reservationDao, times(1)).delete(reservationId);
+        verify(reservationDao, times(1)).delete(reservation);
     }
 
     @Test
@@ -91,12 +93,15 @@ class ReservationServiceImplTest {
         User anotherCustomer = new Customer(99L, "Bob", "789");
         Long reservationId = 10L;
 
-        when(reservationDao.getCustomerIdByReservationId(reservationId)).thenReturn(customer.getId());
+        Reservation reservation = Mockito.mock(Reservation.class);
+        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+        when(reservation.getCustomer()).thenReturn(customer);
 
         assertThatThrownBy(() -> reservationService.delete(anotherCustomer, reservationId))
                 .isInstanceOf(ForbiddenActionException.class);
         verify(reservationDao, never()).delete(any());
     }
+
 
     @Test
     void testGetByIdReturnsReservationWhenExists() throws EntityNotFoundException {

@@ -38,7 +38,8 @@ public class JpaCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId) {
+    public void delete(CoworkingSpace coworkingSpace) {
+        Long coworkingSpaceId = coworkingSpace.getId();
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -128,30 +129,6 @@ public class JpaCoworkingDao implements CoworkingDao {
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting Coworking spaces by admin ID: %d: {}", adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting Coworking spaces by admin ID: %d ", adminId), e);
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    @Override
-    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            String adminIdQuery = """
-                    SELECT cs.admin.id
-                    FROM CoworkingSpace cs
-                    WHERE cs.id = :coworkingSpaceId""";
-            return entityManager
-                    .createQuery(adminIdQuery, Long.class)
-                    .setParameter("coworkingSpaceId", coworkingSpaceId)
-                    .getSingleResult();
-
-        } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to find Coworking with id: %d"
-                    , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-        } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting Admin ID by coworking Space ID: %d: {}", coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting Admin ID by coworking Space ID: %d ", coworkingSpaceId), e);
         } finally {
             entityManager.close();
         }

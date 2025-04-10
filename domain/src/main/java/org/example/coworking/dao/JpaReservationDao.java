@@ -41,7 +41,8 @@ public class JpaReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Long reservationId) {
+    public void delete(Reservation reservation) {
+        Long reservationId = reservation.getId();
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {
@@ -81,7 +82,7 @@ public class JpaReservationDao implements ReservationDao {
 
             return entityManager
                     .createQuery(reservationQuery, Reservation.class)
-                    .setParameter("id", reservationId)
+                    .setParameter("reservationId", reservationId)
                     .getSingleResult();
 
         } catch (NoResultException e) {
@@ -181,31 +182,6 @@ public class JpaReservationDao implements ReservationDao {
                     , adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
                     , adminId), e);
-        } finally {
-            entityManager.close();
-        }
-    }
-
-    @Override
-    public Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        try {
-            String reservationsQuery = """
-                            SELECT r.customer.id
-                            FROM Reservation r
-                            WHERE r.id = :reservationId
-                    """;
-
-            return entityManager
-                    .createQuery(reservationsQuery, Long.class)
-                    .setParameter("reservationId", reservationId)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to find Customer id by reservation ID: %d"
-                    , reservationId), DaoErrorCode.USER_IS_NOT_FOUND);
-        } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting Customer ID by Reservation ID: %d: {}", reservationId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting Customer ID by Reservation ID: %d ", reservationId), e);
         } finally {
             entityManager.close();
         }

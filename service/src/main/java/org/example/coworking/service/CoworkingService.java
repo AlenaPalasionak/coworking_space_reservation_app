@@ -52,7 +52,4 @@ public interface CoworkingService {
      * @throws EntityNotFoundException if no coworking space with the given ID is found
      */
     CoworkingSpace getById(Long id) throws EntityNotFoundException;
-    Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException;
-
-
 }

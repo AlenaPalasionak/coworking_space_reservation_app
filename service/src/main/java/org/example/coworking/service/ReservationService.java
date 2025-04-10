@@ -64,14 +64,4 @@ public interface ReservationService {
      * @return a set of {@code ReservationPeriod} objects representing booked time slots
      */
     Set<Reservation> getAllReservationsByCoworking(Long coworkingId);
-
-    /**
-     * Retrieves all customer ID of a specific reservation.
-     *
-     * @param reservationId the ID of a reservation
-     * @return a Long value of Customer ID
-     */
-    Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException;
-
-
 }

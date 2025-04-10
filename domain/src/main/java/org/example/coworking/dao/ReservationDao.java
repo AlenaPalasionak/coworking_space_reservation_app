@@ -1,6 +1,5 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
 
 import java.util.List;
@@ -34,13 +33,5 @@ public interface ReservationDao extends ModelDao<Reservation> {
      * @return a list of {@code Reservation} objects
      */
     List<Reservation> getAllReservationsByAdmin(Long adminId);
-
-    /**
-     * Retrieves all customer ID of a specific reservation.
-     *
-     * @param reservationId the ID of a reservation
-     * @return a Long value of Customer ID
-     */
-    Long getCustomerIdByReservationId(Long reservationId) throws EntityNotFoundException;
 
 }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -56,11 +57,13 @@ class CoworkingServiceImplTest {
     void testDeleteCoworkingSpaceWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
         Long coworkingSpaceId = 10L;
         User admin = new Admin(1L, "Aden", "123");
-        when(coworkingDao.getAdminIdByCoworkingSpaceId(coworkingSpaceId)).thenReturn(admin.getId());
+        CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, Set.of());
+        coworkingSpace.setId(coworkingSpaceId);
+        when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
 
         coworkingService.delete(admin, coworkingSpaceId);
 
-        verify(coworkingDao, times(1)).delete(coworkingSpaceId);
+        verify(coworkingDao, times(1)).delete(coworkingSpace);
     }
 
     @Test
@@ -68,7 +71,10 @@ class CoworkingServiceImplTest {
         Long coworkingSpaceId = 10L;
         User admin = new Admin(1L, "Aden", "123");
         User anotherAdmin = new Admin(999L, "Bob", "99");
-        when(coworkingDao.getAdminIdByCoworkingSpaceId(coworkingSpaceId)).thenReturn(admin.getId());
+
+        CoworkingSpace coworkingSpace = Mockito.mock(CoworkingSpace.class);
+        when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
+        when(coworkingSpace.getAdmin()).thenReturn(admin);
 
         assertThatThrownBy(() -> coworkingService.delete(anotherAdmin, coworkingSpaceId))
                 .isInstanceOf(ForbiddenActionException.class);
@@ -80,7 +86,8 @@ class CoworkingServiceImplTest {
     void testDeleteCoworkingSpaceWhenCoworkingNotFound() throws EntityNotFoundException {
         Long coworkingId = 10L;
         User admin = new Admin(1L, "Aden", "123");
-        when(coworkingDao.getAdminIdByCoworkingSpaceId(coworkingId))
+
+        when(coworkingDao.getById(coworkingId))
                 .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> coworkingService.delete(admin, coworkingId))

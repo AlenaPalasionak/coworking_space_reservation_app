@@ -23,9 +23,9 @@ public interface ModelDao<T> {
     /**
      * Deletes the specified model object from the data source.
      *
-     * @param id the identifier of the model object to be deleted
+     * @param object the model object to be deleted
      */
-    void delete(Long id);
+    void delete(T object);
 
     /**
      * Retrieves a model object by its unique identifier.

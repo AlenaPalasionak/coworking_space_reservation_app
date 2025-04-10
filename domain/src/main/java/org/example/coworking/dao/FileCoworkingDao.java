@@ -7,7 +7,6 @@ import org.example.coworking.model.CoworkingSpace;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
@@ -41,9 +40,9 @@ public class FileCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(Long coworkingSpaceId)  {
-        coworkingSpacesCache.removeIf(coworking -> coworking.getId().equals(coworkingSpaceId));
-        reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpaceId));
+    public void delete(CoworkingSpace coworkingSpace)  {
+        coworkingSpacesCache.removeIf(c -> c.getId().equals(coworkingSpace.getId()));
+        reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
     }
 
     @Override
@@ -65,19 +64,6 @@ public class FileCoworkingDao implements CoworkingDao {
     public List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId) {
         return coworkingSpacesCache.stream().filter(coworkingSpace -> coworkingSpace.getAdmin().getId().equals(adminId))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {
-        Optional<CoworkingSpace> possibleCoworkingSpace = coworkingSpacesCache.stream()
-                .filter(coworkingSpace -> coworkingSpace.getId().equals(coworkingSpaceId))
-                .findFirst();
-        if (possibleCoworkingSpace.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Failure to find Coworking with id: %d"
-                    , coworkingSpaceId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
-        } else {
-            return possibleCoworkingSpace.get().getAdmin().getId();
-        }
     }
 
     public void shutdown() {
