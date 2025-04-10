@@ -1,15 +1,19 @@
 package org.example.coworking.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "reservations")
 public class Reservation implements Comparable<Reservation> {
@@ -19,23 +23,29 @@ public class Reservation implements Comparable<Reservation> {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
-    @Embedded
-    @Column(nullable = false)
-    private ReservationPeriod period;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "start_time")
+
+    private LocalDateTime startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coworking_space_id", nullable = false)
     private CoworkingSpace coworkingSpace;
 
-    public Reservation(User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+    public Reservation(User customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
         this.customer = customer;
-        this.period = period;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.coworkingSpace = coworkingSpace;
     }
 
-    public Reservation(Long id, User customer, ReservationPeriod period, CoworkingSpace coworkingSpace) {
+    public Reservation(Long id, User customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
         this.id = id;
         this.customer = customer;
-        this.period = period;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.coworkingSpace = coworkingSpace;
     }
 
@@ -44,13 +54,14 @@ public class Reservation implements Comparable<Reservation> {
         return "Reservation{" +
                 "id=" + id +
                 ", customer ID=" + getCustomer().getId() +
-                ", period=" + period + "\n" +
-                ", coworkingSpace ID=" + getCoworkingSpace().getId() + "\n" +
+                ", startTime = " + startTime + "\n" +
+                ", endTime = " + endTime + "\n" +
+                ", coworkingSpace ID = " + getCoworkingSpace().getId() + "\n" +
                 '}';
     }
 
     @Override
     public int compareTo(Reservation other) {
-        return this.period.compareTo(other.period);
+        return this.startTime.compareTo(other.startTime);
     }
 }

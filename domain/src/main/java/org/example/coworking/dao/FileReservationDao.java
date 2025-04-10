@@ -4,7 +4,6 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -64,13 +63,10 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
-        List<Reservation> coworkingSpaces = reservationsCache.stream()
-                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId)).toList();
-        return coworkingSpaces.stream()
-                .map(Reservation::getPeriod)
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingId) {
+        return reservationsCache.stream()
+                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId))
                 .collect(Collectors.toSet());
-
     }
 
     @Override

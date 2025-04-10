@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "facilities")
+@Table(name = "facilities")// no need
 public class Facility {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

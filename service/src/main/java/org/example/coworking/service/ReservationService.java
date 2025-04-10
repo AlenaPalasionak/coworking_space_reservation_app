@@ -2,7 +2,6 @@ package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
 import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
@@ -64,7 +63,7 @@ public interface ReservationService {
      * @param coworkingId the ID of the coworking space
      * @return a set of {@code ReservationPeriod} objects representing booked time slots
      */
-    Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
+    Set<Reservation> getAllReservationsByCoworking(Long coworkingId);
 
     /**
      * Retrieves all customer ID of a specific reservation.

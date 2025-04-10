@@ -26,20 +26,20 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws ReservationTimeException, EntityNotFoundException {
-        ReservationPeriod period = new ReservationPeriod(startTime, endTime);
         CoworkingSpace coworkingSpace = coworkingService.getById(coworkingSpaceId);
         timeLogicValidator.validateReservation(startTime, endTime);
-        Set<ReservationPeriod> existingPeriodsOfACoworking = getAllReservationPeriodsByCoworking(coworkingSpaceId);
-        if (OccupationTimeValidator.isTimeOverlapping(period, existingPeriodsOfACoworking)) {
+        Set<Reservation> existingReservationsOfACoworking = getAllReservationsByCoworking(coworkingSpaceId);
+        if (OccupationTimeValidator.isTimeOverlapping(startTime, endTime, existingReservationsOfACoworking)) {
             throw new ReservationTimeException(String.format("%s - %s overlaps with existing period", startTime, endTime),
                     ServiceErrorCode.TIME_OVERLAPS);
         }
-        Reservation reservation = new Reservation(customer, period, coworkingSpace);
+        Reservation reservation = new Reservation(customer, startTime, endTime, coworkingSpace);
         reservationDao.create(reservation);
     }
 
     @Override
     public void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
+        //create obj
         if (getCustomerIdByReservationId(reservationId).equals(user.getId())) {
             reservationDao.delete(reservationId);
         } else {
@@ -49,7 +49,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAllByUser(User user) {
+    public List<Reservation> getAllByUser(User user) {//2
         if (user.getClass() == Customer.class) {
             return reservationDao.getAllReservationsByCustomer(user.getId());
         } else if (user.getClass() == Admin.class) {
@@ -64,8 +64,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
-        return reservationDao.getAllReservationPeriodsByCoworking(coworkingId);
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingId) {
+        return reservationDao.getAllReservationsByCoworking(coworkingId);
     }
 
     @Override

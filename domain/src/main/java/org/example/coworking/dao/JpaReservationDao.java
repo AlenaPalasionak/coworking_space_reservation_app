@@ -6,7 +6,6 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
 
 import java.util.List;
 import java.util.Set;
@@ -121,24 +120,23 @@ public class JpaReservationDao implements ReservationDao {
 
     }
 
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingSpaceId) {
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingSpaceId) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
-            String periodsQuery = """
-                    SELECT new org.example.coworking.model.ReservationPeriod(r.period.startTime, r.period.endTime)
-                    FROM Reservation r
-                    WHERE r.coworkingSpace.id = :coworkingSpaceId
+            String reservationsQuery = """
+                            SELECT r
+                            FROM Reservation r
+                            WHERE r.coworkingSpace.id = :coworkingSpaceId
                     """;
 
-            TypedQuery<ReservationPeriod> query = entityManager.createQuery(periodsQuery, ReservationPeriod.class);
-            query.setParameter("coworkingSpaceId", coworkingSpaceId);
-
-            return new TreeSet<>(query.getResultList());
-
+            return new TreeSet<>(entityManager
+                    .createQuery(reservationsQuery, Reservation.class)
+                    .setParameter("coworkingSpaceId", coworkingSpaceId)
+                    .getResultList());
         } catch (PersistenceException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}."
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by Coworking Space ID: {}."
                     , coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d."
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by Coworking Space ID: %d."
                     , coworkingSpaceId), e);
         } finally {
             entityManager.close();

@@ -43,7 +43,7 @@ class ReservationServiceImplTest {
 
         when(coworkingService.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
         doNothing().when(timeLogicValidator).validateReservation(startTime, endTime);
-        when(reservationDao.getAllReservationPeriodsByCoworking(coworkingSpaceId))
+        when(reservationDao.getAllReservationsByCoworking(coworkingSpaceId))
                 .thenReturn(new TreeSet<>());
 
         reservationService.add(customer, startTime, endTime, coworkingSpaceId);
@@ -54,8 +54,8 @@ class ReservationServiceImplTest {
         Reservation capturedReservation = reservationCaptor.getValue();
         assertThat(capturedReservation.getCustomer()).isEqualTo(customer);
         assertThat(capturedReservation.getCoworkingSpace()).isEqualTo(coworkingSpace);
-        assertThat(capturedReservation.getPeriod().getStartTime()).isEqualTo(startTime);
-        assertThat(capturedReservation.getPeriod().getEndTime()).isEqualTo(endTime);
+        assertThat(capturedReservation.getStartTime()).isEqualTo(startTime);
+        assertThat(capturedReservation.getEndTime()).isEqualTo(endTime);
     }
 
     @Test

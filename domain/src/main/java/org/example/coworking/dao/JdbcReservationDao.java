@@ -30,8 +30,8 @@ public class JdbcReservationDao implements ReservationDao {
     public void create(Reservation reservation) {
         Long customerId = reservation.getCustomer().getId();
         Long coworkingId = reservation.getCoworkingSpace().getId();
-        LocalDateTime startTime = reservation.getPeriod().getStartTime();
-        LocalDateTime endTime = reservation.getPeriod().getEndTime();
+        LocalDateTime startTime = reservation.getStartTime();
+        LocalDateTime endTime = reservation.getEndTime();
 
         String insertReservationQuery = """
                 INSERT INTO public.reservations (customer_id, coworking_space_id, start_time, end_time)
@@ -77,7 +77,7 @@ public class JdbcReservationDao implements ReservationDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement deleteReservationStatement = connection.prepareStatement(deleteReservationQuery)) {
 
-            deleteReservationStatement.setLong(1,reservationId);
+            deleteReservationStatement.setLong(1, reservationId);
             int rowsAffected = deleteReservationStatement.executeUpdate();
 
             if (rowsAffected == 0) {
@@ -110,7 +110,6 @@ public class JdbcReservationDao implements ReservationDao {
 
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
 
                 Long customerId = reservationResultSet.getLong("customer_id");
                 Long coworkingId = reservationResultSet.getLong("coworking_space_id");
@@ -118,10 +117,9 @@ public class JdbcReservationDao implements ReservationDao {
                 LocalDateTime endTime = reservationResultSet.getTimestamp("end_time").toLocalDateTime();
 
                 customer.setId(customerId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
                 coworkingSpace.setId(coworkingId);
 
-                return new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
+                return new Reservation(reservationId, customer, startTime, endTime, coworkingSpace);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting reservation by ID: {}.", reservationId, e);
@@ -145,7 +143,6 @@ public class JdbcReservationDao implements ReservationDao {
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
                 User admin = new Admin();
-                ReservationPeriod reservationPeriod;
 
                 Long reservationId = reservationsResultSet.getLong("id");
                 Long customerId = reservationsResultSet.getLong("customer_id");
@@ -156,8 +153,7 @@ public class JdbcReservationDao implements ReservationDao {
                 coworkingSpace.setAdmin(admin);
                 customer.setId(customerId);
                 coworkingSpace.setId(coworkingSpaceId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                Reservation reservation = new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
+                Reservation reservation = new Reservation(reservationId, customer, startTime, endTime, coworkingSpace);
                 reservations.add(reservation);
             }
 
@@ -170,10 +166,10 @@ public class JdbcReservationDao implements ReservationDao {
 
 
     @Override
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingSpaceId) {
-        Set<ReservationPeriod> reservations = new TreeSet<>();
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingSpaceId) {
+        Set<Reservation> reservations = new TreeSet<>();
         String selectReservationsQuery = """
-                SELECT start_time, end_time
+                SELECT id, customer_id, coworking_space_id, start_time, end_time
                 FROM public.reservations
                 WHERE coworking_space_id = ?
                 """;
@@ -184,11 +180,19 @@ public class JdbcReservationDao implements ReservationDao {
 
             ResultSet reservationResultSet = selectReservationStatement.executeQuery();
             while (reservationResultSet.next()) {
+                Long reservationId = reservationResultSet.getLong("id");
+
+                Long customerId = reservationResultSet.getLong("customer_id");
+                User customer = new Customer();
+                customer.setId(customerId);
+
                 LocalDateTime startTime = reservationResultSet.getTimestamp("start_time").toLocalDateTime();
                 LocalDateTime endTime = reservationResultSet.getTimestamp("end_time").toLocalDateTime();
 
-                ReservationPeriod reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(reservationPeriod);
+                CoworkingSpace coworkingSpace = new CoworkingSpace();
+                coworkingSpace.setId(coworkingSpaceId);
+
+                reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {
@@ -216,7 +220,6 @@ public class JdbcReservationDao implements ReservationDao {
             while (reservationResultSet.next()) {
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
 
                 Long reservationId = reservationResultSet.getLong("id");
                 Long coworkingSpaceId = reservationResultSet.getLong("coworking_space_id");
@@ -225,8 +228,7 @@ public class JdbcReservationDao implements ReservationDao {
 
                 customer.setId(customerId);
                 coworkingSpace.setId(coworkingSpaceId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(new Reservation(reservationId, customer, reservationPeriod, coworkingSpace));
+                reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {
@@ -255,7 +257,6 @@ public class JdbcReservationDao implements ReservationDao {
             while (reservationResultSet.next()) {
                 User admin = new Admin();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
                 User customer = new Customer();
 
                 Long reservationId = reservationResultSet.getLong("id");
@@ -267,8 +268,7 @@ public class JdbcReservationDao implements ReservationDao {
                 admin.setId(adminId);
                 coworkingSpace.setId(coworkingSpaceId);
                 customer.setId(customerId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(new Reservation(reservationId, admin, reservationPeriod, coworkingSpace));
+                reservations.add(new Reservation(reservationId, admin, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {

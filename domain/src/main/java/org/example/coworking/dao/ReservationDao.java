@@ -2,7 +2,6 @@ package org.example.coworking.dao;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +17,7 @@ public interface ReservationDao extends ModelDao<Reservation> {
      * @param coworkingId the ID of the coworking space
      * @return a set of {@code ReservationPeriod} objects
      */
-    Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId);
+    Set<Reservation> getAllReservationsByCoworking(Long coworkingId);
 
     /**
      * Retrieves all reservations made by a specific customer.
