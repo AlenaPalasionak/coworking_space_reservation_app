@@ -9,11 +9,6 @@ CREATE TABLE public.users
     role     TEXT NOT NULL
 );
 
-CREATE TABLE public.facilities
-(
-    id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    type VARCHAR(50) UNIQUE NOT NULL
-);
 
 CREATE TABLE public.coworking_spaces
 (
@@ -25,11 +20,12 @@ CREATE TABLE public.coworking_spaces
     FOREIGN KEY (admin_id) REFERENCES public.users (id) ON DELETE CASCADE
 );
 
-CREATE TABLE public.coworking_space_facilities
+CREATE TABLE coworking_space_facilities
 (
-    coworking_space_id BIGINT REFERENCES public.coworking_spaces (id) ON DELETE CASCADE,
-    facility_id        BIGINT REFERENCES public.facilities (id) ON DELETE CASCADE,
-    PRIMARY KEY (coworking_space_id, facility_id)
+    coworking_space_id BIGINT NOT NULL,
+    facility           TEXT   NOT NULL,
+    PRIMARY KEY (coworking_space_id, facility),
+    FOREIGN KEY (coworking_space_id) REFERENCES public.coworking_spaces (id) ON DELETE CASCADE
 );
 
 CREATE TABLE public.reservations
@@ -40,13 +36,6 @@ CREATE TABLE public.reservations
     start_time         TIMESTAMP NOT NULL,
     end_time           TIMESTAMP NOT NULL
 );
-
-INSERT INTO public.facilities (type)
-VALUES ('PARKING'),
-       ('WIFI'),
-       ('KITCHEN'),
-       ('PRINTER'),
-       ('CONDITIONING');
 
 INSERT INTO public.users (name, password, role)
 VALUES ('a', crypt('1', gen_salt('bf')), 'ADMIN'),

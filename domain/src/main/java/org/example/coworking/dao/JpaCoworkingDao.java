@@ -6,12 +6,8 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.Facility;
-import org.example.coworking.model.FacilityType;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
@@ -28,17 +24,6 @@ public class JpaCoworkingDao implements CoworkingDao {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            List<FacilityType> facilityTypes = coworkingSpace.getFacilities().stream()
-                    .map(Facility::getType)
-                    .toList();
-
-            Set<Facility> managedFacilities = new HashSet<>(entityManager
-                    .createQuery("SELECT f FROM Facility f WHERE f.type IN :types", Facility.class)
-                    .setParameter("types", facilityTypes)
-                    .getResultList());
-
-            coworkingSpace.setFacilities(managedFacilities);
-
             entityManager.persist(coworkingSpace);
             transaction.commit();
         } catch (PersistenceException e) {

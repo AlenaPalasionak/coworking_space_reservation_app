@@ -4,15 +4,11 @@ import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.dao.exception.ObjectFieldNotFoundException;
 import org.example.coworking.model.*;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
@@ -28,24 +24,23 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
     @Override
     public void create(CoworkingSpace coworkingSpace) {
-
         String insertCoworkingSpaceQuery = """
                 INSERT INTO public.coworking_spaces (admin_id, price, type)
                 VALUES (?, ?, ?) RETURNING id
                 """;
         String insertFacilityLinkQuery = """
-                INSERT INTO public.coworking_space_facilities (coworking_space_id, facility_id)
+                INSERT INTO public.coworking_space_facilities (coworking_space_id, facility)
                 VALUES (?, ?)
                 """;
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             Long coworkingSpaceId;
-            try (PreparedStatement insertCoworkingSpaceStatement = connection.prepareStatement(insertCoworkingSpaceQuery
-                    , Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement insertCoworkingSpaceStatement = connection.prepareStatement(insertCoworkingSpaceQuery,
+                    Statement.RETURN_GENERATED_KEYS)) {
 
                 Long adminId = coworkingSpace.getAdmin().getId();
-                Double price = coworkingSpace.getPrice();
+                double price = coworkingSpace.getPrice();
                 CoworkingType coworkingType = coworkingSpace.getCoworkingType();
 
                 insertCoworkingSpaceStatement.setLong(1, adminId);
@@ -62,14 +57,13 @@ public class JdbcCoworkingDao implements CoworkingDao {
                     }
                 }
 
-                try (PreparedStatement insertFacilityLinkStatement = connection.prepareStatement(insertFacilityLinkQuery)) {
+                try (PreparedStatement insertFacilityStatement = connection.prepareStatement(insertFacilityLinkQuery)) {
                     for (Facility facility : coworkingSpace.getFacilities()) {
-                        insertFacilityLinkStatement.setLong(1, coworkingSpaceId);
-                        Long facilityId = getFacilityId(facility, connection);
-                        insertFacilityLinkStatement.setLong(2, facilityId);
-                        insertFacilityLinkStatement.addBatch();
+                        insertFacilityStatement.setLong(1, coworkingSpaceId);
+                        insertFacilityStatement.setString(2, facility.name());
+                        insertFacilityStatement.addBatch();
                     }
-                    insertFacilityLinkStatement.executeBatch();
+                    insertFacilityStatement.executeBatch();
                 }
                 connection.commit();
             } catch (SQLException e) {
@@ -107,8 +101,10 @@ public class JdbcCoworkingDao implements CoworkingDao {
     @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         String selectCoworkingSpaceQuery = """
-                SELECT admin_id, price, type
-                FROM public.coworking_spaces
+                SELECT cs.admin_id, cs.price, cs.type, csf.facility
+                FROM public.coworking_spaces cs
+                LEFT JOIN coworking_space_facilities csf
+                ON cs.id = csf.coworking_space_id
                 WHERE id = ?
                 """;
 
@@ -126,19 +122,26 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 User admin = new Admin();
                 double price;
                 CoworkingType coworkingType;
+                Set<Facility> facilities = new HashSet<>();
 
                 adminId = coworkingResultSet.getLong("admin_id");
                 price = coworkingResultSet.getDouble("price");
                 String type = coworkingResultSet.getString("type");
                 coworkingType = CoworkingType.valueOf(type);
 
-                Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
-
                 coworkingSpace.setId(coworkingId);
                 admin.setId(adminId);
                 coworkingSpace.setAdmin(admin);
                 coworkingSpace.setPrice(price);
                 coworkingSpace.setCoworkingType(coworkingType);
+
+                do {
+                    String facilityString = coworkingResultSet.getString("facility");
+                    if (facilityString != null) {
+                        Facility facility = Facility.valueOf(facilityString);
+                        facilities.add(facility);
+                    }
+                } while (coworkingResultSet.next());
                 coworkingSpace.setFacilities(facilities);
                 return coworkingSpace;
             }
@@ -150,38 +153,49 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
     @Override
     public List<CoworkingSpace> getAll() {
-        List<CoworkingSpace> coworkingSpaces = new ArrayList<>();
+        Map<Long, CoworkingSpace> coworkingSpaceMap = new HashMap<>();
 
         String selectCoworkingSpacesQuery = """
-                SELECT id, admin_id, price, type
-                FROM public.coworking_spaces
+                SELECT cs.id, cs.admin_id, cs.price, cs.type, csf.facility
+                FROM public.coworking_spaces cs
+                LEFT JOIN coworking_space_facilities csf
+                ON cs.id = csf.coworking_space_id
                 """;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectCoworkingStatement = connection.prepareStatement(selectCoworkingSpacesQuery)) {
 
             ResultSet coworkingSpacesResultSet = selectCoworkingStatement.executeQuery();
+
             while (coworkingSpacesResultSet.next()) {
-                CoworkingSpace coworkingSpace = new CoworkingSpace();
-                User admin = new Admin();
+                Long coworkingSpaceId = coworkingSpacesResultSet.getLong("id");
+                CoworkingSpace coworkingSpace = coworkingSpaceMap.get(coworkingSpaceId);
+                if (coworkingSpace == null) {
+                    coworkingSpace = new CoworkingSpace();
+                    coworkingSpace.setId(coworkingSpaceId);
 
-                Long coworkingId = coworkingSpacesResultSet.getLong("id");
-                Long adminId = coworkingSpacesResultSet.getLong("admin_id");
-                double price = coworkingSpacesResultSet.getDouble("price");
-                String type = coworkingSpacesResultSet.getString("type");
-                CoworkingType coworkingType = CoworkingType.valueOf(type);
+                    User admin = new Admin();
+                    Long coworkingId = coworkingSpacesResultSet.getLong("id");
+                    Long adminId = coworkingSpacesResultSet.getLong("admin_id");
+                    double price = coworkingSpacesResultSet.getDouble("price");
+                    String type = coworkingSpacesResultSet.getString("type");
+                    CoworkingType coworkingType = CoworkingType.valueOf(type);
 
-                Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
+                    coworkingSpace.setId(coworkingId);
+                    admin.setId(adminId);
+                    coworkingSpace.setAdmin(admin);
+                    coworkingSpace.setPrice(price);
+                    coworkingSpace.setCoworkingType(coworkingType);
+                    coworkingSpace.setFacilities(new HashSet<>());
 
-                coworkingSpace.setId(coworkingId);
-                admin.setId(adminId);
-                coworkingSpace.setAdmin(admin);
-                coworkingSpace.setPrice(price);
-                coworkingSpace.setCoworkingType(coworkingType);
-                coworkingSpace.setFacilities(facilities);
-                coworkingSpaces.add(coworkingSpace);
+                    coworkingSpaceMap.put(coworkingSpaceId, coworkingSpace);
+                }
 
+                String facilityString = coworkingSpacesResultSet.getString("facility");
+                if (facilityString != null) {
+                    coworkingSpace.getFacilities().add(Facility.valueOf(facilityString));
+                }
             }
-            return coworkingSpaces;
+            return new ArrayList<>(coworkingSpaceMap.values());
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new DataExcessException("Database error occurred while getting coworking spaces. ", e);
@@ -190,48 +204,57 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
     @Override
     public List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId) {
-        List<CoworkingSpace> coworkingSpaces = new ArrayList<>();
+        Map<Long, CoworkingSpace> coworkingSpaceMap = new HashMap<>();
+
         String selectCoworkingSpacesQuery = """
-                SELECT id, price, type
-                FROM public.coworking_spaces
+                SELECT cs.id, cs.price, cs.type, csf.facility
+                FROM public.coworking_spaces cs
+                LEFT JOIN coworking_space_facilities csf
+                ON cs.id = csf.coworking_space_id
                 WHERE admin_id = ?
                 """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectCoworkingStatement = connection.prepareStatement(selectCoworkingSpacesQuery)) {
             selectCoworkingStatement.setLong(1, adminId);
+            ResultSet coworkingSpacesResultSet = selectCoworkingStatement.executeQuery();
 
-            try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
-                while (coworkingResultSet.next()) {
-                    CoworkingSpace coworkingSpace = new CoworkingSpace();
+            while (coworkingSpacesResultSet.next()) {
+                Long coworkingSpaceId = coworkingSpacesResultSet.getLong("id");
+                CoworkingSpace coworkingSpace = coworkingSpaceMap.get(coworkingSpaceId);
+                if (coworkingSpace == null) {
+                    coworkingSpace = new CoworkingSpace();
+                    coworkingSpace.setId(coworkingSpaceId);
+
                     User admin = new Admin();
-                    admin.setId(adminId);
+                    double price = coworkingSpacesResultSet.getDouble("price");
+                    String type = coworkingSpacesResultSet.getString("type");
+                    CoworkingType coworkingType = CoworkingType.valueOf(type);
 
-                    Long coworkingId = coworkingResultSet.getLong("id");
-                    double price = coworkingResultSet.getDouble("price");
-                    String type = coworkingResultSet.getString("type");
-                    CoworkingType coworkingType = CoworkingType.valueOf(type.replace(" ", "_").toUpperCase());
-
-                    Set<Facility> facilities = getFacilitiesForCoworkingSpace(coworkingId, connection);
-
-                    coworkingSpace.setId(coworkingId);
+                    coworkingSpace.setId(coworkingSpaceId);
+                    admin.setId(coworkingSpaceId);
                     coworkingSpace.setAdmin(admin);
                     coworkingSpace.setPrice(price);
                     coworkingSpace.setCoworkingType(coworkingType);
-                    coworkingSpace.setFacilities(facilities);
+                    coworkingSpace.setFacilities(new HashSet<>());
 
-                    coworkingSpaces.add(coworkingSpace);
+                    coworkingSpaceMap.put(coworkingSpaceId, coworkingSpace);
+                }
+
+                String facilityString = coworkingSpacesResultSet.getString("facility");
+                if (facilityString != null) {
+                    coworkingSpace.getFacilities().add(Facility.valueOf(facilityString));
                 }
             }
+            return new ArrayList<>(coworkingSpaceMap.values());
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting Coworking spaces by admin ID: %d: {}", adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting Coworking spaces by admin ID: %d ", adminId), e);
         }
-        return coworkingSpaces;
     }
 
     @Override
-    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {
+    public Long getAdminIdByCoworkingSpaceId(Long coworkingSpaceId) throws EntityNotFoundException {//TODO delete or replace
         Long adminId;
         String selectAdminIdQuery = """
                 SELECT admin_id
@@ -256,84 +279,5 @@ public class JdbcCoworkingDao implements CoworkingDao {
             throw new DataExcessException(String.format("Database error occurred while getting Admin ID by coworking Space ID: %d ", coworkingSpaceId), e);
         }
         return adminId;
-    }
-
-
-    /**
-     * Retrieves the list of facilities associated with a given coworking space.
-     *
-     * @param coworkingSpaceId The ID of the coworking space.
-     * @param connection       The database connection.
-     * @return A list of {@link Facility} objects.
-     * @throws IllegalArgumentException If coworkingSpaceId is null.
-     * @throws DataExcessException      If a database error occurs.
-     */
-    private Set<Facility> getFacilitiesForCoworkingSpace(Long coworkingSpaceId, Connection connection) {
-        if (coworkingSpaceId == null) {
-            TECHNICAL_LOGGER.error("CoworkingSpaceId is null");
-            throw new IllegalArgumentException("CoworkingSpaceId cannot be null");
-        }
-        Set<Facility> facilities = new HashSet<>();
-        String selectFacilitiesQuery = """
-                SELECT f.type
-                FROM public.coworking_space_facilities cf
-                JOIN public.facilities f ON cf.facility_id = f.id
-                WHERE cf.coworking_space_id = ?
-                """;
-
-        try (PreparedStatement selectFacilitiesStatement = connection.prepareStatement(selectFacilitiesQuery)) {
-            selectFacilitiesStatement.setLong(1, coworkingSpaceId);
-            try (ResultSet facilitiesResultSet = selectFacilitiesStatement.executeQuery()) {
-                while (facilitiesResultSet.next()) {
-                    String facilityDescription = facilitiesResultSet.getString("type");
-                    Facility facility = new Facility(FacilityType.valueOf(facilityDescription.toUpperCase()));
-                    facilities.add(facility);
-                }
-            }
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting facilities List of Coworking with ID: %d: {}"
-                    , coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting facilities List of Coworking with ID: %d "
-                    , coworkingSpaceId), e);
-        }
-        return facilities;
-    }
-
-    /**
-     * Retrieves the ID of a facility based on its description.
-     *
-     * @param facility   The {@link Facility}.
-     * @param connection The database connection.
-     * @return The facility ID.
-     * @throws IllegalArgumentException     If facility or its description is null.
-     * @throws ObjectFieldNotFoundException If no matching facility is found.
-     * @throws DataExcessException          If a database error occurs.
-     */
-    private long getFacilityId(Facility facility, Connection connection) {
-        if (facility == null || facility.getType() == null) {
-            TECHNICAL_LOGGER.error("Facility or facility type is null");
-            throw new IllegalArgumentException("Facility or type cannot be null");
-        }
-        String selectFacilityIdQuery = """
-                SELECT id FROM facilities
-                WHERE type = ?
-                """;
-        try (PreparedStatement selectFacilityIdStatement = connection.prepareStatement(selectFacilityIdQuery)) {
-            selectFacilityIdStatement.setString(1, facility.getType().toString());
-            try (ResultSet facilityIdResultSet = selectFacilityIdStatement.executeQuery()) {
-                if (facilityIdResultSet.next()) {
-                    return facilityIdResultSet.getLong("id");
-                } else {
-                    TECHNICAL_LOGGER.error("Failure to find Facility ID for facility: " + facility.getType());
-                    throw new ObjectFieldNotFoundException(String.format("Failure to find Facility ID for Facility: %s"
-                            , facility.getType()));
-                }
-            }
-        } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting facilities List of Coworking with ID: %d: {}"
-                    , facility.getType(), e);
-            throw new DataExcessException(String.format("Database error occurred while getting ID of Facility: %s."
-                    , facility), e);
-        }
     }
 }

@@ -5,7 +5,6 @@ import org.example.coworking.mapper.exception.FacilityTypeIndexException;
 import org.example.coworking.mapper.exception.MapperErrorCode;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
-import org.example.coworking.model.FacilityType;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -66,11 +65,11 @@ public class CoworkingMapper {
                 .sorted()
                 .map(Integer::parseInt)
                 .map(index -> {
-                    if (isIndexOutOfBound(index, FacilityType.class)) {
+                    if (isIndexOutOfBound(index, Facility.class)) {
                         throw new FacilityTypeIndexException(String.format("Index: %d is out of bound in enum FacilityType."
                                 , index), MapperErrorCode.INVALID_FACILITY_INDEX);
                     }
-                    return new Facility(FacilityType.values()[index]);
+                    return Facility.values()[index];
                 })
                 .collect(Collectors.toSet());
     }

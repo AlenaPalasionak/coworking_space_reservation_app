@@ -22,7 +22,4 @@ public class Log {
      * Logger for technical messages, typically used for debugging, error reporting, and system logs.
      */
     public static final Logger TECHNICAL_LOGGER = LogManager.getLogger("TechnicalLog");
-
-    public static final Logger SQL_LOGGER = LogManager.getLogger("org.hibernate.SQL");
-
 }

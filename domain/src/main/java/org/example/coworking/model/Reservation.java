@@ -54,8 +54,8 @@ public class Reservation implements Comparable<Reservation> {
         return "Reservation{" +
                 "id=" + id +
                 ", customer ID=" + getCustomer().getId() +
-                ", startTime = " + startTime + "\n" +
-                ", endTime = " + endTime + "\n" +
+                ", startTime = " + startTime +
+                ", endTime = " + endTime +
                 ", coworkingSpace ID = " + getCoworkingSpace().getId() + "\n" +
                 '}';
     }

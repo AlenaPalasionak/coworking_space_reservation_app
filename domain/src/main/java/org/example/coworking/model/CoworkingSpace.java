@@ -26,12 +26,13 @@ public class CoworkingSpace {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private CoworkingType coworkingType;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
             name = "coworking_space_facilities",
-            joinColumns = @JoinColumn(name = "coworking_space_id"),
-            inverseJoinColumns = @JoinColumn(name = "facility_id")
+            joinColumns = @JoinColumn(name = "coworking_space_id")
     )
+    @Column(name = "facility")
+    @Enumerated(EnumType.STRING)
     private Set<Facility> facilities;
 
     public CoworkingSpace(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {

@@ -32,11 +32,11 @@ class CoworkingServiceImplTest {
         User admin = new Admin(1L, "Aden", "123");
         CoworkingType type = CoworkingType.PRIVATE_OFFICE;
         Set<Facility> facilities = Set.of(
-                new Facility(FacilityType.WIFI),
-                new Facility(FacilityType.CONDITIONING),
-                new Facility(FacilityType.KITCHEN),
-                new Facility(FacilityType.PARKING),
-                new Facility(FacilityType.PRINTER));
+                Facility.WIFI,
+                Facility.CONDITIONING,
+                Facility.KITCHEN,
+                Facility.PARKING,
+                Facility.PRINTER);
 
         double price = 100.0;
 
