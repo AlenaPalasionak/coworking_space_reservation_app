@@ -20,13 +20,13 @@ public enum Facility {
         return code;
     }
 
-    public static Facility fromCode(int code) {
+    public static Facility fromCode(int code) throws FacilityTypeIndexException {
         for (Facility facility : Facility.values()) {
             if (facility.code == code) {
                 return facility;
             }
         }
-        throw new FacilityTypeIndexException(String.format("Index: %d is out of bound in enum FacilityType.",
+        throw new FacilityTypeIndexException(String.format("Code: %d is out of bound in enum Facility.",
                 code), EnumErrorCode.INVALID_FACILITY_INDEX);
     }
 }

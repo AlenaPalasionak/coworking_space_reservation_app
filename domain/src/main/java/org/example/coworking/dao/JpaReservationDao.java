@@ -74,20 +74,12 @@ public class JpaReservationDao implements ReservationDao {
     public Reservation getById(Long reservationId) throws EntityNotFoundException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
-            String reservationQuery = """
-                    SELECT r
-                    FROM Reservation r
-                    WHERE id = :reservationId
-                    """;
-
-            return entityManager
-                    .createQuery(reservationQuery, Reservation.class)
-                    .setParameter("reservationId", reservationId)
-                    .getSingleResult();
-
-        } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
-                    reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            Reservation reservation = entityManager.find(Reservation.class, reservationId);
+            if (reservation.equals(null)) {
+                throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
+                        reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            }
+            return reservation;
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error while getting Reservation by ID: {}", reservationId, e);
             throw new DataExcessException(

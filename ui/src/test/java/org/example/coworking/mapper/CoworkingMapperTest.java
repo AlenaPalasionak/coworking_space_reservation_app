@@ -25,8 +25,8 @@ class CoworkingMapperTest {
 
     @Test
     public void testGetCoworkingTypeValidInput() throws CoworkingTypeIndexException {
-        assertThat(coworkingMapper.getCoworkingType("0")).isEqualTo(CoworkingType.values()[0]);
-        assertThat(coworkingMapper.getCoworkingType("1")).isEqualTo(CoworkingType.values()[1]);
+        assertThat(coworkingMapper.getCoworkingType("0")).isEqualTo(CoworkingType.fromCode(0));
+        assertThat(coworkingMapper.getCoworkingType("1")).isEqualTo(CoworkingType.fromCode(1));
     }
 
     @Test
@@ -43,16 +43,16 @@ class CoworkingMapperTest {
         Set<Facility> facilities = coworkingMapper.getFacility("0,1,2");
         assertThat(facilities).hasSize(3)
                 .containsExactlyInAnyOrder(
-                        Facility.values()[0],
-                        Facility.values()[1],
-                        Facility.values()[2]);
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
 
         facilities = coworkingMapper.getFacility("2,1,0");
         assertThat(facilities).hasSize(3)
                 .containsExactlyInAnyOrder(
-                        Facility.values()[0],
-                        Facility.values()[1],
-                        Facility.values()[2]);
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
     }
 
     @Test
@@ -76,9 +76,8 @@ class CoworkingMapperTest {
         assertThat(facilities)
                 .hasSize(3)
                 .containsExactlyInAnyOrder(
-                        Facility.values()[0],
-                        Facility.values()[1],
-                        Facility.values()[2]
-                );
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
     }
 }

@@ -39,10 +39,17 @@ public interface CoworkingService {
     /**
      * Retrieves all coworking spaces associated with the specified user.
      *
-     * @param user the user whose coworking spaces are to be retrieved
+     * @return a list of coworking spaces
+     */
+    List<CoworkingSpace> getAll();
+
+    /**
+     * Retrieves all coworking spaces associated with the specified user.
+     *
+     * @param admin the user whose coworking spaces are to be retrieved
      * @return a list of coworking spaces associated with the user
      */
-    List<CoworkingSpace> getAllByUser(User user);
+    List<CoworkingSpace> getAllByAdmin(User admin);
 
     /**
      * Retrieves a coworking space by its ID.

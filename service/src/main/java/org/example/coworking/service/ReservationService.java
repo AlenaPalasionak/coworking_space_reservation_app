@@ -41,14 +41,6 @@ public interface ReservationService {
     void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
 
     /**
-     * Retrieves all reservations associated with the specified user.
-     *
-     * @param user the user whose reservations are to be retrieved
-     * @return a list of {@link Reservation} objects associated with the user
-     */
-    List<Reservation> getAllByUser(User user);
-
-    /**
      * Retrieves a reservation by its ID.
      *
      * @param reservationId the ID of the reservation to be retrieved
@@ -56,6 +48,24 @@ public interface ReservationService {
      * @throws EntityNotFoundException if no reservation with the given ID is found
      */
     Reservation getById(Long reservationId) throws EntityNotFoundException;
+
+    /**
+     * Retrieves all reservations associated with the specified user.
+     *
+     * @param customer the user whose reservations are to be retrieved
+     * @return a list of {@link Reservation} objects associated with the user
+     */
+    List<Reservation> getAllReservationsByCustomer(User customer);
+
+    /**
+     * Retrieves all reservations associated with the specified user.
+     *
+     * @param admin the user whose reservations are to be retrieved
+     * @return a list of {@link Reservation} objects associated with the user
+     */
+
+    List<Reservation> getAllReservationsByAdmin(User admin);
+
 
     /**
      * Retrieves all reservation periods for a specific coworking space.

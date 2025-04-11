@@ -98,10 +98,8 @@ public class JdbcCoworkingDao implements CoworkingDao {
     @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         String selectCoworkingSpaceQuery = """
-                SELECT cs.admin_id, cs.price, cs.type, csf.facility
-                FROM public.coworking_spaces cs
-                LEFT JOIN coworking_space_facilities csf
-                ON cs.id = csf.coworking_space_id
+                SELECT admin_id, price, type
+                FROM public.coworking_spaces
                 WHERE id = ?
                 """;
 
@@ -119,7 +117,6 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 User admin = new Admin();
                 double price;
                 CoworkingType coworkingType;
-                Set<Facility> facilities = new HashSet<>();
 
                 adminId = coworkingResultSet.getLong("admin_id");
                 price = coworkingResultSet.getDouble("price");
@@ -132,14 +129,6 @@ public class JdbcCoworkingDao implements CoworkingDao {
                 coworkingSpace.setPrice(price);
                 coworkingSpace.setCoworkingType(coworkingType);
 
-                do {
-                    String facilityString = coworkingResultSet.getString("facility");
-                    if (facilityString != null) {
-                        Facility facility = Facility.valueOf(facilityString);
-                        facilities.add(facility);
-                    }
-                } while (coworkingResultSet.next());
-                coworkingSpace.setFacilities(facilities);
                 return coworkingSpace;
             }
         } catch (SQLException e) {

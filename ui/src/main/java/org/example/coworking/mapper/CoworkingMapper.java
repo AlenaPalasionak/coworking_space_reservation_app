@@ -29,19 +29,21 @@ public class CoworkingMapper {
 
     /**
      * Converts a string representing a coworking type index into the corresponding enum value of CoworkingType.
-     * Throws a CoworkingTypeIndexException if the index is out of bounds for the CoworkingType enum.
+     * Throws a CoworkingTypeIndexException if the index is invalid.
      *
      * @param coworkingTypeInput the string representing the coworking type index
      * @return the corresponding CoworkingType enum value
      * @throws CoworkingTypeIndexException if the coworking type index is invalid
      */
     public CoworkingType getCoworkingType(String coworkingTypeInput) throws CoworkingTypeIndexException {
-        int coworkingTypeIndex = Integer.parseInt(coworkingTypeInput);
-        if (isIndexOutOfBound(coworkingTypeIndex, CoworkingType.class)) {
-            throw new CoworkingTypeIndexException(String.format("Index: %d is out of bound in enum CoworkingType."
-                    , coworkingTypeIndex), EnumErrorCode.INVALID_COWORKING_TYPE_INDEX);
-        } else {
-            return CoworkingType.values()[coworkingTypeIndex];
+        try {
+            int coworkingTypeCode = Integer.parseInt(coworkingTypeInput);
+            return CoworkingType.fromCode(coworkingTypeCode);
+        } catch (NumberFormatException e) {
+            throw new CoworkingTypeIndexException(
+                    String.format("Invalid input format for coworking type index: '%s'", coworkingTypeInput),
+                    EnumErrorCode.INVALID_COWORKING_TYPE_INDEX
+            );
         }
     }
 
@@ -67,17 +69,4 @@ public class CoworkingMapper {
                 .map(Facility::fromCode)
                 .collect(Collectors.toSet());
     }
-
-    /**
-     * Helper method to check if a given index is out of bounds for the specified enum class.
-     *
-     * @param enumIndex the index to check
-     * @param enumClass the class of the enum to check the index against
-     * @param <T>       the type of the enum
-     * @return true if the index is out of bounds, false otherwise
-     */
-    private static <T extends Enum<T>> boolean isIndexOutOfBound(int enumIndex, Class<T> enumClass) {
-        return enumIndex < 0 || enumIndex >= enumClass.getEnumConstants().length;
-    }
-
 }

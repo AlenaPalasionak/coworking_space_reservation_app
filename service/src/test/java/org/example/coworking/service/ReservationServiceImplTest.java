@@ -16,6 +16,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,4 +125,59 @@ class ReservationServiceImplTest {
         assertThatThrownBy(() -> reservationService.getById(reservationId))
                 .isInstanceOf(EntityNotFoundException.class);
     }
+
+    @Test
+    void testGetAllReservationsByCustomerWithValidCustomer() {
+        User customer = new Customer(1L, "Alice", "123");
+        List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
+
+        when(reservationDao.getAllReservationsByCustomer(customer.getId())).thenReturn(expectedReservations);
+
+        List<Reservation> actualReservations = reservationService.getAllReservationsByCustomer(customer);
+
+        assertThat(actualReservations).isEqualTo(expectedReservations);
+    }
+
+    @Test
+    void testGetAllReservationsByCustomerWithInvalidUserType() {
+        User notCustomer = new Admin(1L, "Admin", "admin123");
+
+        assertThatThrownBy(() -> reservationService.getAllReservationsByCustomer(notCustomer))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unexpected user type: Admin");
+    }
+
+    @Test
+    void testGetAllReservationsByAdminWithValidAdmin() {
+        User admin = new Admin(1L, "Admin", "admin123");
+        List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
+
+        when(reservationDao.getAllReservationsByAdmin(admin.getId())).thenReturn(expectedReservations);
+
+        List<Reservation> actualReservations = reservationService.getAllReservationsByAdmin(admin);
+
+        assertThat(actualReservations).isEqualTo(expectedReservations);
+    }
+
+    @Test
+    void testGetAllReservationsByAdminWithInvalidUserType() {
+        User notAdmin = new Customer(1L, "Bob", "bobpass");
+
+        assertThatThrownBy(() -> reservationService.getAllReservationsByAdmin(notAdmin))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unexpected user type: Customer");
+    }
+
+    @Test
+    void testGetAllReservationsByCoworkingReturnsSet() {
+        Long coworkingId = 123L;
+        Set<Reservation> expectedReservations = Set.of(Mockito.mock(Reservation.class));
+
+        when(reservationDao.getAllReservationsByCoworking(coworkingId)).thenReturn(expectedReservations);
+
+        Set<Reservation> actualReservations = reservationService.getAllReservationsByCoworking(coworkingId);
+
+        assertThat(actualReservations).isEqualTo(expectedReservations);
+    }
+
 }

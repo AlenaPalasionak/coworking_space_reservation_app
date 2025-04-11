@@ -72,20 +72,12 @@ public class JpaCoworkingDao implements CoworkingDao {
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
-            String coworkingSpaceQuery = """
-                    SELECT cs FROM CoworkingSpace cs
-                    LEFT JOIN FETCH cs.facilities
-                    WHERE cs.id = :id
-                    """;
-
-            return entityManager
-                    .createQuery(coworkingSpaceQuery, CoworkingSpace.class)
-                    .setParameter("id", coworkingId)
-                    .getSingleResult();
-
-        } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d",
-                    coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            CoworkingSpace coworkingSpace = entityManager.find(CoworkingSpace.class, coworkingId);
+            if (coworkingSpace == null) {
+                throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d",
+                        coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+            }
+            return coworkingSpace;
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error while getting coworking space by ID: {}", coworkingId, e);
             throw new DataExcessException(

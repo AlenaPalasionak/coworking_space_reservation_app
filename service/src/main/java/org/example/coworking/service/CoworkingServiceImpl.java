@@ -33,17 +33,20 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public List<CoworkingSpace> getAllByUser(User user) {
-        if (user.getClass() == Customer.class) {
-            return coworkingDao.getAll();
-        } else if (user.getClass() == Admin.class) {
-            return coworkingDao.getAllCoworkingSpacesByAdmin(user.getId());
-        } else
-            throw new IllegalArgumentException(String.format("Unexpected user type: %s", user.getClass().getSimpleName()));
-    }
-
-    @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         return coworkingDao.getById(coworkingId);
     }
+
+    @Override
+    public List<CoworkingSpace> getAll() {
+        return coworkingDao.getAll();
+
+    }
+
+    @Override
+    public List<CoworkingSpace> getAllByAdmin(User admin) {
+        return coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId());
+    }
+
+
 }

@@ -40,7 +40,7 @@ public class FileCoworkingDao implements CoworkingDao {
     }
 
     @Override
-    public void delete(CoworkingSpace coworkingSpace)  {
+    public void delete(CoworkingSpace coworkingSpace) {
         coworkingSpacesCache.removeIf(c -> c.getId().equals(coworkingSpace.getId()));
         reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
     }
@@ -66,10 +66,24 @@ public class FileCoworkingDao implements CoworkingDao {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Saves the current state of coworking spaces cache to the json file.
+     * This method should be called during application shutdown to persist
+     * any in-memory reservations to disk. The data will be available for
+     * loading when the application restarts.
+     */
     public void shutdown() {
         coworkingSpaceLoader.save(coworkingSpacesCache);
     }
 
+    /**
+     * Loads coworking Spaces from JSON storage into the cache if not already loaded.
+     * Subsequent calls will use the cached data.
+     *
+     * @throws RuntimeException if the coworking Spaces data file cannot be found or loaded,
+     *                          wrapping the original FileNotFoundException. The exception will be logged
+     *                          with technical details before being rethrown.
+     */
     private void loadFromJson() {
         if (coworkingSpacesCache == null) {
             try {

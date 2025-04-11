@@ -128,10 +128,10 @@ public class CoworkingController {
      * The coworking space is deleted using the {@link CoworkingService}.
      *
      * @param reader the {@link BufferedReader} used to get user input
-     * @param user   the user deleting the coworking space
+     * @param admin  the user deleting the coworking space
      */
-    public void delete(BufferedReader reader, User user) {
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(user);
+    public void delete(BufferedReader reader, User admin) {
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByAdmin(admin);
         if (coworkingSpaces.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Coworking Spaces list is empty.\n");
             return;
@@ -148,7 +148,7 @@ public class CoworkingController {
                 coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(spacesAsString + "Type a coworking id you want to delete:\n");
                 Long coworkingSpaceId = Long.parseLong(coworkingIdInput);
-                coworkingService.delete(user, coworkingSpaceId);
+                coworkingService.delete(admin, coworkingSpaceId);
                 USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingSpaceId + " has been deleted\n");
                 break;
             } catch (InvalidInputException e) {
@@ -165,12 +165,10 @@ public class CoworkingController {
     }
 
     /**
-     * Retrieves and displays all coworking spaces associated with the given user.
-     *
-     * @param user the user whose coworking spaces are to be retrieved
+     * Retrieves and displays all coworking spaces.
      */
-    public void getAllSpaces(User user) {
-        List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
+    public void getAllSpaces() {
+        List<CoworkingSpace> spaces = coworkingService.getAll();
         USER_OUTPUT_LOGGER.info("Spaces list:\n");
         spaces.forEach(space -> USER_OUTPUT_LOGGER.info(space.toString()));
     }

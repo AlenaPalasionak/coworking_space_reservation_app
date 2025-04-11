@@ -39,7 +39,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
-        Reservation reservation = reservationDao.getById(reservationId);
+        Reservation reservation = getById(reservationId);
         if (reservation.getCustomer().getId().equals(user.getId())) {
             reservationDao.delete(reservation);
         } else {
@@ -49,23 +49,28 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAllByUser(User user) {//2
-        if (user.getClass() == Customer.class) {
-            return reservationDao.getAllReservationsByCustomer(user.getId());
-        } else if (user.getClass() == Admin.class) {
-            return reservationDao.getAllReservationsByAdmin(user.getId());
-        } else
-            throw new IllegalArgumentException(String.format("Unexpected user type: %s", user.getClass().getSimpleName()));
+    public Reservation getById(Long reservationId) throws EntityNotFoundException {
+        return reservationDao.getById(reservationId);
     }
 
     @Override
-    public Reservation getById(Long reservationId) throws EntityNotFoundException {
-        return reservationDao.getById(reservationId);
+    public List<Reservation> getAllReservationsByCustomer(User customer) {
+        if (customer.getClass() == Customer.class) {
+            return reservationDao.getAllReservationsByCustomer(customer.getId());
+        } else
+            throw new IllegalArgumentException(String.format("Unexpected user type: %s", customer.getClass().getSimpleName()));
+    }
+
+    @Override
+    public List<Reservation> getAllReservationsByAdmin(User admin) {
+        if (admin.getClass() == Admin.class) {
+            return reservationDao.getAllReservationsByAdmin(admin.getId());
+        } else
+            throw new IllegalArgumentException(String.format("Unexpected user type: %s", admin.getClass().getSimpleName()));
     }
 
     @Override
     public Set<Reservation> getAllReservationsByCoworking(Long coworkingId) {
         return reservationDao.getAllReservationsByCoworking(coworkingId);
     }
-
 }

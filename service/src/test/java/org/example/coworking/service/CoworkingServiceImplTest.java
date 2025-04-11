@@ -97,30 +97,6 @@ class CoworkingServiceImplTest {
     }
 
     @Test
-    void testGetAllByUserWhenUserIsAdmin() {
-        User admin = new Admin(1L, "Aden", "123");
-        CoworkingSpace coworking1 = new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, Set.of());
-        CoworkingSpace coworking2 = new CoworkingSpace(admin, 100.0, CoworkingType.PRIVATE_OFFICE, Set.of());
-        when(coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId())).thenReturn(List.of(coworking1, coworking2));
-
-        List<CoworkingSpace> actualCoworkingSpaces = coworkingService.getAllByUser(admin);
-
-        assertThat(actualCoworkingSpaces).containsExactly(coworking1, coworking2);
-    }
-
-    @Test
-    void testGetAllByUserWhenUserIsCustomer() {
-        User customer = new Customer(2L, "Customer", "321");
-        CoworkingSpace coworking1 = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of());
-        CoworkingSpace coworking2 = new CoworkingSpace(new Admin(2L, "Bob", "124"), 200.0, CoworkingType.PRIVATE_OFFICE, Set.of());
-        when(coworkingDao.getAll()).thenReturn(List.of(coworking1, coworking2));
-
-        List<CoworkingSpace> actualCoworkingSpaces = coworkingService.getAllByUser(customer);
-
-        assertThat(actualCoworkingSpaces).containsExactly(coworking1, coworking2);
-    }
-
-    @Test
     void testGetByIdReturnsCoworkingSpaceWhenExists() throws EntityNotFoundException {
         Long coworkingId = 1L;
         CoworkingSpace expectedCoworkingSpace = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of());
@@ -141,4 +117,34 @@ class CoworkingServiceImplTest {
                 .isInstanceOf(EntityNotFoundException.class);
         verify(coworkingDao, times(1)).getById(coworkingId);
     }
+
+    @Test
+    void testGetAllReturnsAllCoworkingSpaces() {
+        List<CoworkingSpace> expectedList = List.of(
+                new CoworkingSpace(new Admin(1L, "Admin1", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of()),
+                new CoworkingSpace(new Admin(2L, "Admin2", "456"), 200.0, CoworkingType.PRIVATE_OFFICE, Set.of())
+        );
+
+        when(coworkingDao.getAll()).thenReturn(expectedList);
+
+        List<CoworkingSpace> actualList = coworkingService.getAll();
+
+        assertThat(actualList).isEqualTo(expectedList);
+        verify(coworkingDao, times(1)).getAll();
+    }
+    @Test
+    void testGetAllByAdminReturnsCorrectList() {
+        User admin = new Admin(1L, "Admin", "pass");
+        List<CoworkingSpace> expectedList = List.of(
+                new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, Set.of())
+        );
+
+        when(coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId())).thenReturn(expectedList);
+
+        List<CoworkingSpace> actualList = coworkingService.getAllByAdmin(admin);
+
+        assertThat(actualList).isEqualTo(expectedList);
+        verify(coworkingDao, times(1)).getAllCoworkingSpacesByAdmin(admin.getId());
+    }
+
 }

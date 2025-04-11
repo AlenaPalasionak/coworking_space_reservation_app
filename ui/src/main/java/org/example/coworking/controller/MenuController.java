@@ -121,7 +121,7 @@ public class MenuController {
             switch (adminOptionChoice) {
                 case ADD_COWORKING_SPACE -> coworkingController.add(reader, user);
                 case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, user);
-                case GET_ALL_RESERVATIONS -> reservationController.getAllReservations(user);
+                case GET_ALL_RESERVATIONS -> reservationController.getAllReservationsByAdmin(user);
             }
             logOut = shouldLogOut(menuController, reader);
         }
@@ -148,9 +148,9 @@ public class MenuController {
             menuController.showMenu(customerMenu.getMenuName());
             String customerOptionChoice = menuController.getUserChoice(reader, customerMenu);
             switch (customerOptionChoice) {
-                case GET_AVAILABLE_COWORKING_SPACES -> coworkingController.getAllSpaces(user);
+                case GET_AVAILABLE_COWORKING_SPACES -> coworkingController.getAllSpaces();
                 case ADD_RESERVATION -> reservationController.add(reader, user);
-                case GET_RESERVATIONS -> reservationController.getAllReservations(user);
+                case GET_RESERVATIONS -> reservationController.getAllReservationsByCustomer(user);
                 case DELETE_RESERVATION -> reservationController.delete(reader, user);
             }
             logOut = shouldLogOut(menuController, reader);
