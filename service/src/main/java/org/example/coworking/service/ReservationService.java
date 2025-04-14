@@ -1,8 +1,9 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.model.Admin;
+import org.example.coworking.model.Customer;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.User;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
@@ -27,18 +28,18 @@ public interface ReservationService {
      * @throws ReservationTimeException if the reservation times are invalid (e.g., overlapping with existing reservations)
      * @throws EntityNotFoundException  if the coworking space with the given ID is not found
      */
-    void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId)
+    void add(Customer customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId)
             throws ReservationTimeException, EntityNotFoundException;
 
     /**
      * Deletes an existing reservation made by the specified user.
      *
-     * @param user          the user who is deleting the reservation
+     * @param customer      the user who is deleting the reservation
      * @param reservationId the ID of the reservation to be deleted
      * @throws ForbiddenActionException if the user is not allowed to delete the reservation
      * @throws EntityNotFoundException  if the reservation with the given ID is not found
      */
-    void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
+    void delete(Customer customer, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
 
     /**
      * Retrieves a reservation by its ID.
@@ -55,7 +56,7 @@ public interface ReservationService {
      * @param customer the user whose reservations are to be retrieved
      * @return a list of {@link Reservation} objects associated with the user
      */
-    List<Reservation> getAllReservationsByCustomer(User customer);
+    List<Reservation> getAllReservationsByCustomer(Customer customer);
 
     /**
      * Retrieves all reservations associated with the specified user.
@@ -64,7 +65,7 @@ public interface ReservationService {
      * @return a list of {@link Reservation} objects associated with the user
      */
 
-    List<Reservation> getAllReservationsByAdmin(User admin);
+    List<Reservation> getAllReservationsByAdmin(Admin admin);
 
 
     /**

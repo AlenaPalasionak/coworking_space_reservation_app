@@ -37,7 +37,7 @@ class ReservationServiceImplTest {
 
     @Test
     void testAddReservationSuccessfully() throws ReservationTimeException, EntityNotFoundException {
-        User customer = new Customer(2L, "Custer", "321");
+        Customer customer = new Customer(2L, "Custer", "321");
         Long coworkingSpaceId = 10L;
         LocalDateTime startTime = LocalDateTime.of(2030, 1, 2, 12, 0);
         LocalDateTime endTime = LocalDateTime.of(2030, 1, 2, 14, 0);
@@ -62,7 +62,7 @@ class ReservationServiceImplTest {
 
     @Test
     void testAddReservationWhenCoworkingSpaceNotFound() throws EntityNotFoundException {
-        User customer = new Customer(2L, "Custer", "321");
+        Customer customer = new Customer(2L, "Custer", "321");
         Long coworkingSpaceId = 999L;
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = LocalDateTime.now().plusHours(2);
@@ -77,7 +77,7 @@ class ReservationServiceImplTest {
 
     @Test
     void testDeleteReservationWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
-        User customer = new Customer(2L, "Custer", "321");
+        Customer customer = new Customer(2L, "Custer", "321");
         Long reservationId = 10L;
 
         Reservation reservation = Mockito.mock(Reservation.class);
@@ -91,8 +91,8 @@ class ReservationServiceImplTest {
 
     @Test
     void testDeleteReservationWhenUserIsNotOwner() throws EntityNotFoundException {
-        User customer = new Customer(2L, "Custer", "321");
-        User anotherCustomer = new Customer(99L, "Bob", "789");
+        Customer customer = new Customer(2L, "Custer", "321");
+        Customer anotherCustomer = new Customer(99L, "Bob", "789");
         Long reservationId = 10L;
 
         Reservation reservation = Mockito.mock(Reservation.class);
@@ -128,7 +128,7 @@ class ReservationServiceImplTest {
 
     @Test
     void testGetAllReservationsByCustomerWithValidCustomer() {
-        User customer = new Customer(1L, "Alice", "123");
+        Customer customer = new Customer(1L, "Alice", "123");
         List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
 
         when(reservationDao.getAllReservationsByCustomer(customer.getId())).thenReturn(expectedReservations);
@@ -138,18 +138,11 @@ class ReservationServiceImplTest {
         assertThat(actualReservations).isEqualTo(expectedReservations);
     }
 
-    @Test
-    void testGetAllReservationsByCustomerWithInvalidUserType() {
-        User notCustomer = new Admin(1L, "Admin", "admin123");
 
-        assertThatThrownBy(() -> reservationService.getAllReservationsByCustomer(notCustomer))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Unexpected user type: Admin");
-    }
 
     @Test
     void testGetAllReservationsByAdminWithValidAdmin() {
-        User admin = new Admin(1L, "Admin", "admin123");
+        Admin admin = new Admin(1L, "Admin", "admin123");
         List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
 
         when(reservationDao.getAllReservationsByAdmin(admin.getId())).thenReturn(expectedReservations);
@@ -157,15 +150,6 @@ class ReservationServiceImplTest {
         List<Reservation> actualReservations = reservationService.getAllReservationsByAdmin(admin);
 
         assertThat(actualReservations).isEqualTo(expectedReservations);
-    }
-
-    @Test
-    void testGetAllReservationsByAdminWithInvalidUserType() {
-        User notAdmin = new Customer(1L, "Bob", "bobpass");
-
-        assertThatThrownBy(() -> reservationService.getAllReservationsByAdmin(notAdmin))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Unexpected user type: Customer");
     }
 
     @Test

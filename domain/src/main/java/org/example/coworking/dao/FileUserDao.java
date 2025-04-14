@@ -21,16 +21,16 @@ public class FileUserDao implements UserDao {
     }
 
     @Override
-    public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
+    public <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException {
         Optional<User> possibleUser = userCache.stream()
                 .filter(user -> user.getName().equals(name) &&
                         user.getPassword().equals(password) &&
-                        user.getClass().equals(roleClass))
+                        user.getClass().equals(role))
                 .findFirst();
         if (possibleUser.isEmpty()) {
             throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
         } else {
-            return possibleUser.get();
+            return role.cast(possibleUser.get());
         }
     }
 

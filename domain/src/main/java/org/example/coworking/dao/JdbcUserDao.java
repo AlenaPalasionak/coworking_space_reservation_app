@@ -28,8 +28,8 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
-        String userRole = roleClass == Admin.class ? "ADMIN" : "CUSTOMER"; // Убедитесь, что роли правильно указываются
+    public <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException {
+        String userRole = role == Admin.class ? "ADMIN" : "CUSTOMER";
         String selectUserQuery = "SELECT id, name, password, role " +
                 "FROM users " +
                 "WHERE name = ? AND password = crypt(?, password) AND role = ?";
@@ -49,10 +49,11 @@ public class JdbcUserDao implements UserDao {
                 Long id = selectUserResultSet.getLong("id");
                 String userName = selectUserResultSet.getString("name");
                 String userPassword = selectUserResultSet.getString("password");
+                User user = userRole.equals("ADMIN")
+                        ? new Admin(id, userName, userPassword)
+                        : new Customer(id, userName, userPassword);
 
-                return userRole.equals("ADMIN") ?
-                        new Admin(id, userName, userPassword) :
-                        new Customer(id, userName, userPassword);
+                return role.cast(user);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);

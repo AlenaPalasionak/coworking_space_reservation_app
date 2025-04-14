@@ -17,12 +17,12 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
+    public void add(Admin admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
         coworkingDao.create(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 
     @Override
-    public void delete(User admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
+    public void delete(Admin admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
         CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
             coworkingDao.delete(coworkingSpace);
@@ -44,7 +44,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public List<CoworkingSpace> getAllByAdmin(User admin) {
+    public List<CoworkingSpace> getAllByAdmin(Admin admin) {
         return coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId());
     }
 

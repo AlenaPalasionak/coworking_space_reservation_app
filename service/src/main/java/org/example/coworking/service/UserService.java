@@ -12,13 +12,13 @@ public interface UserService {
     /**
      * Retrieves a user by their name, password, and role.
      *
-     * @param name      the username
-     * @param password  the user's password
-     * @param roleClass the expected role of the user (e.g., Admin, Customer)
+     * @param name     the username
+     * @param password the user's password
+     * @param role the expected role of the user (e.g., Admin, Customer)
      * @return the authenticated {@code User} instance
      * @throws EntityNotFoundException if the user is not found or credentials are incorrect
      */
-    User getUserByNamePasswordAndAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException;
+    <T extends User> T getUserByNamePasswordAndAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
 
 }
 

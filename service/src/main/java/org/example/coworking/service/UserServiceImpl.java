@@ -11,7 +11,7 @@ public class UserServiceImpl implements UserService {
         this.userDao = userDao;
     }
 
-    public User getUserByNamePasswordAndAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
-        return userDao.getUserByNamePasswordAndRole(name, password, roleClass);
+    public <T extends User> T getUserByNamePasswordAndAndRole(String name, String password, Class<T> role) throws EntityNotFoundException {
+        return userDao.getUserByNamePasswordAndRole(name, password, role);
     }
 }

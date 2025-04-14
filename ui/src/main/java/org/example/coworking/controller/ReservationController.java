@@ -4,9 +4,7 @@ import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.ReservationMapper;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.Reservation;
-import org.example.coworking.model.User;
+import org.example.coworking.model.*;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
@@ -56,7 +54,7 @@ public class ReservationController {
      * @param reader   the BufferedReader for user input
      * @param customer the customer making the reservation
      */
-    public void add(BufferedReader reader, User customer) {
+    public void add(BufferedReader reader, Customer customer) {
         String coworkingIdInput;
         Long coworkingId;
         LocalDateTime startTime;
@@ -126,7 +124,7 @@ public class ReservationController {
      *
      * @param admin the customer whose reservations are to be displayed
      */
-    public void getAllReservationsByAdmin(User admin) {
+    public void getAllReservationsByAdmin(Admin admin) {
         List<Reservation> reservations = reservationService.getAllReservationsByAdmin(admin);
         if (reservations.isEmpty()) {
             USER_OUTPUT_LOGGER.warn("Reservation list is empty\n");
@@ -142,7 +140,7 @@ public class ReservationController {
      *
      * @param customer the customer whose reservations are to be displayed
      */
-    public void getAllReservationsByCustomer(User customer) {
+    public void getAllReservationsByCustomer(Customer customer) {
         List<Reservation> reservations = reservationService.getAllReservationsByCustomer(customer);
         if (reservations.isEmpty()) {
             USER_OUTPUT_LOGGER.warn("Reservation list is empty\n");
@@ -160,7 +158,7 @@ public class ReservationController {
      * @param reader   the BufferedReader for user input
      * @param customer the customer deleting the reservation
      */
-    public void delete(BufferedReader reader, User customer) {
+    public void delete(BufferedReader reader, Customer customer) {
         String reservationIdInput;
         Long reservationId;
         List<Reservation> reservationsByCustomer = reservationService.getAllReservationsByCustomer(customer);

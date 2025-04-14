@@ -1,11 +1,10 @@
 package org.example.coworking.controller;
 
+import org.example.coworking.dao.exception.MenuNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
-import org.example.coworking.model.User;
 import org.example.coworking.service.MenuService;
-import org.example.coworking.dao.exception.MenuNotFoundException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * making reservations, and logging out.
  */
 public class MenuController {
-    private User user = null;
     private final MenuService menuService;
     private static final String LOG_OUT = "2";
     private static final String ADD_COWORKING_SPACE = "1";
@@ -112,16 +110,16 @@ public class MenuController {
     public void handleAdminFlow(AuthorizationController authorizationController, MenuController menuController,
                                 CoworkingController coworkingController, ReservationController reservationController,
                                 BufferedReader reader) throws IOException {
-        user = authorizationController.authenticate(reader, Admin.class);
+        Admin admin = authorizationController.authenticate(reader, Admin.class);
         boolean logOut = false;
         while (!logOut) {
             Menu adminMenu = menuController.getMenuByName(ADMIN_MENU_KEY);
             menuController.showMenu(adminMenu.getMenuName());
             String adminOptionChoice = menuController.getUserChoice(reader, adminMenu);
             switch (adminOptionChoice) {
-                case ADD_COWORKING_SPACE -> coworkingController.add(reader, user);
-                case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, user);
-                case GET_ALL_RESERVATIONS -> reservationController.getAllReservationsByAdmin(user);
+                case ADD_COWORKING_SPACE -> coworkingController.add(reader, admin);
+                case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, admin);
+                case GET_ALL_RESERVATIONS -> reservationController.getAllReservationsByAdmin(admin);
             }
             logOut = shouldLogOut(menuController, reader);
         }
@@ -135,13 +133,13 @@ public class MenuController {
      * @param menuController          The controller used to handle menus.
      * @param coworkingController     The controller used to manage coworking spaces.
      * @param reservationController   The controller used to manage reservations.
-     * @param reader                  The {@code BufferedReader} used to read user input.
+     * @param reader                  The {@code BufferedReader} used to read customer input.
      * @throws IOException If an I/O error occurs during user interaction.
      */
     public void handleCustomerFlow(AuthorizationController authorizationController, MenuController menuController,
                                    CoworkingController coworkingController, ReservationController reservationController,
                                    BufferedReader reader) throws IOException {
-        user = authorizationController.authenticate(reader, Customer.class);
+        Customer customer = authorizationController.authenticate(reader, Customer.class);
         boolean logOut = false;
         while (!logOut) {
             Menu customerMenu = menuController.getMenuByName(CUSTOMER_MENU_KEY);
@@ -149,9 +147,9 @@ public class MenuController {
             String customerOptionChoice = menuController.getUserChoice(reader, customerMenu);
             switch (customerOptionChoice) {
                 case GET_AVAILABLE_COWORKING_SPACES -> coworkingController.getAllSpaces();
-                case ADD_RESERVATION -> reservationController.add(reader, user);
-                case GET_RESERVATIONS -> reservationController.getAllReservationsByCustomer(user);
-                case DELETE_RESERVATION -> reservationController.delete(reader, user);
+                case ADD_RESERVATION -> reservationController.add(reader, customer);
+                case GET_RESERVATIONS -> reservationController.getAllReservationsByCustomer(customer);
+                case DELETE_RESERVATION -> reservationController.delete(reader, customer);
             }
             logOut = shouldLogOut(menuController, reader);
         }

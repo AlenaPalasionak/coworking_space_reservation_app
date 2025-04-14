@@ -21,12 +21,12 @@ public class JpaUserDao implements UserDao {
     }
 
     @Override
-    public User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException {
+    public <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        CriteriaQuery<User> cq = cb.createQuery(User.class);
-        Root<? extends User> root = cq.from(roleClass);
+        CriteriaQuery<T> cq = cb.createQuery(role);
+        Root<T> root = cq.from(role);
 
         Predicate namePredicate = cb.equal(root.get("name"), name);
         Expression<String> cryptExpr = cb.function(

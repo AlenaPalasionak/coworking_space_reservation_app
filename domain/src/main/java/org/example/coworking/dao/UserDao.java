@@ -14,11 +14,10 @@ public interface UserDao {
      *
      * @param name      the username
      * @param password  the password
-     * @param roleClass the user role class
+     * @param role the user role class
      * @return the found {@link User}
      * @throws EntityNotFoundException if no user matches the criteria
      */
-    User getUserByNamePasswordAndRole(String name, String password, Class<? extends User> roleClass)
-            throws EntityNotFoundException;
+    <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
 
 }

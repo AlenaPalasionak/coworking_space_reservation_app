@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor(force = true)
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "reservations")
 public class Reservation implements Comparable<Reservation> {
@@ -25,7 +24,6 @@ public class Reservation implements Comparable<Reservation> {
     private User customer;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "start_time")
-
     private LocalDateTime startTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "end_time")

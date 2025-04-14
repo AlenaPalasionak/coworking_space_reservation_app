@@ -11,14 +11,15 @@ import org.example.coworking.model.User;
 public interface AuthorizationService {
 
     /**
-     * Authenticates a user with the given name and password, and associates them with a role class.
+     * Authenticates a User with the given name and password, and associates them with a role class.
      *
-     * @param name the name of the user to authenticate
-     * @param password the password of the user to authenticate
-     * @param roleClass the role class associated with the user
+     * @param name     the name of the User to authenticate
+     * @param password the password of the User to authenticate
+     * @param role     the role class associated with the User
      * @return the authenticated {@link User} object
-     * @throws EntityNotFoundException if no user matching the provided name and password is found
+     * @throws EntityNotFoundException if no User matching the provided name and password is found
      */
-    User authenticate(String name, String password, Class<? extends User> roleClass) throws EntityNotFoundException;
+    <T extends User> T authenticate(String name, String password, Class<T> role) throws EntityNotFoundException;
+
 }
 

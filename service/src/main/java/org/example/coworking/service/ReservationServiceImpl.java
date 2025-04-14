@@ -25,7 +25,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void add(User customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws ReservationTimeException, EntityNotFoundException {
+    public void add(Customer customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId) throws ReservationTimeException, EntityNotFoundException {
         CoworkingSpace coworkingSpace = coworkingService.getById(coworkingSpaceId);
         timeLogicValidator.validateReservation(startTime, endTime);
         Set<Reservation> existingReservationsOfACoworking = getAllReservationsByCoworking(coworkingSpaceId);
@@ -38,12 +38,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void delete(User user, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
+    public void delete(Customer customer, Long reservationId) throws ForbiddenActionException, EntityNotFoundException {
         Reservation reservation = getById(reservationId);
-        if (reservation.getCustomer().getId().equals(user.getId())) {
+        if (reservation.getCustomer().getId().equals(customer.getId())) {
             reservationDao.delete(reservation);
         } else {
-            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", user.getId()),
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", customer.getId()),
                     ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -54,19 +54,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getAllReservationsByCustomer(User customer) {
-        if (customer.getClass() == Customer.class) {
-            return reservationDao.getAllReservationsByCustomer(customer.getId());
-        } else
-            throw new IllegalArgumentException(String.format("Unexpected user type: %s", customer.getClass().getSimpleName()));
+    public List<Reservation> getAllReservationsByCustomer(Customer customer) {
+        return reservationDao.getAllReservationsByCustomer(customer.getId());
     }
 
     @Override
-    public List<Reservation> getAllReservationsByAdmin(User admin) {
-        if (admin.getClass() == Admin.class) {
-            return reservationDao.getAllReservationsByAdmin(admin.getId());
-        } else
-            throw new IllegalArgumentException(String.format("Unexpected user type: %s", admin.getClass().getSimpleName()));
+    public List<Reservation> getAllReservationsByAdmin(Admin admin) {
+        return reservationDao.getAllReservationsByAdmin(admin.getId());
     }
 
     @Override

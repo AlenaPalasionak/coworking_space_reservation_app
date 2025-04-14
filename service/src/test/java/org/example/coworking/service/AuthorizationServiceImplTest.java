@@ -23,7 +23,7 @@ class AuthorizationServiceImplTest {
 
     @Test
     void testAuthenticateValidAdmin() throws EntityNotFoundException {
-        User expectedAdmin = new Admin(1L, "Aden", "123");
+        Admin expectedAdmin = new Admin(1L, "Aden", "123");
         when(userService.getUserByNamePasswordAndAndRole("Aden", "123", Admin.class))
                 .thenReturn(expectedAdmin);
 
@@ -38,7 +38,7 @@ class AuthorizationServiceImplTest {
 
     @Test
     void testAuthenticateValidCustomer() throws EntityNotFoundException {
-        User expectedCustomer = new Customer(2L, "Custer", "321");
+        Customer expectedCustomer = new Customer(2L, "Custer", "321");
         when(userService.getUserByNamePasswordAndAndRole("Custer", "321", Customer.class))
                 .thenReturn(expectedCustomer);
 

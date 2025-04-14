@@ -30,7 +30,7 @@ class CoworkingServiceImplTest {
 
     @Test
     void testAdd() {
-        User admin = new Admin(1L, "Aden", "123");
+        Admin admin = new Admin(1L, "Aden", "123");
         CoworkingType type = CoworkingType.PRIVATE_OFFICE;
         Set<Facility> facilities = Set.of(
                 Facility.WIFI,
@@ -56,7 +56,7 @@ class CoworkingServiceImplTest {
     @Test
     void testDeleteCoworkingSpaceWhenUserIsOwner() throws EntityNotFoundException, ForbiddenActionException {
         Long coworkingSpaceId = 10L;
-        User admin = new Admin(1L, "Aden", "123");
+        Admin admin = new Admin(1L, "Aden", "123");
         CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, Set.of());
         coworkingSpace.setId(coworkingSpaceId);
         when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
@@ -69,8 +69,8 @@ class CoworkingServiceImplTest {
     @Test
     void testDeleteCoworkingSpaceWhenUserIsNotOwner() throws EntityNotFoundException {
         Long coworkingSpaceId = 10L;
-        User admin = new Admin(1L, "Aden", "123");
-        User anotherAdmin = new Admin(999L, "Bob", "99");
+        Admin admin = new Admin(1L, "Aden", "123");
+        Admin anotherAdmin = new Admin(999L, "Bob", "99");
 
         CoworkingSpace coworkingSpace = Mockito.mock(CoworkingSpace.class);
         when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
@@ -85,7 +85,7 @@ class CoworkingServiceImplTest {
     @Test
     void testDeleteCoworkingSpaceWhenCoworkingNotFound() throws EntityNotFoundException {
         Long coworkingId = 10L;
-        User admin = new Admin(1L, "Aden", "123");
+        Admin admin = new Admin(1L, "Aden", "123");
 
         when(coworkingDao.getById(coworkingId))
                 .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
@@ -134,7 +134,7 @@ class CoworkingServiceImplTest {
     }
     @Test
     void testGetAllByAdminReturnsCorrectList() {
-        User admin = new Admin(1L, "Admin", "pass");
+        Admin admin = new Admin(1L, "Admin", "pass");
         List<CoworkingSpace> expectedList = List.of(
                 new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, Set.of())
         );
@@ -146,5 +146,4 @@ class CoworkingServiceImplTest {
         assertThat(actualList).isEqualTo(expectedList);
         verify(coworkingDao, times(1)).getAllCoworkingSpacesByAdmin(admin.getId());
     }
-
 }

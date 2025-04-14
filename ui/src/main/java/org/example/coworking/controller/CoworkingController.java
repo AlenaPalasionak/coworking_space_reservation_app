@@ -4,12 +4,9 @@ import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.CoworkingMapper;
+import org.example.coworking.model.*;
 import org.example.coworking.model.exception.CoworkingTypeIndexException;
 import org.example.coworking.model.exception.FacilityTypeIndexException;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
-import org.example.coworking.model.User;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
@@ -69,7 +66,7 @@ public class CoworkingController {
      * @param reader the {@link BufferedReader} used to get user input
      * @param admin  the admin user adding the coworking space
      */
-    public void add(BufferedReader reader, User admin) {
+    public void add(BufferedReader reader, Admin admin) {
         double price;
         CoworkingType coworkingType;
         Set<Facility> facilities;
@@ -130,7 +127,7 @@ public class CoworkingController {
      * @param reader the {@link BufferedReader} used to get user input
      * @param admin  the user deleting the coworking space
      */
-    public void delete(BufferedReader reader, User admin) {
+    public void delete(BufferedReader reader, Admin admin) {
         List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByAdmin(admin);
         if (coworkingSpaces.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Coworking Spaces list is empty.\n");
