@@ -24,9 +24,8 @@ public interface ModelDao<T> {
      * Deletes the specified model object from the data source.
      *
      * @param object the model object to be deleted
-     * @throws EntityNotFoundException if an error occurs during the delete operation
      */
-    void delete(T object) throws EntityNotFoundException;
+    void delete(T object);
 
     /**
      * Retrieves a model object by its unique identifier.

@@ -1,12 +1,12 @@
 package org.example.coworking.mapper;
 
-import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityIndexException;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,8 +25,8 @@ class CoworkingMapperTest {
 
     @Test
     public void testGetCoworkingTypeValidInput() throws CoworkingTypeIndexException {
-        assertThat(coworkingMapper.getCoworkingType("0")).isEqualTo(CoworkingType.values()[0]);
-        assertThat(coworkingMapper.getCoworkingType("1")).isEqualTo(CoworkingType.values()[1]);
+        assertThat(coworkingMapper.getCoworkingType("0")).isEqualTo(CoworkingType.fromCode(0));
+        assertThat(coworkingMapper.getCoworkingType("1")).isEqualTo(CoworkingType.fromCode(1));
     }
 
     @Test
@@ -39,35 +39,45 @@ class CoworkingMapperTest {
     }
 
     @Test
-    public void testGetFacilityValidInput() throws FacilityIndexException {
-        List<Facility> facilities = coworkingMapper.getFacility("0,1,2");
+    public void testGetFacilityValidInput() throws FacilityTypeIndexException {
+        Set<Facility> facilities = coworkingMapper.getFacility("0,1,2");
         assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+                .containsExactlyInAnyOrder(
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
 
         facilities = coworkingMapper.getFacility("2,1,0");
         assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+                .containsExactlyInAnyOrder(
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
     }
 
     @Test
     public void testGetFacilityEmptyInput() {
-        List<Facility> facilities = coworkingMapper.getFacility("");
+        Set<Facility> facilities = coworkingMapper.getFacility("");
         assertThat(facilities).isEmpty();
     }
 
     @Test
     public void testGetFacilityInvalidInput() {
         assertThatThrownBy(() -> coworkingMapper.getFacility("0,10"))
-                .isInstanceOf(FacilityIndexException.class);
+                .isInstanceOf(FacilityTypeIndexException.class);
 
         assertThatThrownBy(() -> coworkingMapper.getFacility("1,-1"))
-                .isInstanceOf(FacilityIndexException.class);
+                .isInstanceOf(FacilityTypeIndexException.class);
     }
 
     @Test
-    public void testGetFacilityWithDuplicates() throws FacilityIndexException {
-        List<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
-        assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(Facility.values()[0], Facility.values()[1], Facility.values()[2]);
+    void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
+        Set<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
+        assertThat(facilities)
+                .hasSize(3)
+                .containsExactlyInAnyOrder(
+                        Facility.fromCode(0),
+                        Facility.fromCode(1),
+                        Facility.fromCode(2));
     }
 }

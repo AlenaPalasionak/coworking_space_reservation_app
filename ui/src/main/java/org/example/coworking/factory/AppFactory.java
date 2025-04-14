@@ -66,7 +66,7 @@ public class AppFactory {
 
         this.menuDao = new MenuDaoImpl(menuLoader);
         switch (storageType) {
-            case "DB" -> {
+            case "JDBC" -> {
                 this.userDao = new JdbcUserDao();
                 this.coworkingDao = new JdbcCoworkingDao();
                 this.reservationDao = new JdbcReservationDao();
@@ -76,6 +76,11 @@ public class AppFactory {
                 this.reservationDao = new FileReservationDao(reservationLoader);
                 this.coworkingDao = new FileCoworkingDao(coworkingSpaceLoader, reservationDao);
                 registerShutdownHook();
+            }
+            case "JPA" -> {
+                this.userDao = new JpaUserDao();
+                this.coworkingDao = new JpaCoworkingDao();
+                this.reservationDao = new JpaReservationDao();
             }
             default -> throw new IllegalArgumentException("Unknown storage type: " + storageType);
         }

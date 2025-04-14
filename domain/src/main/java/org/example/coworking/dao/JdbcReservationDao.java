@@ -1,6 +1,6 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.DataSourceConfig;
+import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
@@ -23,15 +23,15 @@ public class JdbcReservationDao implements ReservationDao {
     private final DataSource dataSource;
 
     public JdbcReservationDao() {
-        this.dataSource = DataSourceConfig.getDataSource();
+        this.dataSource = JdbcConfig.getDataSource();
     }
 
     @Override
     public void create(Reservation reservation) {
         Long customerId = reservation.getCustomer().getId();
         Long coworkingId = reservation.getCoworkingSpace().getId();
-        LocalDateTime startTime = reservation.getPeriod().getStartTime();
-        LocalDateTime endTime = reservation.getPeriod().getEndTime();
+        LocalDateTime startTime = reservation.getStartTime();
+        LocalDateTime endTime = reservation.getEndTime();
 
         String insertReservationQuery = """
                 INSERT INTO public.reservations (customer_id, coworking_space_id, start_time, end_time)
@@ -68,7 +68,8 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Reservation reservation) throws EntityNotFoundException {
+    public void delete(Reservation reservation) {
+        Long reservationId = reservation.getId();
         String deleteReservationQuery = """
                 DELETE FROM public.reservations
                 WHERE ID = ?
@@ -77,16 +78,12 @@ public class JdbcReservationDao implements ReservationDao {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement deleteReservationStatement = connection.prepareStatement(deleteReservationQuery)) {
 
-            deleteReservationStatement.setLong(1, reservation.getId());
-            int rowsAffected = deleteReservationStatement.executeUpdate();
+            deleteReservationStatement.setLong(1, reservationId);
+            deleteReservationStatement.executeUpdate();
 
-            if (rowsAffected == 0) {
-                throw new EntityNotFoundException(String.format("Failure to delete Reservation with ID: %d. Reservation is not found."
-                        , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-            }
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while deleting reservation: {}.", reservation, e);
-            throw new DataExcessException(String.format("Database error occurred while deleting reservation: %s.", reservation), e);
+            TECHNICAL_LOGGER.error("Database error occurred while deleting reservation with ID: {}.", reservationId, e);
+            throw new DataExcessException(String.format("Database error occurred while deleting reservation with ID: %s.", reservationId), e);
         }
     }
 
@@ -104,13 +101,12 @@ public class JdbcReservationDao implements ReservationDao {
 
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
-                    throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d."
-                            , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                    throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d.",
+                            reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
 
                 Long customerId = reservationResultSet.getLong("customer_id");
                 Long coworkingId = reservationResultSet.getLong("coworking_space_id");
@@ -118,10 +114,9 @@ public class JdbcReservationDao implements ReservationDao {
                 LocalDateTime endTime = reservationResultSet.getTimestamp("end_time").toLocalDateTime();
 
                 customer.setId(customerId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
                 coworkingSpace.setId(coworkingId);
 
-                return new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
+                return new Reservation(reservationId, customer, startTime, endTime, coworkingSpace);
             }
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting reservation by ID: {}.", reservationId, e);
@@ -145,7 +140,6 @@ public class JdbcReservationDao implements ReservationDao {
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
                 User admin = new Admin();
-                ReservationPeriod reservationPeriod;
 
                 Long reservationId = reservationsResultSet.getLong("id");
                 Long customerId = reservationsResultSet.getLong("customer_id");
@@ -156,8 +150,7 @@ public class JdbcReservationDao implements ReservationDao {
                 coworkingSpace.setAdmin(admin);
                 customer.setId(customerId);
                 coworkingSpace.setId(coworkingSpaceId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                Reservation reservation = new Reservation(reservationId, customer, reservationPeriod, coworkingSpace);
+                Reservation reservation = new Reservation(reservationId, customer, startTime, endTime, coworkingSpace);
                 reservations.add(reservation);
             }
 
@@ -170,10 +163,10 @@ public class JdbcReservationDao implements ReservationDao {
 
 
     @Override
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingSpaceId) {
-        Set<ReservationPeriod> reservations = new TreeSet<>();
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingSpaceId) {
+        Set<Reservation> reservations = new TreeSet<>();
         String selectReservationsQuery = """
-                SELECT start_time, end_time
+                SELECT id, customer_id, coworking_space_id, start_time, end_time
                 FROM public.reservations
                 WHERE coworking_space_id = ?
                 """;
@@ -184,18 +177,26 @@ public class JdbcReservationDao implements ReservationDao {
 
             ResultSet reservationResultSet = selectReservationStatement.executeQuery();
             while (reservationResultSet.next()) {
+                Long reservationId = reservationResultSet.getLong("id");
+
+                Long customerId = reservationResultSet.getLong("customer_id");
+                User customer = new Customer();
+                customer.setId(customerId);
+
                 LocalDateTime startTime = reservationResultSet.getTimestamp("start_time").toLocalDateTime();
                 LocalDateTime endTime = reservationResultSet.getTimestamp("end_time").toLocalDateTime();
 
-                ReservationPeriod reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(reservationPeriod);
+                CoworkingSpace coworkingSpace = new CoworkingSpace();
+                coworkingSpace.setId(coworkingSpaceId);
+
+                reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}."
-                    , coworkingSpaceId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d."
-                    , coworkingSpaceId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservation periods by coworking ID: {}.",
+                    coworkingSpaceId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservation periods by coworking ID: %d.",
+                    coworkingSpaceId), e);
         }
     }
 
@@ -216,7 +217,6 @@ public class JdbcReservationDao implements ReservationDao {
             while (reservationResultSet.next()) {
                 User customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
 
                 Long reservationId = reservationResultSet.getLong("id");
                 Long coworkingSpaceId = reservationResultSet.getLong("coworking_space_id");
@@ -225,15 +225,14 @@ public class JdbcReservationDao implements ReservationDao {
 
                 customer.setId(customerId);
                 coworkingSpace.setId(coworkingSpaceId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(new Reservation(reservationId, customer, reservationPeriod, coworkingSpace));
+                reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}."
-                    , customerId, e);
-            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d."
-                    , customerId), e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations by customer ID: {}.",
+                    customerId, e);
+            throw new DataExcessException(String.format("Database error occurred while getting reservations by customer ID: %d.",
+                    customerId), e);
         }
     }
 
@@ -255,7 +254,6 @@ public class JdbcReservationDao implements ReservationDao {
             while (reservationResultSet.next()) {
                 User admin = new Admin();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
-                ReservationPeriod reservationPeriod;
                 User customer = new Customer();
 
                 Long reservationId = reservationResultSet.getLong("id");
@@ -267,13 +265,12 @@ public class JdbcReservationDao implements ReservationDao {
                 admin.setId(adminId);
                 coworkingSpace.setId(coworkingSpaceId);
                 customer.setId(customerId);
-                reservationPeriod = new ReservationPeriod(startTime, endTime);
-                reservations.add(new Reservation(reservationId, admin, reservationPeriod, coworkingSpace));
+                reservations.add(new Reservation(reservationId, admin, startTime, endTime, coworkingSpace));
             }
             return reservations;
         } catch (SQLException e) {
-            TECHNICAL_LOGGER.error("Database error occurred while getting reservations reservations by admin ID: {}."
-                    , adminId, e);
+            TECHNICAL_LOGGER.error("Database error occurred while getting reservations reservations by admin ID: {}.",
+                    adminId, e);
             throw new DataExcessException(String.format("Database error occurred while getting reservations by admin id: %d ",
                     adminId), e);
         }

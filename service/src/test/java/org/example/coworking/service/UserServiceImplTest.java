@@ -27,14 +27,16 @@ class UserServiceImplTest {
     void testGetUserByNamePasswordAndRoleReturnsUser() throws EntityNotFoundException {
         String name = "Aden";
         String password = "123";
-        Class<? extends User> roleClass = Admin.class;
-        User expectedUser = new Admin(1L, name, password);
+        Class<Admin> roleClass = Admin.class;
+        Admin mockAdmin = new Admin();
+        mockAdmin.setName(name);
+        mockAdmin.setPassword(password);
 
-        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenReturn(expectedUser);
+        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenReturn(mockAdmin);
 
         User actualUser = userService.getUserByNamePasswordAndAndRole(name, password, roleClass);
 
-        assertEquals(expectedUser, actualUser);
+        assertEquals(mockAdmin, actualUser);
         verify(userDao, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
     }
 

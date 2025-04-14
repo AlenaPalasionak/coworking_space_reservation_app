@@ -4,9 +4,7 @@ import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.ReservationMapper;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.Reservation;
-import org.example.coworking.model.User;
+import org.example.coworking.model.*;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
@@ -39,9 +37,9 @@ public class ReservationController {
     /**
      * Constructs a ReservationController object with the specified services and mapper.
      *
-     * @param coworkingService the service responsible for managing coworking spaces
+     * @param coworkingService   the service responsible for managing coworking spaces
      * @param reservationService the service responsible for managing reservations
-     * @param reservationMapper the mapper for converting input to reservation objects
+     * @param reservationMapper  the mapper for converting input to reservation objects
      */
     public ReservationController(CoworkingService coworkingService, ReservationService reservationService, ReservationMapper reservationMapper) {
         this.coworkingService = coworkingService;
@@ -53,15 +51,15 @@ public class ReservationController {
      * Allows a customer to add a reservation for a coworking space by specifying the start and end times.
      * Prompts the user for input and validates the entered values.
      *
-     * @param reader the BufferedReader for user input
+     * @param reader   the BufferedReader for user input
      * @param customer the customer making the reservation
      */
-    public void add(BufferedReader reader, User customer) {
+    public void add(BufferedReader reader, Customer customer) {
         String coworkingIdInput;
         Long coworkingId;
         LocalDateTime startTime;
         LocalDateTime endTime;
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(customer);
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAll();
 
         if (coworkingSpaces.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Coworking Spaces list is empty.\n");
@@ -124,10 +122,26 @@ public class ReservationController {
     /**
      * Displays all reservations made by the specified customer.
      *
+     * @param admin the customer whose reservations are to be displayed
+     */
+    public void getAllReservationsByAdmin(Admin admin) {
+        List<Reservation> reservations = reservationService.getAllReservationsByAdmin(admin);
+        if (reservations.isEmpty()) {
+            USER_OUTPUT_LOGGER.warn("Reservation list is empty\n");
+            TECHNICAL_LOGGER.warn("Reservation list is empty\n");
+        } else {
+            USER_OUTPUT_LOGGER.info("Your reservation(s):\n");
+            reservations.forEach(USER_OUTPUT_LOGGER::info);
+        }
+    }
+
+    /**
+     * Displays all reservations made by the specified customer.
+     *
      * @param customer the customer whose reservations are to be displayed
      */
-    public void getAllReservations(User customer) {
-        List<Reservation> reservations = reservationService.getAllByUser(customer);
+    public void getAllReservationsByCustomer(Customer customer) {
+        List<Reservation> reservations = reservationService.getAllReservationsByCustomer(customer);
         if (reservations.isEmpty()) {
             USER_OUTPUT_LOGGER.warn("Reservation list is empty\n");
             TECHNICAL_LOGGER.warn("Reservation list is empty\n");
@@ -141,13 +155,13 @@ public class ReservationController {
      * Allows a customer to delete a reservation by specifying its reservation ID.
      * Prompts the user for input and validates the entered values.
      *
-     * @param reader the BufferedReader for user input
+     * @param reader   the BufferedReader for user input
      * @param customer the customer deleting the reservation
      */
-    public void delete(BufferedReader reader, User customer) {
+    public void delete(BufferedReader reader, Customer customer) {
         String reservationIdInput;
         Long reservationId;
-        List<Reservation> reservationsByCustomer = reservationService.getAllByUser(customer);
+        List<Reservation> reservationsByCustomer = reservationService.getAllReservationsByCustomer(customer);
         if (reservationsByCustomer.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Reservation list is empty.\n");
             return;
@@ -185,7 +199,7 @@ public class ReservationController {
      * @param reader the BufferedReader for user input
      * @return the LocalDateTime object corresponding to the input date and time
      * @throws InvalidInputException if the input is invalid
-     * @throws DateTimeException if the date/time is invalid
+     * @throws DateTimeException     if the date/time is invalid
      */
     private LocalDateTime getLocalDateTimeObject(BufferedReader reader) throws InvalidInputException, DateTimeException {
         String year;

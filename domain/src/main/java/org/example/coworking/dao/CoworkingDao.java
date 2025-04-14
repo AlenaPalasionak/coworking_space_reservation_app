@@ -20,5 +20,4 @@ public interface CoworkingDao extends ModelDao<CoworkingSpace> {
      * @return a list of {@code CoworkingSpace} objects managed by the admin
      */
     List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId);
-
 }

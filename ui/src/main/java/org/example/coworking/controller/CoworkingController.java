@@ -4,17 +4,15 @@ import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.mapper.CoworkingMapper;
-import org.example.coworking.mapper.exception.CoworkingTypeIndexException;
-import org.example.coworking.mapper.exception.FacilityIndexException;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
-import org.example.coworking.model.User;
+import org.example.coworking.model.*;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.io.BufferedReader;
 import java.util.List;
+import java.util.Set;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
@@ -68,10 +66,10 @@ public class CoworkingController {
      * @param reader the {@link BufferedReader} used to get user input
      * @param admin  the admin user adding the coworking space
      */
-    public void add(BufferedReader reader, User admin) {
+    public void add(BufferedReader reader, Admin admin) {
         double price;
         CoworkingType coworkingType;
-        List<Facility> facilities;
+        Set<Facility> facilities;
 
         while (true) {
             String priceInput;
@@ -103,16 +101,16 @@ public class CoworkingController {
         }
 
         while (true) {
-            String facilitiesIndexesInput;
+            String facilityCodesInput;
             try {
-                facilitiesIndexesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
+                facilityCodesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
                         .supplier(FACILITY_MENU + "\nPlease enter numbers separated by commas.\n");
-                facilities = coworkingMapper.getFacility(facilitiesIndexesInput);
+                facilities = coworkingMapper.getFacility(facilityCodesInput);
                 break;
             } catch (InvalidInputException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
-            } catch (FacilityIndexException e) {
+            } catch (FacilityTypeIndexException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
             }
@@ -127,10 +125,10 @@ public class CoworkingController {
      * The coworking space is deleted using the {@link CoworkingService}.
      *
      * @param reader the {@link BufferedReader} used to get user input
-     * @param user   the user deleting the coworking space
+     * @param admin  the user deleting the coworking space
      */
-    public void delete(BufferedReader reader, User user) {
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByUser(user);
+    public void delete(BufferedReader reader, Admin admin) {
+        List<CoworkingSpace> coworkingSpaces = coworkingService.getAllByAdmin(admin);
         if (coworkingSpaces.isEmpty()) {
             USER_OUTPUT_LOGGER.info("Coworking Spaces list is empty.\n");
             return;
@@ -147,7 +145,7 @@ public class CoworkingController {
                 coworkingIdInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
                         .supplier(spacesAsString + "Type a coworking id you want to delete:\n");
                 Long coworkingSpaceId = Long.parseLong(coworkingIdInput);
-                coworkingService.delete(user, coworkingSpaceId);
+                coworkingService.delete(admin, coworkingSpaceId);
                 USER_OUTPUT_LOGGER.info("Coworking with id: " + coworkingSpaceId + " has been deleted\n");
                 break;
             } catch (InvalidInputException e) {
@@ -164,12 +162,10 @@ public class CoworkingController {
     }
 
     /**
-     * Retrieves and displays all coworking spaces associated with the given user.
-     *
-     * @param user the user whose coworking spaces are to be retrieved
+     * Retrieves and displays all coworking spaces.
      */
-    public void getAllSpaces(User user) {
-        List<CoworkingSpace> spaces = coworkingService.getAllByUser(user);
+    public void getAllSpaces() {
+        List<CoworkingSpace> spaces = coworkingService.getAll();
         USER_OUTPUT_LOGGER.info("Spaces list:\n");
         spaces.forEach(space -> USER_OUTPUT_LOGGER.info(space.toString()));
     }

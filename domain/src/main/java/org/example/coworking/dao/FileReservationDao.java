@@ -4,7 +4,6 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.Reservation;
-import org.example.coworking.model.ReservationPeriod;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -39,12 +38,8 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public void delete(Reservation reservation) throws EntityNotFoundException {
-        if (checkIfNotExist(reservation.getId())) {
-            throw new EntityNotFoundException(String.format("Failure to delete Reservation with id: %d. Reservation is not found."
-                    , reservation.getId()), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
-        }
-        reservationsCache.remove(reservation);
+    public void delete(Reservation reservation) {
+        reservationsCache.removeIf(r -> r.getId().equals(reservation.getId()));
     }
 
     @Override
@@ -52,8 +47,8 @@ public class FileReservationDao implements ReservationDao {
         return reservationsCache.stream()
                 .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d"
-                        , reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d",
+                        reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
     @Override
@@ -62,13 +57,10 @@ public class FileReservationDao implements ReservationDao {
     }
 
     @Override
-    public Set<ReservationPeriod> getAllReservationPeriodsByCoworking(Long coworkingId) {
-        List<Reservation> coworkingSpaces = reservationsCache.stream()
-                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId)).toList();
-        return coworkingSpaces.stream()
-                .map(Reservation::getPeriod)
+    public Set<Reservation> getAllReservationsByCoworking(Long coworkingId) {
+        return reservationsCache.stream()
+                .filter(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingId))
                 .collect(Collectors.toSet());
-
     }
 
     @Override
@@ -90,15 +82,24 @@ public class FileReservationDao implements ReservationDao {
         }
     }
 
-    private boolean checkIfNotExist(Long id) {
-        return reservationsCache.stream()
-                .noneMatch(r -> r.getId().equals(id));
-    }
-
+    /**
+     * Saves the current state of reservations cache to the json file.
+     * This method should be called during application shutdown to persist
+     * any in-memory reservations to disk. The data will be available for
+     * loading when the application restarts.
+     */
     public void shutdown() {
         reservationLoader.save(reservationsCache);
     }
 
+    /**
+     * Loads reservations from JSON storage into the cache if not already loaded.
+     * Subsequent calls will use the cached data.
+     *
+     * @throws RuntimeException if the reservation data file cannot be found or loaded,
+     *                          wrapping the original FileNotFoundException. The exception will be logged
+     *                          with technical details before being rethrown.
+     */
     private void loadFromJson() {
         if (reservationsCache == null) {
             try {

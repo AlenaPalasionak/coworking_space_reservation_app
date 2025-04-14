@@ -7,6 +7,7 @@ import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 
 import java.util.List;
+import java.util.Set;
 
 public class CoworkingServiceImpl implements CoworkingService {
     private final CoworkingDao coworkingDao;
@@ -16,33 +17,36 @@ public class CoworkingServiceImpl implements CoworkingService {
     }
 
     @Override
-    public void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) {
+    public void add(Admin admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
         coworkingDao.create(new CoworkingSpace(admin, price, coworkingType, facilities));
     }
 
     @Override
-    public void delete(User admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
+    public void delete(Admin admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
         CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
             coworkingDao.delete(coworkingSpace);
         } else {
-            throw new ForbiddenActionException(String.format("Action is forbidden for the user: %s", admin.getName())
-                    , ServiceErrorCode.FORBIDDEN_ACTION);
+            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName(),
+                    ServiceErrorCode.FORBIDDEN_ACTION);
         }
-    }
-
-    @Override
-    public List<CoworkingSpace> getAllByUser(User user) {
-        if (user.getClass() == Customer.class) {
-            return coworkingDao.getAll();
-        } else if (user.getClass() == Admin.class) {
-            return coworkingDao.getAllCoworkingSpacesByAdmin(user.getId());
-        } else
-            throw new IllegalArgumentException(String.format("Unexpected user type: %s", user.getClass().getSimpleName()));
     }
 
     @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
         return coworkingDao.getById(coworkingId);
     }
+
+    @Override
+    public List<CoworkingSpace> getAll() {
+        return coworkingDao.getAll();
+
+    }
+
+    @Override
+    public List<CoworkingSpace> getAllByAdmin(Admin admin) {
+        return coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId());
+    }
+
+
 }

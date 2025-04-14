@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
  * Both loggers are initialized with separate loggers, allowing for distinction between user output and technical logs.
  */
 public class Log {
-
     /**
      * Logger for user-facing messages, typically used for general application output or user notifications.
      */

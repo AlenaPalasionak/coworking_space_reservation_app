@@ -41,7 +41,7 @@ public class MenuDaoImpl implements MenuDao {
                 .filter(m -> m.getMenuName().equals(name))
                 .findFirst();
         if (possibleMenu.isEmpty()) {
-            throw new MenuNotFoundException("Failure to find menu with the name: " + name, DaoErrorCode.MENU_IS_NOT_FOUND);
+            throw new MenuNotFoundException(String.format("Failure to find menu with the name: %s", name), DaoErrorCode.MENU_IS_NOT_FOUND);
         } else {
             return possibleMenu.get();
         }

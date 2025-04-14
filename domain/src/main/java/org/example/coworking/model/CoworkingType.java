@@ -1,20 +1,29 @@
 package org.example.coworking.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.NoArgsConstructor;
+import org.example.coworking.model.exception.CoworkingTypeIndexException;
+import org.example.coworking.model.exception.EnumErrorCode;
 
 @NoArgsConstructor(force = true)
 public enum CoworkingType {
-    OPEN_SPACE("Open Space"), PRIVATE_OFFICE("Private Office"), CO_LIVING("Co Living");
+    OPEN_SPACE(0), PRIVATE_OFFICE(1), CO_LIVING(2);
+    private final int code;
 
-    private final String description;
-
-    CoworkingType(String description) {
-        this.description = description;
+    CoworkingType(int code) {
+        this.code = code;
     }
 
-    @JsonValue
-    public String getDescription() {
-        return description;
+    public int getCode() {
+        return code;
+    }
+
+    public static CoworkingType fromCode(int code) throws CoworkingTypeIndexException{
+        for (CoworkingType type : CoworkingType.values()) {
+            if (type.code == code) {
+                return type;
+            }
+        }
+        throw new CoworkingTypeIndexException(String.format("Code: %d is out of bound in enum CoworkingType.",
+                code), EnumErrorCode.INVALID_COWORKING_TYPE_INDEX);
     }
 }

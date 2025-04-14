@@ -3,6 +3,7 @@ package org.example.coworking.controller;
 import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
 import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
 
@@ -26,15 +27,15 @@ public class AuthorizationController {
     }
 
     /**
-     * Prompts the user to enter their name and password, validates the input,
+     * Prompts the Customer to enter their name and password, validates the input,
      * and attempts to authenticate the user.
-     * If the input is invalid or the authentication fails, the user is asked to try again.
+     * If the input is invalid or the authentication fails, the Customer is asked to try again.
      *
-     * @param reader the {@link BufferedReader} to read user input
-     * @param userType the class type of the user to be authenticated
-     * @return the authenticated {@link User} object if authentication is successful
+     * @param reader the {@link BufferedReader} to read Customer input
+     * @param role   the class type of the user to be authenticated
+     * @return the authenticated {@link Customer} object if authentication is successful
      */
-    public User authenticate(BufferedReader reader, Class<? extends User> userType) {
+    public <T extends User> T authenticate(BufferedReader reader, Class<T> role) {
         while (true) {
             String nameInput;
             String passwordInput;
@@ -50,9 +51,10 @@ public class AuthorizationController {
             }
 
             try {
-                User user = authorizationService.authenticate(nameInput, passwordInput, userType);
+                T user = authorizationService.authenticate(nameInput, passwordInput, role);
                 USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                 return user;
+
             } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());

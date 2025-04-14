@@ -25,7 +25,7 @@ public class Main {
     private static final String EXIT = "0";
 
     public static void main(String[] args) {
-        AppFactory appFactory = new AppFactory("DB");
+        AppFactory appFactory = new AppFactory("JPA");
         ReservationController reservationController = appFactory.createReservationController();
         AuthorizationController authorizationController = appFactory.createAuthorizationController();
         CoworkingController coworkingController = appFactory.createCoworkingController();

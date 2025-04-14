@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 /**
  * Configuration class for setting up a HikariCP data source.
  */
-public class DataSourceConfig {
+public class JdbcConfig {
 
     private static final HikariConfig hikariConfig = new HikariConfig();
     private static final HikariDataSource dataSource;

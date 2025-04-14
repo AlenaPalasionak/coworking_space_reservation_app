@@ -1,13 +1,11 @@
 package org.example.coworking.service;
 
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
-import org.example.coworking.model.User;
+import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * This interface defines the operations for managing coworking spaces in the system.
@@ -23,7 +21,7 @@ public interface CoworkingService {
      * @param coworkingType the type of the coworking space
      * @param facilities    a list of facilities available in the coworking space
      */
-    void add(User admin, double price, CoworkingType coworkingType, List<Facility> facilities) ;
+    void add(Admin admin, double price, CoworkingType coworkingType, Set<Facility> facilities);
 
     /**
      * Deletes a coworking space for the specified user by its ID.
@@ -33,15 +31,22 @@ public interface CoworkingService {
      * @throws ForbiddenActionException if the user is not allowed to delete the coworking space
      * @throws EntityNotFoundException  if the coworking space with the given ID is not found
      */
-    void delete(User user, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException;
+    void delete(Admin user, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException;
 
     /**
      * Retrieves all coworking spaces associated with the specified user.
      *
-     * @param user the user whose coworking spaces are to be retrieved
+     * @return a list of coworking spaces
+     */
+    List<CoworkingSpace> getAll();
+
+    /**
+     * Retrieves all coworking spaces associated with the specified user.
+     *
+     * @param admin the user whose coworking spaces are to be retrieved
      * @return a list of coworking spaces associated with the user
      */
-    List<CoworkingSpace> getAllByUser(User user);
+    List<CoworkingSpace> getAllByAdmin(Admin admin);
 
     /**
      * Retrieves a coworking space by its ID.
@@ -51,5 +56,4 @@ public interface CoworkingService {
      * @throws EntityNotFoundException if no coworking space with the given ID is found
      */
     CoworkingSpace getById(Long id) throws EntityNotFoundException;
-
 }
