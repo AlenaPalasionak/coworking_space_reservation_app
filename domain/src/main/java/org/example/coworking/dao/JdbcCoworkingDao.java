@@ -1,10 +1,11 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -15,11 +16,13 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Coworking object
  */
+@Repository("jdbcCoworkingDao")
 public class JdbcCoworkingDao implements CoworkingDao {
     private final DataSource dataSource;
 
-    public JdbcCoworkingDao() {
-        this.dataSource = JdbcConfig.getDataSource();
+    @Autowired
+    public JdbcCoworkingDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
 
     @Override
     public void delete(CoworkingSpace coworkingSpace) {
-       Long coworkingSpaceId =  coworkingSpace.getId();
+        Long coworkingSpaceId = coworkingSpace.getId();
         String deleteCoworkingQuery = """
                 DELETE FROM public.coworking_spaces
                 WHERE id = ?

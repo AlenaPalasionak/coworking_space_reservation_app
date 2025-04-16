@@ -9,6 +9,8 @@ import org.example.coworking.model.exception.CoworkingTypeIndexException;
 import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.exception.ForbiddenActionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.util.List;
@@ -22,6 +24,7 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * and {@link CoworkingMapper} to load, save, add, delete, and retrieve coworking spaces.
  * It also provides menus for selecting coworking types and facilities and validates user inputs.
  */
+@Component
 public class CoworkingController {
 
     private final CoworkingService coworkingService;
@@ -54,6 +57,7 @@ public class CoworkingController {
      * @param coworkingService the service for managing coworking spaces
      * @param coworkingMapper  the mapper used for mapping inputs to valid coworking types and facilities
      */
+    @Autowired
     public CoworkingController(CoworkingService coworkingService, CoworkingMapper coworkingMapper) {
         this.coworkingService = coworkingService;
         this.coworkingMapper = coworkingMapper;

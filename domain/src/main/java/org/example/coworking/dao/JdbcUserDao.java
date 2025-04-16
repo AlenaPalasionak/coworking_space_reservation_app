@@ -1,12 +1,13 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -20,11 +21,13 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
  * Implementation of {@link UserDao} that interacts with the database
  * to manage user retrieval operations.
  */
+@Repository("jdbcUserDao")
 public class JdbcUserDao implements UserDao {
     private final DataSource dataSource;
 
-    public JdbcUserDao() {
-        this.dataSource = JdbcConfig.getDataSource();
+    @Autowired
+    public JdbcUserDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -60,5 +63,4 @@ public class JdbcUserDao implements UserDao {
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
         }
     }
-
 }

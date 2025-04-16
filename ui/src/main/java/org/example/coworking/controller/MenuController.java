@@ -5,6 +5,8 @@ import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
 import org.example.coworking.service.MenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * to display menus, process user choices, and perform actions like adding, deleting coworking spaces,
  * making reservations, and logging out.
  */
+@Component
 public class MenuController {
     private final MenuService menuService;
     private static final String LOG_OUT = "2";
@@ -37,6 +40,7 @@ public class MenuController {
      *
      * @param menuService The service used to retrieve and manage menu data.
      */
+    @Autowired
     public MenuController(MenuService menuService) {
         this.menuService = menuService;
     }
@@ -70,13 +74,6 @@ public class MenuController {
             }
             USER_OUTPUT_LOGGER.warn("You entered the wrong symbol: " + userChoice + ". Try again\n");
         }
-    }
-
-    /**
-     * Loads the menus from storage.
-     */
-    public void getMenusFromStorage() {
-        menuService.getMenusFromStorage();
     }
 
     /**

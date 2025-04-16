@@ -13,7 +13,6 @@ import java.util.function.Supplier;
  * and handled in case of invalid input.
  */
 public class ValidatedInputSupplier {
-
     private final Consumer<String> consumer;
     private final Supplier<String> supplier;
     private final Predicate<String> validator;

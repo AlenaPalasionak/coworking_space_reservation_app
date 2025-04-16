@@ -4,6 +4,8 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.MenuNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.Menu;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -14,6 +16,7 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Implementation of {@link MenuDao} for managing menu data storage and retrieval.
  */
+@Repository
 public class MenuDaoImpl implements MenuDao {
     private final Loader<Menu> menuLoader;
     private static List<Menu> menus;
@@ -23,15 +26,13 @@ public class MenuDaoImpl implements MenuDao {
      *
      * @param menuLoader the loader used to retrieve menu data
      */
+    @Autowired
     public MenuDaoImpl(Loader<Menu> menuLoader) {
         this.menuLoader = menuLoader;
+        loadMenusFromStorage();
     }
 
-    @Override
-    public List<Menu> getMenusFromStorage() {
-        if (menus == null) {
-            loadMenuFromStorage();
-        }
+    public List<Menu> getMenus() {
         return menus;
     }
 
@@ -47,16 +48,14 @@ public class MenuDaoImpl implements MenuDao {
         }
     }
 
-    /**
-     * Loads menu data from storage using the provided loader.
-     * Throws a {@link RuntimeException} if the file is not found.
-     */
-    private void loadMenuFromStorage() {
-        try {
-            menus = menuLoader.load(Menu.class);
-        } catch (FileNotFoundException e) {
-            TECHNICAL_LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
+    private void loadMenusFromStorage() {
+        if (menus == null) {
+            try {
+                menus = menuLoader.load(Menu.class);
+            } catch (FileNotFoundException e) {
+                TECHNICAL_LOGGER.error("Failure to load Menu List", e);
+                throw new RuntimeException("Failure to load Menu List", e);
+            }
         }
     }
 }

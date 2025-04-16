@@ -2,37 +2,43 @@ package org.example.coworking.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
 /**
  * Configuration class for setting up a HikariCP data source.
  */
+@Configuration
+@PropertySource("classpath:application.properties")
 public class JdbcConfig {
+    @Value("${database.url}")
+    String url;
+    @Value("${database.username}")
+    String username;
+    @Value("${database.password}")
+    String password;
+    @Value("${hikari.maximumPoolSize}")
+    int maximumPoolSize;
+    @Value("${hikari.minimumIdle}")
+    int minimumIdle;
+    @Value("${hikari.idleTimeout}")
+    int idleTimeout;
 
-    private static final HikariConfig hikariConfig = new HikariConfig();
-    private static final HikariDataSource dataSource;
-    private static final int MAX_POOL_SIZE = 10;
-    private static final int MINIMUM_IDLE_SIZE = 2;
-    private static final int IDLE_TIMEOUT = 30_000;
+    @Bean
+    public DataSource dataSource() {
+        HikariConfig hikariConfig = new HikariConfig();
 
-    static {
-        hikariConfig.setJdbcUrl(PropertyConfig.getProperties().getProperty("database.url"));
-        hikariConfig.setUsername(PropertyConfig.getProperties().getProperty("database.username"));
-        hikariConfig.setPassword(PropertyConfig.getProperties().getProperty("database.password"));
-        hikariConfig.setMaximumPoolSize(MAX_POOL_SIZE);
-        hikariConfig.setMinimumIdle(MINIMUM_IDLE_SIZE);
-        hikariConfig.setIdleTimeout(IDLE_TIMEOUT);
+        hikariConfig.setJdbcUrl(url);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.setMaximumPoolSize(maximumPoolSize);
+        hikariConfig.setMinimumIdle(minimumIdle);
+        hikariConfig.setIdleTimeout(idleTimeout);
 
-        dataSource = new HikariDataSource(hikariConfig);
-    }
-
-    /**
-     * Returns the configured HikariCP data source.
-     *
-     * @return the data source instance.
-     */
-    public static DataSource getDataSource() {
-        return dataSource;
+        return new HikariDataSource(hikariConfig);
     }
 }

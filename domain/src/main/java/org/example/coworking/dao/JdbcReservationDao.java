@@ -1,10 +1,11 @@
 package org.example.coworking.dao;
 
-import org.example.coworking.config.JdbcConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -19,11 +20,13 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Reservation object
  */
+@Repository("jdbcReservationDao")
 public class JdbcReservationDao implements ReservationDao {
     private final DataSource dataSource;
 
-    public JdbcReservationDao() {
-        this.dataSource = JdbcConfig.getDataSource();
+    @Autowired
+    public JdbcReservationDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override

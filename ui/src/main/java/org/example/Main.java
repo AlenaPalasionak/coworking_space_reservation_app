@@ -1,11 +1,14 @@
 package org.example;
 
+import org.example.coworking.config.DaoConfig;
 import org.example.coworking.controller.AuthorizationController;
 import org.example.coworking.controller.CoworkingController;
 import org.example.coworking.controller.MenuController;
 import org.example.coworking.controller.ReservationController;
-import org.example.coworking.factory.AppFactory;
+import org.example.coworking.config.AppConfig;
 import org.example.coworking.model.Menu;
+import org.example.coworking.service.config.ServiceConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,13 +28,17 @@ public class Main {
     private static final String EXIT = "0";
 
     public static void main(String[] args) {
-        AppFactory appFactory = new AppFactory("JPA");
-        ReservationController reservationController = appFactory.createReservationController();
-        AuthorizationController authorizationController = appFactory.createAuthorizationController();
-        CoworkingController coworkingController = appFactory.createCoworkingController();
-        MenuController menuController = appFactory.createMenuController();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+                DaoConfig.class,
+                ServiceConfig.class,
+                AppConfig.class
+        );
 
-        menuController.getMenusFromStorage();
+        ReservationController reservationController = context.getBean(ReservationController.class);
+        AuthorizationController authorizationController = context.getBean(AuthorizationController.class);
+        CoworkingController coworkingController = context.getBean(CoworkingController.class);
+        MenuController menuController = context.getBean(MenuController.class);
+
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             label:
@@ -48,7 +55,7 @@ public class Main {
                             menuController.handleCustomerFlow(authorizationController, menuController, coworkingController,
                                     reservationController, reader);
                     case EXIT -> {
-                        System.exit(0);
+                        context.close();
                         break label;
                     }
                 }

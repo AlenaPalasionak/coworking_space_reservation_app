@@ -9,6 +9,8 @@ import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.ReservationService;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.time.DateTimeException;
@@ -23,6 +25,7 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * for coworking spaces. This class interacts with the reservation service, coworking service, and reservation mapper to
  * perform actions related to reservations.
  */
+@Component
 public class ReservationController {
     private final CoworkingService coworkingService;
     private final ReservationService reservationService;
@@ -41,6 +44,8 @@ public class ReservationController {
      * @param reservationService the service responsible for managing reservations
      * @param reservationMapper  the mapper for converting input to reservation objects
      */
+
+    @Autowired
     public ReservationController(CoworkingService coworkingService, ReservationService reservationService, ReservationMapper reservationMapper) {
         this.coworkingService = coworkingService;
         this.reservationService = reservationService;

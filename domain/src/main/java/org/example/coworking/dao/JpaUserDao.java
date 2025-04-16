@@ -5,19 +5,23 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.criteria.*;
-import org.example.coworking.config.JpaConfig;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+
+@Repository("jpaUserDao")
 public class JpaUserDao implements UserDao {
     private final EntityManagerFactory entityManagerFactory;
 
-    public JpaUserDao() {
-        this.entityManagerFactory = JpaConfig.getEntityManagerFactory();
+    @Autowired
+    public JpaUserDao(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override

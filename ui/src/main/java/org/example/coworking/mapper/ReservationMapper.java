@@ -1,5 +1,7 @@
 package org.example.coworking.mapper;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
 /**
@@ -8,16 +10,17 @@ import java.time.LocalDateTime;
  * This class provides utility methods to convert string inputs into a `LocalDateTime` object
  * and to parse and validate identifiers as `Long` values.
  */
+@Component
 public class ReservationMapper {
 
     /**
      * Converts individual string inputs for year, month, day, hour, and minute into a corresponding
      * LocalDateTime object.
      *
-     * @param yearInput the string representation of the year
-     * @param monthInput the string representation of the month
-     * @param dayInput the string representation of the day
-     * @param hourInput the string representation of the hour
+     * @param yearInput   the string representation of the year
+     * @param monthInput  the string representation of the month
+     * @param dayInput    the string representation of the day
+     * @param hourInput   the string representation of the hour
      * @param minuteInput the string representation of the minute
      * @return a LocalDateTime object representing the parsed date and time
      */
