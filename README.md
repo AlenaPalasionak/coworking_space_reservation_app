@@ -47,7 +47,7 @@ in CoworkingServiceImpl, ReservationServiceImpl, UserServiceImpl in constructors
 ## 📁 DAO Implementations & Setup Instructions
 ### 1️⃣ File-based (Jackson)
 **Configuration Steps:**
-1. Create `application.properties` in `domain/resources` with the following content (replace `***` with actual values):
+1. Create `application.properties` in `domain/resources` with the following content:
 ```properties
 menu.path=menu.json
 user.path=users.json
