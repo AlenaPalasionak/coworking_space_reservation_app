@@ -23,23 +23,23 @@ class MenuServiceImplTest {
     private MenuServiceImpl menuService;
 
     @Test
-    void testGetMenusFromStorageReturnsMenus() {
+    void testGetMenus() {
         List<Menu> expectedMenus = List.of(
                 new Menu("Welcome Menu", "Main menu text", new String[]{"1", "2"}),
                 new Menu("Admin Menu", "Admin Menu text", new String[]{"A", "B"})
         );
-        when(menuDao.getMenusFromStorage()).thenReturn(expectedMenus);
+        when(menuDao.getMenus()).thenReturn(expectedMenus);
 
-        List<Menu> actualMenus = menuService.getMenusFromStorage();
+        List<Menu> actualMenus = menuService.getMenus();
 
         assertEquals(expectedMenus, actualMenus);
-        verify(menuDao, times(1)).getMenusFromStorage();
+        verify(menuDao, times(1)).getMenus();
     }
 
     @Test
     void testGetMenuTextByMenuNameReturnsCorrectText() {
         Menu menu = new Menu("Welcome Menu", "Welcome menu text", new String[]{"1", "2"});
-        when(menuDao.getMenusFromStorage()).thenReturn(List.of(menu));
+        when(menuDao.getMenus()).thenReturn(List.of(menu));
 
         String menuText = menuService.getMenuTextByMenuName("Welcome Menu");
 
@@ -48,7 +48,7 @@ class MenuServiceImplTest {
 
     @Test
     void testGetMenuTextByMenuNameReturnsNotFoundMessage() {
-        when(menuDao.getMenusFromStorage()).thenReturn(List.of());
+        when(menuDao.getMenus()).thenReturn(List.of());
 
         String menuText = menuService.getMenuTextByMenuName("Non Existing Menu");
 
