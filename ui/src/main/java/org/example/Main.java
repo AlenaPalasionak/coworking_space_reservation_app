@@ -1,69 +1,30 @@
 package org.example;
 
-import org.example.coworking.config.DaoConfig;
-import org.example.coworking.controller.AuthorizationController;
-import org.example.coworking.controller.CoworkingController;
-import org.example.coworking.controller.MenuController;
-import org.example.coworking.controller.ReservationController;
 import org.example.coworking.config.AppConfig;
-import org.example.coworking.model.Menu;
+import org.example.coworking.config.DaoConfig;
+import org.example.coworking.controller.FlowController;
 import org.example.coworking.service.config.ServiceConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
-
 /**
- * The Main class is the entry point of the application. It initializes various controllers
- * for handling different aspects of the system such as reservations, authorization, coworking spaces,
- * and menus.
+ * Entry point of the coworking reservation console application.
+ * Initializes the Spring context and starts the main application flow.
  */
 public class Main {
-    private static final String WELCOME_MENU_KEY = "Welcome Menu";
-    private static final String ADMIN = "1";
-    private static final String CUSTOMER = "2";
-    private static final String EXIT = "0";
 
+    /**
+     * Launches the application by creating the Spring context and delegating control
+     * to {@link FlowController}. Ensures proper resource cleanup on exit.
+     */
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
                 DaoConfig.class,
                 ServiceConfig.class,
                 AppConfig.class
-        );
-
-        ReservationController reservationController = context.getBean(ReservationController.class);
-        AuthorizationController authorizationController = context.getBean(AuthorizationController.class);
-        CoworkingController coworkingController = context.getBean(CoworkingController.class);
-        MenuController menuController = context.getBean(MenuController.class);
-
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            label:
-            while (true) {
-                Menu welcomeMenu = menuController.getMenuByName(WELCOME_MENU_KEY);
-                menuController.showMenu(welcomeMenu.getMenuName());
-                String userRoleIdentifier = menuController.getUserChoice(reader, welcomeMenu);
-
-                switch (userRoleIdentifier) {
-                    case ADMIN ->
-                            menuController.handleAdminFlow(authorizationController, menuController, coworkingController,
-                                    reservationController, reader);
-                    case CUSTOMER ->
-                            menuController.handleCustomerFlow(authorizationController, menuController, coworkingController,
-                                    reservationController, reader);
-                    case EXIT -> {
-                        context.close();
-                        break label;
-                    }
-                }
-            }
-
-        } catch (IOException e) {
-            TECHNICAL_LOGGER.error("Error while reading from console. " + e.getMessage());
-            throw new RuntimeException(e.getMessage());
+        )) {
+            FlowController flowController = context.getBean(FlowController.class);
+            flowController.startAppFlow();
         }
     }
 }
+

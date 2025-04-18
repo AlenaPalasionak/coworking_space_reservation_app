@@ -26,18 +26,17 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  */
 @Component
 public class CoworkingController {
-
     private final CoworkingService coworkingService;
     private final CoworkingMapper coworkingMapper;
 
-    public static final String COWORKING_TYPE_MENU = """
+    public static final String COWORKING_TYPE_OPTIONS = """
             Choose the coworkingSpace type (press only one of the numbers):
             Open Space - 0
             Private Office - 1
             Co Living - 2
             """;
 
-    public static final String FACILITY_MENU = """
+    public static final String FACILITY_OPTIONS = """
             Choose the facilities. Write numbers comma-separated on one line:
             NO Facilities - just press Enter,
             PARKING - 0,
@@ -92,7 +91,7 @@ public class CoworkingController {
             String coworkingTypeInput;
             try {
                 coworkingTypeInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
-                        .supplier(COWORKING_TYPE_MENU);
+                        .supplier(COWORKING_TYPE_OPTIONS);
                 coworkingType = coworkingMapper.getCoworkingType(coworkingTypeInput);
                 break;
             } catch (InvalidInputException e) {
@@ -108,7 +107,7 @@ public class CoworkingController {
             String facilityCodesInput;
             try {
                 facilityCodesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
-                        .supplier(FACILITY_MENU + "\nPlease enter numbers separated by commas.\n");
+                        .supplier(FACILITY_OPTIONS + "\nPlease enter numbers separated by commas.\n");
                 facilities = coworkingMapper.getFacility(facilityCodesInput);
                 break;
             } catch (InvalidInputException e) {

@@ -58,7 +58,6 @@ public class AuthorizationController {
                 T user = authorizationService.authenticate(nameInput, passwordInput, role);
                 USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                 return user;
-
             } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());
