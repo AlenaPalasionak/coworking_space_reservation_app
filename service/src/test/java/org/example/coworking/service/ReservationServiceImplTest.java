@@ -1,9 +1,12 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.ReservationDao;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.*;
+import org.example.coworking.repository.ReservationRepository;
+import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.entity.Customer;
+import org.example.coworking.entity.Reservation;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 import org.example.coworking.service.validator.TimeLogicValidator;
@@ -18,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,9 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplTest {
     @Mock
-    private ReservationDao reservationDao;
-    @Mock
-    private CoworkingService coworkingService;
+    private ReservationRepository reservationDao;
     @Mock
     private TimeLogicValidator timeLogicValidator;
     @InjectMocks
@@ -41,14 +41,14 @@ class ReservationServiceImplTest {
         Long coworkingSpaceId = 10L;
         LocalDateTime startTime = LocalDateTime.of(2030, 1, 2, 12, 0);
         LocalDateTime endTime = LocalDateTime.of(2030, 1, 2, 14, 0);
+
         CoworkingSpace coworkingSpace = new CoworkingSpace();
+        coworkingSpace.setId(coworkingSpaceId);
 
-        when(coworkingService.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
         doNothing().when(timeLogicValidator).validateReservation(startTime, endTime);
-        when(reservationDao.getAllReservationsByCoworking(coworkingSpaceId))
-                .thenReturn(new TreeSet<>());
 
-        reservationService.add(customer, startTime, endTime, coworkingSpaceId);
+        Reservation reservation = new Reservation(customer, startTime, endTime, coworkingSpace);
+        reservationService.add(reservation);
 
         ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
         verify(reservationDao).create(reservationCaptor.capture());
@@ -59,19 +59,16 @@ class ReservationServiceImplTest {
         assertThat(capturedReservation.getStartTime()).isEqualTo(startTime);
         assertThat(capturedReservation.getEndTime()).isEqualTo(endTime);
     }
-
     @Test
-    void testAddReservationWhenCoworkingSpaceNotFound() throws EntityNotFoundException {
+    void testAddReservationWhenCoworkingSpaceNotFound() {
         Customer customer = new Customer(2L, "Custer", "321");
-        Long coworkingSpaceId = 999L;
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = LocalDateTime.now().plusHours(2);
 
-        when(coworkingService.getById(coworkingSpaceId))
-                .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingSpaceId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
+        Reservation reservation = new Reservation(customer, startTime, endTime, null);
 
-        assertThatThrownBy(() -> reservationService.add(customer, startTime, endTime, coworkingSpaceId))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> reservationService.add(reservation))
+                .isInstanceOf(NullPointerException.class);
         verify(reservationDao, never()).create(any());
     }
 

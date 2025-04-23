@@ -1,9 +1,9 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.CoworkingDao;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.*;
+import org.example.coworking.repository.CoworkingRepository;
+import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CoworkingServiceImplTest {
     @Mock
-    private CoworkingDao coworkingDao;
+    private CoworkingRepository coworkingRepository;
 
     @InjectMocks
     private CoworkingServiceImpl coworkingService;
@@ -41,10 +41,10 @@ class CoworkingServiceImplTest {
 
         double price = 100.0;
 
-        coworkingService.add(admin, price, type, facilities);
+        coworkingService.add(new CoworkingSpace(admin, price, type, facilities));
 
         ArgumentCaptor<CoworkingSpace> captor = ArgumentCaptor.forClass(CoworkingSpace.class);
-        verify(coworkingDao).create(captor.capture());
+        verify(coworkingRepository).create(captor.capture());
         CoworkingSpace capturedSpace = captor.getValue();
         assertThat(capturedSpace)
                 .hasFieldOrPropertyWithValue("admin", admin)
@@ -59,11 +59,11 @@ class CoworkingServiceImplTest {
         Admin admin = new Admin(1L, "Aden", "123");
         CoworkingSpace coworkingSpace = new CoworkingSpace(admin, 100.0, CoworkingType.CO_LIVING, Set.of());
         coworkingSpace.setId(coworkingSpaceId);
-        when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
+        when(coworkingRepository.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
 
         coworkingService.delete(admin, coworkingSpaceId);
 
-        verify(coworkingDao, times(1)).delete(coworkingSpace);
+        verify(coworkingRepository, times(1)).delete(coworkingSpace);
     }
 
     @Test
@@ -73,13 +73,13 @@ class CoworkingServiceImplTest {
         Admin anotherAdmin = new Admin(999L, "Bob", "99");
 
         CoworkingSpace coworkingSpace = Mockito.mock(CoworkingSpace.class);
-        when(coworkingDao.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
+        when(coworkingRepository.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
         when(coworkingSpace.getAdmin()).thenReturn(admin);
 
         assertThatThrownBy(() -> coworkingService.delete(anotherAdmin, coworkingSpaceId))
                 .isInstanceOf(ForbiddenActionException.class);
 
-        verify(coworkingDao, never()).delete(any());
+        verify(coworkingRepository, never()).delete(any());
     }
 
     @Test
@@ -87,35 +87,35 @@ class CoworkingServiceImplTest {
         Long coworkingId = 10L;
         Admin admin = new Admin(1L, "Aden", "123");
 
-        when(coworkingDao.getById(coworkingId))
+        when(coworkingRepository.getById(coworkingId))
                 .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> coworkingService.delete(admin, coworkingId))
                 .isInstanceOf(EntityNotFoundException.class);
 
-        verify(coworkingDao, never()).delete(any());
+        verify(coworkingRepository, never()).delete(any());
     }
 
     @Test
     void testGetByIdReturnsCoworkingSpaceWhenExists() throws EntityNotFoundException {
         Long coworkingId = 1L;
         CoworkingSpace expectedCoworkingSpace = new CoworkingSpace(new Admin(1L, "Aden", "123"), 100.0, CoworkingType.OPEN_SPACE, Set.of());
-        when(coworkingDao.getById(coworkingId)).thenReturn(expectedCoworkingSpace);
+        when(coworkingRepository.getById(coworkingId)).thenReturn(expectedCoworkingSpace);
 
         CoworkingSpace actualCoworkingSpace = coworkingService.getById(coworkingId);
 
         assertThat(actualCoworkingSpace).isEqualTo(expectedCoworkingSpace);
-        verify(coworkingDao, times(1)).getById(coworkingId);
+        verify(coworkingRepository, times(1)).getById(coworkingId);
     }
 
     @Test
     void testGetByIdThrowsEntityNotFoundExceptionWhenNotFound() throws EntityNotFoundException {
         Long coworkingId = 999L;
-        when(coworkingDao.getById(coworkingId)).thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
+        when(coworkingRepository.getById(coworkingId)).thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> coworkingService.getById(coworkingId))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(coworkingDao, times(1)).getById(coworkingId);
+        verify(coworkingRepository, times(1)).getById(coworkingId);
     }
 
     @Test
@@ -125,13 +125,14 @@ class CoworkingServiceImplTest {
                 new CoworkingSpace(new Admin(2L, "Admin2", "456"), 200.0, CoworkingType.PRIVATE_OFFICE, Set.of())
         );
 
-        when(coworkingDao.getAll()).thenReturn(expectedList);
+        when(coworkingRepository.getAll()).thenReturn(expectedList);
 
         List<CoworkingSpace> actualList = coworkingService.getAll();
 
         assertThat(actualList).isEqualTo(expectedList);
-        verify(coworkingDao, times(1)).getAll();
+        verify(coworkingRepository, times(1)).getAll();
     }
+
     @Test
     void testGetAllByAdminReturnsCorrectList() {
         Admin admin = new Admin(1L, "Admin", "pass");
@@ -139,11 +140,11 @@ class CoworkingServiceImplTest {
                 new CoworkingSpace(admin, 100.0, CoworkingType.OPEN_SPACE, Set.of())
         );
 
-        when(coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId())).thenReturn(expectedList);
+        when(coworkingRepository.getAllCoworkingSpacesByAdmin(admin.getId())).thenReturn(expectedList);
 
         List<CoworkingSpace> actualList = coworkingService.getAllByAdmin(admin);
 
         assertThat(actualList).isEqualTo(expectedList);
-        verify(coworkingDao, times(1)).getAllCoworkingSpacesByAdmin(admin.getId());
+        verify(coworkingRepository, times(1)).getAllCoworkingSpacesByAdmin(admin.getId());
     }
 }

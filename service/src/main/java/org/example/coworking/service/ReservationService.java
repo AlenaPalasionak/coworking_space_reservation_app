@@ -1,13 +1,12 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.Customer;
-import org.example.coworking.model.Reservation;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.Customer;
+import org.example.coworking.entity.Reservation;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -18,18 +17,12 @@ import java.util.Set;
 public interface ReservationService {
 
     /**
-     * Adds a new reservation for the specified customer with the given start and end times
-     * and the associated coworking space ID.
+     * Adds a new reservation
      *
-     * @param customer         the user who is making the reservation
-     * @param startTime        the start time of the reservation
-     * @param endTime          the end time of the reservation
-     * @param coworkingSpaceId the ID of the coworking space being reserved
      * @throws ReservationTimeException if the reservation times are invalid (e.g., overlapping with existing reservations)
      * @throws EntityNotFoundException  if the coworking space with the given ID is not found
      */
-    void add(Customer customer, LocalDateTime startTime, LocalDateTime endTime, Long coworkingSpaceId)
-            throws ReservationTimeException, EntityNotFoundException;
+    void add(Reservation reservation) throws ReservationTimeException, EntityNotFoundException;
 
     /**
      * Deletes an existing reservation made by the specified user.
@@ -66,7 +59,6 @@ public interface ReservationService {
      */
 
     List<Reservation> getAllReservationsByAdmin(Admin admin);
-
 
     /**
      * Retrieves all reservation periods for a specific coworking space.

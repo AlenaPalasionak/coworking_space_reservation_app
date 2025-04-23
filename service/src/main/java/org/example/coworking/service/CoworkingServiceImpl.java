@@ -1,11 +1,9 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.CoworkingDao;
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
+import org.example.coworking.repository.CoworkingRepository;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.CoworkingSpace;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,27 +11,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class CoworkingServiceImpl implements CoworkingService {
-    private final CoworkingDao coworkingDao;
+    private final CoworkingRepository coworkingRepository;
 
     @Autowired
-    public CoworkingServiceImpl(@Qualifier("jpaCoworkingDao") CoworkingDao coworkingDao) {
-        this.coworkingDao = coworkingDao;
+    public CoworkingServiceImpl(@Qualifier("jpaCoworkingRepository") CoworkingRepository coworkingRepository) {
+        this.coworkingRepository = coworkingRepository;
     }
 
     @Override
-    public void add(Admin admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
-        coworkingDao.create(new CoworkingSpace(admin, price, coworkingType, facilities));
+    public void add(CoworkingSpace coworkingSpace) {
+        coworkingRepository.create(coworkingSpace);
     }
 
     @Override
-    public void delete(Admin admin, Long coworkingSpaceId) throws ForbiddenActionException, EntityNotFoundException {
+    public void delete(Admin admin, Long coworkingSpaceId) {
         CoworkingSpace coworkingSpace = getById(coworkingSpaceId);
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
-            coworkingDao.delete(coworkingSpace);
+            coworkingRepository.delete(coworkingSpace);
         } else {
             throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName(),
                     ServiceErrorCode.FORBIDDEN_ACTION);
@@ -42,18 +39,18 @@ public class CoworkingServiceImpl implements CoworkingService {
 
     @Override
     public CoworkingSpace getById(Long coworkingId) throws EntityNotFoundException {
-        return coworkingDao.getById(coworkingId);
+        return coworkingRepository.getById(coworkingId);
     }
 
     @Override
     public List<CoworkingSpace> getAll() {
-        return coworkingDao.getAll();
+        return coworkingRepository.getAll();
 
     }
 
     @Override
     public List<CoworkingSpace> getAllByAdmin(Admin admin) {
-        return coworkingDao.getAllCoworkingSpacesByAdmin(admin.getId());
+        return coworkingRepository.getAllCoworkingSpacesByAdmin(admin.getId());
     }
 
 

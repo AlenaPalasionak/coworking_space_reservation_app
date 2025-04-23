@@ -1,6 +1,6 @@
 package org.example.coworking.loader;
 
-import org.example.coworking.model.Reservation;
+import org.example.coworking.entity.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
