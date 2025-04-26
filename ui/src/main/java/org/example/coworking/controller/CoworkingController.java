@@ -1,10 +1,11 @@
 package org.example.coworking.controller;
 
+import jakarta.validation.Valid;
 import org.example.coworking.dto.CoworkingSpaceDto;
-import org.example.coworking.mapper.CoworkingMapper;
-import org.example.coworking.mapper.UserMapper;
 import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.mapper.CoworkingMapper;
+import org.example.coworking.mapper.UserMapper;
 import org.example.coworking.service.CoworkingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,14 +29,14 @@ public class CoworkingController {
     }
 
     @PostMapping("/coworking-spaces")
-    public ResponseEntity<Void> add(@RequestBody CoworkingSpaceDto coworkingSpaceDto) {
+    public ResponseEntity<Void> add(@Valid @RequestBody CoworkingSpaceDto coworkingSpaceDto) {
         CoworkingSpace coworkingSpace = coworkingMapper.coworkingSpaceDtoToEntity(coworkingSpaceDto);
         coworkingService.add(coworkingSpace);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/coworking/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam Long adminId) {
+    @DeleteMapping("/coworking-spaces/{id}")
+    public ResponseEntity<Void> delete(@Valid @PathVariable Long id, @RequestParam Long adminId) {
         Admin admin = userMapper.getAdminEntity(adminId);
         coworkingService.delete(admin, id);
         return ResponseEntity.noContent().build();

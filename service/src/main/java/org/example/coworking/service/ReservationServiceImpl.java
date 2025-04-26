@@ -1,10 +1,10 @@
 package org.example.coworking.service;
 
-import org.example.coworking.repository.ReservationRepository;
-import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.Customer;
 import org.example.coworking.entity.Reservation;
+import org.example.coworking.repository.ReservationRepository;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 import org.example.coworking.service.exception.ServiceErrorCode;
@@ -24,7 +24,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final TimeLogicValidator timeLogicValidator;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("jpaReservationRepository") ReservationRepository reservationRepository, TimeLogicValidator timeLogicValidator) {
+    public ReservationServiceImpl(@Qualifier("fileReservationRepository") ReservationRepository reservationRepository,
+                                  TimeLogicValidator timeLogicValidator) {
         this.reservationRepository = reservationRepository;
         this.timeLogicValidator = timeLogicValidator;
     }

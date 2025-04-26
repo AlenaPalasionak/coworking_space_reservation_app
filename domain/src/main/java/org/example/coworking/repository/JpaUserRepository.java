@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-
 @Repository("jpaUserRepository")
 public class JpaUserRepository implements UserRepository {
     private final EntityManagerFactory entityManagerFactory;
@@ -45,9 +44,8 @@ public class JpaUserRepository implements UserRepository {
 
         try {
             return entityManager.createQuery(cq).getSingleResult();
-
         } catch (NoResultException e) {
-            throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), DaoErrorCode.USER_IS_NOT_FOUND);
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
@@ -55,4 +53,32 @@ public class JpaUserRepository implements UserRepository {
             entityManager.close();
         }
     }
+
+    @Override
+    public User getUserById(Long id) throws EntityNotFoundException {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        User user;
+        try {
+            String checkUserQuery = """
+                     SELECT u
+                     FROM  User u
+                     WHERE id=:id
+                    """;
+            user = entityManager.createQuery(checkUserQuery, User.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            throw new EntityNotFoundException(
+                    String.format("Failure to find User with the ID: %d ", id),
+                    DaoErrorCode.USER_IS_NOT_FOUND
+            );
+        } catch (PersistenceException e) {
+            TECHNICAL_LOGGER.error("Database error occurred while fetching user with the ID: {}.", id, e);
+            throw new DataExcessException(String.format("Database error occurred while fetching user with the ID: %d.", id), e);
+        } finally {
+            entityManager.close();
+        }
+        return user;
+    }
 }
+

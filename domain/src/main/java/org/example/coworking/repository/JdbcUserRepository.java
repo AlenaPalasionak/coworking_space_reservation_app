@@ -21,7 +21,7 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
  * Implementation of {@link UserRepository} that interacts with the database
  * to manage user retrieval operations.
  */
-@Repository("jdbcUserDao")
+@Repository("jdbcUserRepository")
 public class JdbcUserRepository implements UserRepository {
     private final DataSource dataSource;
 
@@ -61,6 +61,35 @@ public class JdbcUserRepository implements UserRepository {
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
+        }
+    }
+
+    @Override
+    public User getUserById(Long id) throws EntityNotFoundException {
+        String selectUserQuery = """
+                SELECT
+                FROM users
+                WHERE id = ?
+                """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement selectUserStatement = connection.prepareStatement(selectUserQuery)) {
+
+            selectUserStatement.setLong(1, id);
+
+            try (ResultSet selectUserResultSet = selectUserStatement.executeQuery()) {
+                if (!selectUserResultSet.next()) {
+                    throw new EntityNotFoundException(String.format("Failure to find user with the ID %d: ",
+                            id),
+                            DaoErrorCode.USER_IS_NOT_FOUND);
+                }
+
+                User user = new User();
+                user.setId(id);
+                return user;
+            }
+        } catch (SQLException e) {
+            TECHNICAL_LOGGER.error("Database error occurred while fetching user with the ID: {}.", id, e);
+            throw new DataExcessException(String.format("Database error occurred while fetching user with the ID %d: ", id), e);
         }
     }
 }

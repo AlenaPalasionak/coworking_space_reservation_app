@@ -16,7 +16,7 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Coworking object
  */
-@Repository("jdbcCoworkingDao")
+@Repository("jdbcCoworkingRepository")
 public class JdbcCoworkingRepository implements CoworkingRepository {
     private final DataSource dataSource;
 

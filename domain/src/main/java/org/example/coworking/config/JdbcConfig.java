@@ -16,17 +16,20 @@ import javax.sql.DataSource;
 @PropertySource("classpath:application.properties")
 public class JdbcConfig {
     @Value("${database.url}")
-    String url;
+    private String url;
     @Value("${database.username}")
-    String username;
+    private String username;
     @Value("${database.password}")
-    String password;
+    private String password;
     @Value("${hikari.maximumPoolSize}")
-    int maximumPoolSize;
+    private int maximumPoolSize;
     @Value("${hikari.minimumIdle}")
-    int minimumIdle;
+    private int minimumIdle;
     @Value("${hikari.idleTimeout}")
-    int idleTimeout;
+    private int idleTimeout;
+    @Value("${database.driver}")
+    private String driver;
+
 
     @Bean
     public DataSource dataSource() {
@@ -35,6 +38,7 @@ public class JdbcConfig {
         hikariConfig.setJdbcUrl(url);
         hikariConfig.setUsername(username);
         hikariConfig.setPassword(password);
+        hikariConfig.setDriverClassName(driver);
         hikariConfig.setMaximumPoolSize(maximumPoolSize);
         hikariConfig.setMinimumIdle(minimumIdle);
         hikariConfig.setIdleTimeout(idleTimeout);

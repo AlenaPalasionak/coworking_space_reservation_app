@@ -12,12 +12,13 @@ public interface UserRepository {
     /**
      * Finds a user by name, password, and role.
      *
-     * @param name      the username
-     * @param password  the password
-     * @param role the user role class
+     * @param name     the username
+     * @param password the password
+     * @param role     the user role class
      * @return the found {@link User}
      * @throws EntityNotFoundException if no user matches the criteria
      */
     <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
 
+    User getUserById(Long id) throws EntityNotFoundException;
 }

@@ -1,9 +1,9 @@
 package org.example.coworking.service;
 
-import org.example.coworking.repository.CoworkingRepository;
-import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.repository.CoworkingRepository;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     private final CoworkingRepository coworkingRepository;
 
     @Autowired
-    public CoworkingServiceImpl(@Qualifier("jpaCoworkingRepository") CoworkingRepository coworkingRepository) {
+    public CoworkingServiceImpl(@Qualifier("fileCoworkingRepository") CoworkingRepository coworkingRepository) {
         this.coworkingRepository = coworkingRepository;
     }
 
@@ -32,7 +32,8 @@ public class CoworkingServiceImpl implements CoworkingService {
         if (coworkingSpace.getAdmin().getId().equals(admin.getId())) {
             coworkingRepository.delete(coworkingSpace);
         } else {
-            throw new ForbiddenActionException("Action is forbidden for the user: " + admin.getName(),
+            throw new ForbiddenActionException(String.format("Action is forbidden for the user with ID %d: ",
+                    admin.getId()),
                     ServiceErrorCode.FORBIDDEN_ACTION);
         }
     }
@@ -45,13 +46,10 @@ public class CoworkingServiceImpl implements CoworkingService {
     @Override
     public List<CoworkingSpace> getAll() {
         return coworkingRepository.getAll();
-
     }
 
     @Override
     public List<CoworkingSpace> getAllByAdmin(Admin admin) {
         return coworkingRepository.getAllCoworkingSpacesByAdmin(admin.getId());
     }
-
-
 }

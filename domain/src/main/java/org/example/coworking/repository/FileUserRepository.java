@@ -13,10 +13,11 @@ import java.util.Optional;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("fileUserDao")
+@Repository("fileUserRepository")
 public class FileUserRepository implements UserRepository {
     private final Loader<User> userLoader;
     private static List<User> userCache;
+
     @Autowired
     public FileUserRepository(Loader<User> userLoader) {
         this.userLoader = userLoader;
@@ -31,10 +32,21 @@ public class FileUserRepository implements UserRepository {
                         user.getClass().equals(role))
                 .findFirst();
         if (possibleUser.isEmpty()) {
-            throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), DaoErrorCode.USER_IS_NOT_FOUND);
         } else {
             return role.cast(possibleUser.get());
         }
+    }
+
+    @Override
+    public User getUserById(Long id) throws EntityNotFoundException {
+        Optional<User> possibleUser = userCache.stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst();
+        if (possibleUser.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Failure to find user with the ID %d: " + id), DaoErrorCode.USER_IS_NOT_FOUND);
+        }
+        return possibleUser.get();
     }
 
     private void loadFromJson() {
@@ -42,7 +54,7 @@ public class FileUserRepository implements UserRepository {
             try {
                 userCache = userLoader.load(User.class);
             } catch (FileNotFoundException e) {
-                TECHNICAL_LOGGER.error("Failure to load User List" + e.getMessage());
+                TECHNICAL_LOGGER.error("Failure to load User List", e);
                 throw new RuntimeException(e.getMessage());
             }
         }

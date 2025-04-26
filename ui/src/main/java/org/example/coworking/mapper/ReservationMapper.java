@@ -1,6 +1,7 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.ReservationDto;
+import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
 import org.example.coworking.entity.Customer;
 import org.example.coworking.entity.Reservation;
@@ -18,12 +19,16 @@ public class ReservationMapper {
         reservation.setStartTime(dto.getStartTime());
         reservation.setEndTime(dto.getEndTime());
 
+        Admin admin = new Admin();
+        admin.setId(dto.getAdminId());
+
         Customer customer = new Customer();
         customer.setId(dto.getCustomerId());
         reservation.setCustomer(customer);
 
         CoworkingSpace space = new CoworkingSpace();
         space.setId(dto.getCoworkingSpaceId());
+        space.setAdmin(admin);
         reservation.setCoworkingSpace(space);
         return reservation;
     }
@@ -33,7 +38,8 @@ public class ReservationMapper {
         LocalDateTime endTime = reservation.getEndTime();
         Long customerId = reservation.getCustomer().getId();
         Long coworkingSpaceId = reservation.getCoworkingSpace().getId();
-        return new ReservationDto(customerId, startTime, endTime, coworkingSpaceId);
+        Long adminId = reservation.getCoworkingSpace().getAdmin().getId();
+        return new ReservationDto(customerId, adminId, startTime, endTime, coworkingSpaceId);
     }
 
     public List<ReservationDto> reservationEntitiesToDtoList(List<Reservation> reservations) {

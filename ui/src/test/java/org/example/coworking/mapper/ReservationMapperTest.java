@@ -1,6 +1,7 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.ReservationDto;
+import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
 import org.example.coworking.entity.Customer;
 import org.example.coworking.entity.Reservation;
@@ -17,67 +18,79 @@ public class ReservationMapperTest {
 
         @Test
         public void testReservationDtoToEntity() {
+
             LocalDateTime start = LocalDateTime.of(2025, 4, 23, 10, 0);
             LocalDateTime end = LocalDateTime.of(2025, 4, 23, 12, 0);
-            ReservationDto dto = new ReservationDto(1L, start, end, 2L);
+            ReservationDto dto = new ReservationDto(1L, 2L, start, end, 2L);
 
             Reservation entity = reservationMapper.reservationDtoToEntity(dto);
 
             assertThat(entity.getStartTime()).isEqualTo(start);
             assertThat(entity.getEndTime()).isEqualTo(end);
             assertThat(entity.getCustomer().getId()).isEqualTo(1L);
+            assertThat(entity.getCoworkingSpace().getAdmin().getId()).isEqualTo(2L);
             assertThat(entity.getCoworkingSpace().getId()).isEqualTo(2L);
         }
 
-        @Test
-        public void testReservationEntityToDto() {
-            Customer customer = new Customer();
-            customer.setId(5L);
+    @Test
+    public void testReservationEntityToDto() {
+        Customer customer = new Customer();
+        customer.setId(5L);
 
-            CoworkingSpace space = new CoworkingSpace();
-            space.setId(8L);
+        Admin admin = new Admin();
+        admin.setId(10L);
 
-            LocalDateTime start = LocalDateTime.of(2025, 5, 1, 9, 0);
-            LocalDateTime end = LocalDateTime.of(2025, 5, 1, 11, 0);
+        CoworkingSpace space = new CoworkingSpace();
+        space.setId(8L);
+        space.setAdmin(admin);
 
-            Reservation reservation = new Reservation();
-            reservation.setCustomer(customer);
-            reservation.setCoworkingSpace(space);
-            reservation.setStartTime(start);
-            reservation.setEndTime(end);
+        LocalDateTime start = LocalDateTime.of(2025, 5, 1, 9, 0);
+        LocalDateTime end = LocalDateTime.of(2025, 5, 1, 11, 0);
 
-            ReservationDto dto = reservationMapper.reservationEntityToDto(reservation);
+        Reservation reservation = new Reservation();
+        reservation.setCustomer(customer);
+        reservation.setCoworkingSpace(space);
+        reservation.setStartTime(start);
+        reservation.setEndTime(end);
 
-            assertThat(dto.getCustomerId()).isEqualTo(5L);
-            assertThat(dto.getCoworkingSpaceId()).isEqualTo(8L);
-            assertThat(dto.getStartTime()).isEqualTo(start);
-            assertThat(dto.getEndTime()).isEqualTo(end);
-        }
+        ReservationDto dto = reservationMapper.reservationEntityToDto(reservation);
 
-        @Test
-        public void testReservationEntitiesToDtoList() {
-            Customer customer = new Customer();
-            customer.setId(3L);
-
-            CoworkingSpace space = new CoworkingSpace();
-            space.setId(4L);
-
-            Reservation reservation1 = new Reservation();
-            reservation1.setCustomer(customer);
-            reservation1.setCoworkingSpace(space);
-            reservation1.setStartTime(LocalDateTime.of(2025, 4, 24, 14, 0));
-            reservation1.setEndTime(LocalDateTime.of(2025, 4, 24, 16, 0));
-
-            Reservation reservation2 = new Reservation();
-            reservation2.setCustomer(customer);
-            reservation2.setCoworkingSpace(space);
-            reservation2.setStartTime(LocalDateTime.of(2025, 4, 25, 10, 0));
-            reservation2.setEndTime(LocalDateTime.of(2025, 4, 25, 12, 0));
-
-            List<ReservationDto> dtoList = reservationMapper.reservationEntitiesToDtoList(List.of(reservation1, reservation2));
-
-            assertThat(dtoList).hasSize(2);
-            assertThat(dtoList.get(0).getStartTime()).isEqualTo(LocalDateTime.of(2025, 4, 24, 14, 0));
-            assertThat(dtoList.get(1).getEndTime()).isEqualTo(LocalDateTime.of(2025, 4, 25, 12, 0));
-        }
+        assertThat(dto.getCustomerId()).isEqualTo(5L);
+        assertThat(dto.getCoworkingSpaceId()).isEqualTo(8L);
+        assertThat(dto.getStartTime()).isEqualTo(start);
+        assertThat(dto.getEndTime()).isEqualTo(end);
+        assertThat(dto.getAdminId()).isEqualTo(10L);
     }
+
+    @Test
+    public void testReservationEntitiesToDtoList() {
+        Customer customer = new Customer();
+        customer.setId(3L);
+
+        Admin admin = new Admin();
+        admin.setId(5L);
+
+        CoworkingSpace space = new CoworkingSpace();
+        space.setId(4L);
+        space.setAdmin(admin);
+
+        Reservation reservation1 = new Reservation();
+        reservation1.setCustomer(customer);
+        reservation1.setCoworkingSpace(space);
+        reservation1.setStartTime(LocalDateTime.of(2025, 4, 24, 14, 0));
+        reservation1.setEndTime(LocalDateTime.of(2025, 4, 24, 16, 0));
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setCustomer(customer);
+        reservation2.setCoworkingSpace(space);
+        reservation2.setStartTime(LocalDateTime.of(2025, 4, 25, 10, 0));
+        reservation2.setEndTime(LocalDateTime.of(2025, 4, 25, 12, 0));
+
+        List<ReservationDto> dtoList = reservationMapper.reservationEntitiesToDtoList(List.of(reservation1, reservation2));
+
+        assertThat(dtoList).hasSize(2);
+        assertThat(dtoList.get(0).getStartTime()).isEqualTo(LocalDateTime.of(2025, 4, 24, 14, 0));
+        assertThat(dtoList.get(1).getEndTime()).isEqualTo(LocalDateTime.of(2025, 4, 25, 12, 0));
+    }
+
+}

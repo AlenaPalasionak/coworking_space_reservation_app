@@ -19,6 +19,10 @@ public class ReservationDto {
     @PositiveOrZero(message = "Customer ID must be positive or zero")
     private Long customerId;
 
+    @NotNull(message = "Admin ID must not be null")
+    @PositiveOrZero(message = "Admin ID must be positive or zero")
+    private Long adminId;
+
     @NotNull(message = "Start time must not be null")
     @FutureOrPresent(message = "Start time must be in the present or future")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

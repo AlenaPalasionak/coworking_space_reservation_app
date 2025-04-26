@@ -19,6 +19,5 @@ public interface UserService {
      * @throws EntityNotFoundException if the user is not found or credentials are incorrect
      */
     <T extends User> T getUserByNamePasswordAndAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
-
-}
+    }
 

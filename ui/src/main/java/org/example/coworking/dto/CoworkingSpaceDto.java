@@ -1,7 +1,6 @@
 package org.example.coworking.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import org.example.coworking.entity.CoworkingType;
@@ -15,7 +14,7 @@ public class CoworkingSpaceDto {
     @PositiveOrZero(message = "Coworking Space ID must be positive or zero")
     private Long adminId;
     @NotNull(message = "Price must not be 0.0")
-    @Positive(message = "Price must be positive or zero")
+    @PositiveOrZero(message = "Price must be positive or zero")
     private double price;
     @NotNull(message = "CoworkingType must not be null")
     private CoworkingType coworkingType;

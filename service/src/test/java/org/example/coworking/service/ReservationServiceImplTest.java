@@ -44,7 +44,6 @@ class ReservationServiceImplTest {
 
         CoworkingSpace coworkingSpace = new CoworkingSpace();
         coworkingSpace.setId(coworkingSpaceId);
-
         doNothing().when(timeLogicValidator).validateReservation(startTime, endTime);
 
         Reservation reservation = new Reservation(customer, startTime, endTime, coworkingSpace);
@@ -59,6 +58,7 @@ class ReservationServiceImplTest {
         assertThat(capturedReservation.getStartTime()).isEqualTo(startTime);
         assertThat(capturedReservation.getEndTime()).isEqualTo(endTime);
     }
+
     @Test
     void testAddReservationWhenCoworkingSpaceNotFound() {
         Customer customer = new Customer(2L, "Custer", "321");
@@ -101,7 +101,6 @@ class ReservationServiceImplTest {
         verify(reservationDao, never()).delete(any());
     }
 
-
     @Test
     void testGetByIdReturnsReservationWhenExists() throws EntityNotFoundException {
         Long reservationId = 10L;
@@ -135,8 +134,6 @@ class ReservationServiceImplTest {
         assertThat(actualReservations).isEqualTo(expectedReservations);
     }
 
-
-
     @Test
     void testGetAllReservationsByAdminWithValidAdmin() {
         Admin admin = new Admin(1L, "Admin", "admin123");
@@ -160,5 +157,4 @@ class ReservationServiceImplTest {
 
         assertThat(actualReservations).isEqualTo(expectedReservations);
     }
-
 }

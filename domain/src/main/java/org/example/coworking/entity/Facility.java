@@ -16,6 +16,5 @@ public enum Facility {
     public int getCode() {
         return code;
     }
-
 }
 

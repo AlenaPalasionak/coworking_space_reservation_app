@@ -41,6 +41,7 @@ class CoworkingServiceImplTest {
 
         double price = 100.0;
 
+
         coworkingService.add(new CoworkingSpace(admin, price, type, facilities));
 
         ArgumentCaptor<CoworkingSpace> captor = ArgumentCaptor.forClass(CoworkingSpace.class);

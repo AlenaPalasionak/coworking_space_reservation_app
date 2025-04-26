@@ -29,14 +29,14 @@ public class ReservationController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping("/reservation")
+    @PostMapping("/reservations")
     public ResponseEntity<Void> add(@Valid @RequestBody ReservationDto reservationDto) {
         Reservation reservation = reservationMapper.reservationDtoToEntity(reservationDto);
         reservationService.add(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("reservation/{id}")
+    @DeleteMapping("reservations/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id, @Valid @RequestParam Long customerId) {
         Customer customer = userMapper.getCustomerEntity(customerId);
         reservationService.delete(customer, id);

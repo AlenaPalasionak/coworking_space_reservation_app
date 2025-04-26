@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("fileCoworkingDao")
+@Repository("fileCoworkingRepository")
 public class FileCoworkingRepository implements CoworkingRepository {
     private static List<CoworkingSpace> coworkingSpacesCache;
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
@@ -23,7 +23,7 @@ public class FileCoworkingRepository implements CoworkingRepository {
     private final ReservationRepository reservationDao;
 
     @Autowired
-    public FileCoworkingRepository(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationDao") ReservationRepository reservationDao) {
+    public FileCoworkingRepository(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationRepository") ReservationRepository reservationDao) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
         this.reservationDao = reservationDao;
         loadFromJson();

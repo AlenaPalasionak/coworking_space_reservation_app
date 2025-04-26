@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class ReservationLoader extends AbstractLoaderImpl<Reservation> {
         private final String filePath;
 
-
     @Autowired
     public ReservationLoader(@Value("${reservation.path}") String filePath) {
         super();

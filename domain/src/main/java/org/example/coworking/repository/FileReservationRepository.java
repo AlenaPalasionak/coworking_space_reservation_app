@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("fileReservationDao")
+@Repository("fileReservationRepository")
 public class FileReservationRepository implements ReservationRepository {
     private static List<Reservation> reservationsCache;
     private final Loader<Reservation> reservationLoader;

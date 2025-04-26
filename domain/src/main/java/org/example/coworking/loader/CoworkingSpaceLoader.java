@@ -17,7 +17,6 @@ public class CoworkingSpaceLoader extends AbstractLoaderImpl<CoworkingSpace> {
         this.filePath = filePath;
     }
 
-
     @Override
     protected String getFilepath() {
         return filePath;

@@ -20,7 +20,7 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Reservation object
  */
-@Repository("jdbcReservationDao")
+@Repository("jdbcReservationRepository")
 public class JdbcReservationRepository implements ReservationRepository {
     private final DataSource dataSource;
 
