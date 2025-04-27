@@ -1,13 +1,12 @@
 package org.example.coworking.controller.exception;
 
 import jakarta.validation.ValidationException;
+import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,12 +23,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<?> handleValidationException(ValidationException exception, BindingResult result) {
-        StringBuilder errorMessage = new StringBuilder();
-        for (FieldError error : result.getFieldErrors()) {
-            errorMessage.append(error.getField()).append(": ").append(error.getDefaultMessage()).append("\n");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage.toString());
+    public ResponseEntity<String> handleValidationException(ValidationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Validation error: " + exception.getMessage());
     }
 
     @ExceptionHandler(ForbiddenActionException.class)
@@ -44,6 +41,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body("Entity not found: " + exception.getMessage());
+    }
+    @ExceptionHandler(DataExcessException.class)
+    public ResponseEntity<String> handleDataExcessException(DataExcessException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Data excess error: " + exception.getMessage());
     }
 
     @ExceptionHandler(DateTimeException.class)

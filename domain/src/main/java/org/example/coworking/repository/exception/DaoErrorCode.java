@@ -17,12 +17,7 @@ public enum DaoErrorCode {
      */
     RESERVATION_IS_NOT_FOUND("Reservation is not found. Try again."),
 
-    /**
-     * Error when menu is not found.
-     */
-    MENU_IS_NOT_FOUND("Menu is not found."),
-
-    /**
+        /**
      * Error when user is not found.
      */
     USER_IS_NOT_FOUND("User is not found. Try again.");
