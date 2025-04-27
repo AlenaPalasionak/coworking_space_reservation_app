@@ -1,9 +1,9 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.Customer;
-import org.example.coworking.model.User;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.Customer;
+import org.example.coworking.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

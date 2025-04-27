@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.User;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.User;
 
 /**
  * This interface defines the authentication operations for users.

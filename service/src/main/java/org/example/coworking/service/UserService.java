@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.User;
+import org.example.coworking.repository.exception.EntityNotFoundException;
+import org.example.coworking.entity.User;
 
 /**
  * This interface defines the operations for managing users in the system.
@@ -19,6 +19,5 @@ public interface UserService {
      * @throws EntityNotFoundException if the user is not found or credentials are incorrect
      */
     <T extends User> T getUserByNamePasswordAndAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
-
-}
+    }
 

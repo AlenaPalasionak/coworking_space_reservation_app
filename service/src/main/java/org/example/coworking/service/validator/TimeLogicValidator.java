@@ -16,6 +16,7 @@ public class TimeLogicValidator {
         validateDatesNotInPast(startTime, endTime);
         validateStartNotAfterEnd(startTime, endTime);
         validateDurationAtLeastOneHour(startTime, endTime);
+        validateYearBefore2100(startTime, endTime);
     }
 
     private void validateNotNull(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
@@ -47,6 +48,22 @@ public class TimeLogicValidator {
         long hoursBetween = ChronoUnit.HOURS.between(startTime, endTime);
         if (hoursBetween < MIN_HOURS_DURATION) {
             throw new ReservationTimeException("Reservation duration is less than an hour", ServiceErrorCode.INVALID_TIME_LOGIC);
+        }
+    }
+
+    private void validateYearBefore2100(LocalDateTime startTime, LocalDateTime endTime) throws ReservationTimeException {
+        int maxAllowedYear = 2100;
+        if (startTime.getYear() > maxAllowedYear) {
+            throw new ReservationTimeException(
+                    String.format("StartTime: *%s* is after the allowed year %d", startTime, maxAllowedYear),
+                    ServiceErrorCode.INVALID_TIME_LOGIC
+            );
+        }
+        if (endTime.getYear() > maxAllowedYear) {
+            throw new ReservationTimeException(
+                    String.format("EndTime: *%s* is after the allowed year %d", endTime, maxAllowedYear),
+                    ServiceErrorCode.INVALID_TIME_LOGIC
+            );
         }
     }
 }

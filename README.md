@@ -12,35 +12,35 @@ in CoworkingServiceImpl, ReservationServiceImpl, UserServiceImpl in constructors
 - **File-based (Jackson)**
 
 ```sh
-@Qualifier("fileUserDao")
+@Qualifier("fileUserRepository")
 ```
 ```sh
-@Qualifier("fileReservationDao")
+@Qualifier("fileReservationRepository")
 ```
 ```sh
-@Qualifier("fileCoworkingDao")
+@Qualifier("fileCoworkingRepository")
 ```
 
 - **JDBC** 
 ```sh
-@Qualifier("jdbcUserDao")
+@Qualifier("jdbcUserRepository")
 ```
 ```sh
-@Qualifier("jdbcReservationDao")
+@Qualifier("jdbcReservationRepository")
 ```
 ```sh
-@Qualifier("jdbcCoworkingDao")
+@Qualifier("jdbcCoworkingRepository")
 ```
 
 - **JPA (Hibernate)**
 ```sh
-@Qualifier("jpaUserDao")
+@Qualifier("jpaUserRepository")
 ```
 ```sh
-@Qualifier("jpaReservationDao")
+@Qualifier("jpaReservationRepository")
  ```
 ```sh
-@Qualifier("jpaCoworkingDao")
+@Qualifier("jpaCoworkingRepository")
  ```
 ---
 
@@ -58,15 +58,6 @@ reservation.path=reservations.json
 ```sh
 mvn clean install
 ```
-3. Navigate to the target directory:
-```sh
-cd ui/target
-```
-4. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
-```
-
 ### 2️⃣ JDBC
 Configuration Steps:
 1. Create a PostgreSQL database named:
@@ -79,16 +70,6 @@ coworking_reservation_app
  ```sh
 mvn clean install
 ```
-5. Navigate to the target directory:
-```sh
-cd ui/target
-```
-6. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
-
-```
-
 ### 3️⃣ JPA (Hibernate)
 Configuration Steps:
 1. Create a PostgreSQL database named:
@@ -111,12 +92,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
 <persistence-unit name="coworking-space-reservation_db">
-<class>org.example.coworking.model.User</class>
-<class>org.example.coworking.model.Admin</class>
-<class>org.example.coworking.model.Customer</class>
-<class>org.example.coworking.model.CoworkingSpace</class>
-<class>org.example.coworking.model.Facility</class>
-<class>org.example.coworking.model.Reservation</class>
+<class>org.example.coworking.entity.User</class>
+<class>org.example.coworking.entity.Admin</class>
+<class>org.example.coworking.entity.Customer</class>
+<class>org.example.coworking.entity.CoworkingSpace</class>
+<class>org.example.coworking.entity.Facility</class>
+<class>org.example.coworking.entity.Reservation</class>
 <properties>
 <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
 <property name="jakarta.persistence.jdbc.url" value="***"/>
@@ -137,11 +118,77 @@ https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
  ```sh
 mvn clean install
 ```
-6. Navigate to the target directory:
+### 3️⃣  Running the application
+1. Copy war from target directory:
 ```sh
 cd ui/target
 ```
-7. Run the application:
+2. Create web app archive in project structure.
+3. Add tomcat local server (edit configuration). Add archive into it.
+4. Copy war, coworking_places.json, reservations.json, users.json and place into webapps folder in TomCat.
+5. Run the application using TomCat.
+
+### List of endpoints:
+
+🏢 GET all Coworkings -
+http://localhost:8080/coworking_space_reservation_1/api/coworking-spaces
+
+📭 POST add a Coworking
+http://localhost:8080/coworking_space_reservation_1/api/coworking-spaces
+##### body:
+ ```sh
+{
+"adminId": 1,
+"price": 44.0,
+"coworkingType": "CO_LIVING",
+"facilities": [
+"PRINTER",
+"CONDITIONING"
+]
+}
+ ```
+❌ DELETE a Coworking
+http://localhost:8080/coworking_space_reservation_1/api/coworking-spaces/*?adminId=1
+ ```sh
+ instead of * - coworking id
+ instead of 1 - admin id
+  ```
+✅ POST authorization
+http://localhost:8080/coworking_space_reservation_1/auth/login
+##### body:
 ```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
+{
+"username": "c",
+"password": "3",
+"role": "CUSTOMER"
+}
 ```
+📎 POST Reservation
+http://localhost:8080/coworking_space_reservation_1/api/reservations
+##### body:
+```sh
+{
+"customerId": 2,
+"adminId": 1,
+"startTime": "2029-12-01 01:01",
+"endTime": "2031-12-02 01:01",
+"coworkingSpaceId": 26
+}
+```
+❌ DELETE Reservation
+http://localhost:8080/coworking_space_reservation_1/api/reservations/*?customerId=2
+```sh
+ instead of * - reservation id
+ instead of 2 - customer id
+  ```
+🗒 GET Reservations by adminId
+http://localhost:8080/coworking_space_reservation_1/api/reservations/admin?adminId=1
+```sh
+ instead of 1 - admin id
+  ```
+
+📙 GET Reservations by customerId
+http://localhost:8080/coworking_space_reservation_1/api/reservations/customer?customerId=2
+```sh
+ instead of 2 - customer id
+  ```

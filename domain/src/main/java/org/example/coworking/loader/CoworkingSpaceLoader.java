@@ -1,6 +1,6 @@
 package org.example.coworking.loader;
 
-import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.entity.CoworkingSpace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -16,7 +16,6 @@ public class CoworkingSpaceLoader extends AbstractLoaderImpl<CoworkingSpace> {
         super();
         this.filePath = filePath;
     }
-
 
     @Override
     protected String getFilepath() {

@@ -4,8 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ui</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>coworking_space_reservation</artifactId>
+    <version>1</version>
+
+    <packaging>war</packaging>
 
     <parent>
         <groupId>org.example</groupId>
@@ -21,6 +23,25 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>5.3.39</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.2.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -30,8 +51,10 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
                 <executions>
+
+                    <!-- Первая задача: скопировать *.json в target/ -->
                     <execution>
-                        <id>copy-resources</id>
+                        <id>copy-json-resources</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -40,47 +63,40 @@
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../domain/src/main/resources
-                                    </directory>
+                                    <directory>${project.basedir}/../domain/src/main/resources</directory>
                                     <includes>
                                         <include>*.json</include>
-                                        <include>log4j2.xml</include>
-                                        <include>schema.sql</include>
-                                        <include>application.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
+                    <!-- Вторая задача: скопировать log4j2.xml в classes/ -->
                     <execution>
-                        <phase>package</phase>
+                        <id>copy-log4j-config</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.example.Main</mainClass>
-                                </transformer>
-                            </transformers>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../domain/src/main/resources</directory>
+                                    <includes>
+                                        <include>log4j2.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
+
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>

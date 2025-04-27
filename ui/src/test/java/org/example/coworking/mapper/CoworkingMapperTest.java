@@ -1,83 +1,77 @@
 package org.example.coworking.mapper;
 
-import org.example.coworking.model.exception.CoworkingTypeIndexException;
-import org.example.coworking.model.exception.FacilityTypeIndexException;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
+import org.example.coworking.dto.CoworkingSpaceDto;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.entity.CoworkingType;
+import org.example.coworking.entity.Facility;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class CoworkingMapperTest {
-    private static final CoworkingMapper coworkingMapper = new CoworkingMapper();
+public class CoworkingMapperTest {
+
+    private final CoworkingMapper coworkingMapper = new CoworkingMapper();
 
     @Test
-    public void testGetPrice() {
-        double price = coworkingMapper.getPrice("29.99");
+    public void testDtoToEntity() {
+        CoworkingSpaceDto dto = new CoworkingSpaceDto();
+        dto.setAdminId(42L);
+        dto.setPrice(100.0);
+        dto.setCoworkingType(CoworkingType.CO_LIVING);
+        dto.setFacilities(Set.of(Facility.WIFI, Facility.KITCHEN));
 
-        assertThat(price).isEqualTo(29.99);
-        assertThatThrownBy(() -> coworkingMapper.getPrice("invalid"))
-                .isInstanceOf(NumberFormatException.class);
+        CoworkingSpace entity = coworkingMapper.coworkingSpaceDtoToEntity(dto);
+
+        assertThat(entity.getAdmin().getId()).isEqualTo(42L);
+        assertThat(entity.getPrice()).isEqualTo(100.0);
+        assertThat(entity.getCoworkingType()).isEqualTo(CoworkingType.CO_LIVING);
+        assertThat(entity.getFacilities()).containsExactlyInAnyOrder(Facility.WIFI, Facility.KITCHEN);
     }
 
     @Test
-    public void testGetCoworkingTypeValidInput() throws CoworkingTypeIndexException {
-        assertThat(coworkingMapper.getCoworkingType("0")).isEqualTo(CoworkingType.fromCode(0));
-        assertThat(coworkingMapper.getCoworkingType("1")).isEqualTo(CoworkingType.fromCode(1));
+    public void testEntityToDto() {
+        Admin admin = new Admin();
+        admin.setId(99L);
+
+        CoworkingSpace space = new CoworkingSpace();
+        space.setAdmin(admin);
+        space.setPrice(75.0);
+        space.setCoworkingType(CoworkingType.OPEN_SPACE);
+        space.setFacilities(Set.of(Facility.CONDITIONING, Facility.WIFI));
+
+        CoworkingSpaceDto dto = coworkingMapper.coworkingSpaceToDtoEntity(space);
+
+        assertThat(dto.getAdminId()).isEqualTo(99L);
+        assertThat(dto.getPrice()).isEqualTo(75.0);
+        assertThat(dto.getCoworkingType()).isEqualTo(CoworkingType.OPEN_SPACE);
+        assertThat(dto.getFacilities()).containsExactlyInAnyOrder(Facility.CONDITIONING, Facility.WIFI);
     }
 
     @Test
-    public void testGetCoworkingTypeInvalidInput() {
-        assertThatThrownBy(() -> coworkingMapper.getCoworkingType("20"))
-                .isInstanceOf(CoworkingTypeIndexException.class);
+    public void testListConversion() {
+        Admin admin = new Admin();
+        admin.setId(1L);
 
-        assertThatThrownBy(() -> coworkingMapper.getCoworkingType("-1"))
-                .isInstanceOf(CoworkingTypeIndexException.class);
-    }
+        CoworkingSpace space1 = new CoworkingSpace();
+        space1.setAdmin(admin);
+        space1.setPrice(50.0);
+        space1.setCoworkingType(CoworkingType.CO_LIVING);
+        space1.setFacilities(Set.of(Facility.KITCHEN));
 
-    @Test
-    public void testGetFacilityValidInput() throws FacilityTypeIndexException {
-        Set<Facility> facilities = coworkingMapper.getFacility("0,1,2");
-        assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(
-                        Facility.fromCode(0),
-                        Facility.fromCode(1),
-                        Facility.fromCode(2));
+        CoworkingSpace space2 = new CoworkingSpace();
+        space2.setAdmin(admin);
+        space2.setPrice(70.0);
+        space2.setCoworkingType(CoworkingType.OPEN_SPACE);
+        space2.setFacilities(Set.of(Facility.WIFI));
 
-        facilities = coworkingMapper.getFacility("2,1,0");
-        assertThat(facilities).hasSize(3)
-                .containsExactlyInAnyOrder(
-                        Facility.fromCode(0),
-                        Facility.fromCode(1),
-                        Facility.fromCode(2));
-    }
+        List<CoworkingSpaceDto> dtoList = coworkingMapper.coworkingSpacesToDtoList(List.of(space1, space2));
 
-    @Test
-    public void testGetFacilityEmptyInput() {
-        Set<Facility> facilities = coworkingMapper.getFacility("");
-        assertThat(facilities).isEmpty();
-    }
-
-    @Test
-    public void testGetFacilityInvalidInput() {
-        assertThatThrownBy(() -> coworkingMapper.getFacility("0,10"))
-                .isInstanceOf(FacilityTypeIndexException.class);
-
-        assertThatThrownBy(() -> coworkingMapper.getFacility("1,-1"))
-                .isInstanceOf(FacilityTypeIndexException.class);
-    }
-
-    @Test
-    void testGetFacilityWithDuplicates() throws FacilityTypeIndexException {
-        Set<Facility> facilities = coworkingMapper.getFacility("0,0,1,2,2");
-        assertThat(facilities)
-                .hasSize(3)
-                .containsExactlyInAnyOrder(
-                        Facility.fromCode(0),
-                        Facility.fromCode(1),
-                        Facility.fromCode(2));
+        assertThat(dtoList).hasSize(2);
+        assertThat(dtoList.get(0).getPrice()).isEqualTo(50.0);
+        assertThat(dtoList.get(1).getCoworkingType()).isEqualTo(CoworkingType.OPEN_SPACE);
     }
 }
