@@ -12,14 +12,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("fileUserRepository") UserRepository userRepository) {
+    public UserServiceImpl(@Qualifier("jpaUserRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public <T extends User> T getUserByNamePasswordAndAndRole(String name, String password, Class<T> role) throws EntityNotFoundException {
         return userRepository.getUserByNamePasswordAndRole(name, password, role);
-    }
-    public User getUserById(Long id) throws EntityNotFoundException {
-        return userRepository.getUserById(id);
     }
 }

@@ -51,8 +51,10 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
                 <executions>
+
+                    <!-- Первая задача: скопировать *.json в target/ -->
                     <execution>
-                        <id>copy-resources</id>
+                        <id>copy-json-resources</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -61,22 +63,40 @@
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../domain/src/main/resources
-                                    </directory>
+                                    <directory>${project.basedir}/../domain/src/main/resources</directory>
                                     <includes>
                                         <include>*.json</include>
-                                        <include>log4j2.xml</include>
-                                        <include>schema.sql</include>
-                                        <include>application.properties</include>
                                     </includes>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
+
+                    <!-- Вторая задача: скопировать log4j2.xml в classes/ -->
+                    <execution>
+                        <id>copy-log4j-config</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../domain/src/main/resources</directory>
+                                    <includes>
+                                        <include>log4j2.xml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>

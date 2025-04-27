@@ -83,7 +83,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
             deleteReservationStatement.setLong(1, reservationId);
             deleteReservationStatement.executeUpdate();
-
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while deleting reservation with ID: {}.", reservationId, e);
             throw new DataExcessException(String.format("Database error occurred while deleting reservation with ID: %s.", reservationId), e);
@@ -156,14 +155,12 @@ public class JdbcReservationRepository implements ReservationRepository {
                 Reservation reservation = new Reservation(reservationId, customer, startTime, endTime, coworkingSpace);
                 reservations.add(reservation);
             }
-
         } catch (SQLException e) {
             TECHNICAL_LOGGER.error("Database error occurred while getting all reservations.", e);
             throw new DataExcessException("Database error occurred while getting all reservations.", e);
         }
         return reservations;
     }
-
 
     @Override
     public Set<Reservation> getAllReservationsByCoworking(Long coworkingSpaceId) {
@@ -207,10 +204,11 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> getAllReservationsByCustomer(Long customerId) {
         List<Reservation> reservations = new ArrayList<>();
         String selectReservationsQuery = """
-                SELECT id, coworking_space_id, start_time, end_time
-                FROM public.reservations
-                WHERE customer_id = ?
-                """;
+            SELECT r.id, r.customer_id, r.coworking_space_id, cs.admin_id, r.start_time, r.end_time
+            FROM public.reservations r
+            JOIN public.coworking_spaces cs ON r.coworking_space_id = cs.id
+            WHERE r.customer_id = ?
+        """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement selectReservationStatement = connection.prepareStatement(selectReservationsQuery)) {
@@ -220,14 +218,18 @@ public class JdbcReservationRepository implements ReservationRepository {
             while (reservationResultSet.next()) {
                 Customer customer = new Customer();
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
+                Admin admin = new Admin();
 
                 Long reservationId = reservationResultSet.getLong("id");
                 Long coworkingSpaceId = reservationResultSet.getLong("coworking_space_id");
+                Long adminId = reservationResultSet.getLong("admin_id");
                 LocalDateTime startTime = reservationResultSet.getTimestamp("start_time").toLocalDateTime();
                 LocalDateTime endTime = reservationResultSet.getTimestamp("end_time").toLocalDateTime();
 
                 customer.setId(customerId);
                 coworkingSpace.setId(coworkingSpaceId);
+                admin.setId(adminId);
+                coworkingSpace.setAdmin(admin);
                 reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;
@@ -243,7 +245,7 @@ public class JdbcReservationRepository implements ReservationRepository {
     public List<Reservation> getAllReservationsByAdmin(Long adminId) {
         List<Reservation> reservations = new ArrayList<>();
         String selectReservationsQuery = """
-                SELECT r.id, r.customer_id, r.coworking_space_id, r.start_time, r.end_time
+                SELECT r.id, r.customer_id, r.coworking_space_id, r.start_time, r.end_time, cs.admin_id
                 FROM public.reservations r
                 LEFT JOIN public.coworking_spaces cs ON r.coworking_space_id=cs.id
                 WHERE admin_id = ?
@@ -256,6 +258,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             ResultSet reservationResultSet = selectReservationStatement.executeQuery();
             while (reservationResultSet.next()) {
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
+                Admin admin = new Admin();
                 Customer customer = new Customer();
 
                 Long reservationId = reservationResultSet.getLong("id");
@@ -266,6 +269,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
                 coworkingSpace.setId(coworkingSpaceId);
                 customer.setId(customerId);
+                admin.setId(adminId);
+                coworkingSpace.setAdmin(admin);
                 reservations.add(new Reservation(reservationId, customer, startTime, endTime, coworkingSpace));
             }
             return reservations;

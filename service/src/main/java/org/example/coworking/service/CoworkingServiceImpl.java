@@ -17,7 +17,7 @@ public class CoworkingServiceImpl implements CoworkingService {
     private final CoworkingRepository coworkingRepository;
 
     @Autowired
-    public CoworkingServiceImpl(@Qualifier("fileCoworkingRepository") CoworkingRepository coworkingRepository) {
+    public CoworkingServiceImpl(@Qualifier("jpaCoworkingRepository") CoworkingRepository coworkingRepository) {
         this.coworkingRepository = coworkingRepository;
     }
 

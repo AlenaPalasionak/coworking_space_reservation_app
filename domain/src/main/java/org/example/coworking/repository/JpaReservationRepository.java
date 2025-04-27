@@ -34,7 +34,6 @@ public class JpaReservationRepository implements ReservationRepository {
             transaction.begin();
             entityManager.persist(reservation);
             transaction.commit();
-
         } catch (PersistenceException e) {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -81,7 +80,7 @@ public class JpaReservationRepository implements ReservationRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             Reservation reservation = entityManager.find(Reservation.class, reservationId);
-            if (reservation.equals(null)) {
+            if (reservation == null) {
                 throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
                         reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
             }
@@ -111,7 +110,6 @@ public class JpaReservationRepository implements ReservationRepository {
         } finally {
             entityManager.close();
         }
-
     }
 
     public Set<Reservation> getAllReservationsByCoworking(Long coworkingSpaceId) {
@@ -144,6 +142,8 @@ public class JpaReservationRepository implements ReservationRepository {
             String reservationsQuery = """
                             SELECT r
                             FROM Reservation r
+                            JOIN FETCH r.coworkingSpace cs
+                            JOIN FETCH cs.admin
                             WHERE r.customer.id = :customerId
                     """;
 
@@ -168,6 +168,8 @@ public class JpaReservationRepository implements ReservationRepository {
             String reservationsQuery = """
                             SELECT r
                             FROM Reservation r
+                            JOIN FETCH r.coworkingSpace cs
+                            JOIN FETCH cs.admin
                             WHERE r.coworkingSpace.admin.id = :adminId
                     """;
 
