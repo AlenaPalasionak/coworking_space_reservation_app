@@ -9,6 +9,8 @@ import org.example.coworking.model.exception.CoworkingTypeIndexException;
 import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.service.CoworkingService;
 import org.example.coworking.service.exception.ForbiddenActionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.util.List;
@@ -22,19 +24,19 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * and {@link CoworkingMapper} to load, save, add, delete, and retrieve coworking spaces.
  * It also provides menus for selecting coworking types and facilities and validates user inputs.
  */
+@Component
 public class CoworkingController {
-
     private final CoworkingService coworkingService;
     private final CoworkingMapper coworkingMapper;
 
-    public static final String COWORKING_TYPE_MENU = """
+    public static final String COWORKING_TYPE_OPTIONS = """
             Choose the coworkingSpace type (press only one of the numbers):
             Open Space - 0
             Private Office - 1
             Co Living - 2
             """;
 
-    public static final String FACILITY_MENU = """
+    public static final String FACILITY_OPTIONS = """
             Choose the facilities. Write numbers comma-separated on one line:
             NO Facilities - just press Enter,
             PARKING - 0,
@@ -54,6 +56,7 @@ public class CoworkingController {
      * @param coworkingService the service for managing coworking spaces
      * @param coworkingMapper  the mapper used for mapping inputs to valid coworking types and facilities
      */
+    @Autowired
     public CoworkingController(CoworkingService coworkingService, CoworkingMapper coworkingMapper) {
         this.coworkingService = coworkingService;
         this.coworkingMapper = coworkingMapper;
@@ -88,7 +91,7 @@ public class CoworkingController {
             String coworkingTypeInput;
             try {
                 coworkingTypeInput = InputValidator.getInputSupplier(reader, ANY_NUMBER_PATTERN)
-                        .supplier(COWORKING_TYPE_MENU);
+                        .supplier(COWORKING_TYPE_OPTIONS);
                 coworkingType = coworkingMapper.getCoworkingType(coworkingTypeInput);
                 break;
             } catch (InvalidInputException e) {
@@ -104,7 +107,7 @@ public class CoworkingController {
             String facilityCodesInput;
             try {
                 facilityCodesInput = InputValidator.getInputSupplier(reader, FACILITY_PATTERN)
-                        .supplier(FACILITY_MENU + "\nPlease enter numbers separated by commas.\n");
+                        .supplier(FACILITY_OPTIONS + "\nPlease enter numbers separated by commas.\n");
                 facilities = coworkingMapper.getFacility(facilityCodesInput);
                 break;
             } catch (InvalidInputException e) {

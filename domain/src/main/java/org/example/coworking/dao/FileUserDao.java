@@ -4,6 +4,8 @@ import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -11,10 +13,11 @@ import java.util.Optional;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+@Repository("fileUserDao")
 public class FileUserDao implements UserDao {
     private final Loader<User> userLoader;
     private static List<User> userCache;
-
+    @Autowired
     public FileUserDao(Loader<User> userLoader) {
         this.userLoader = userLoader;
         loadFromJson();

@@ -12,17 +12,13 @@ import java.util.List;
 public interface MenuDao {
 
     /**
-     * Retrieves a list of all menus from the storage.
-     *
-     * @return a list of menus available in the storage.
-     */
-    List<Menu> getMenusFromStorage();
-
-    /**
      * Retrieves a menu by its name.
      *
      * @param name the name of the menu to retrieve.
      * @return an Optional containing the menu if found, or empty if not found.
      */
     Menu getMenuByName(String name) throws MenuNotFoundException;
+
+    List<Menu> getMenus();
+
 }

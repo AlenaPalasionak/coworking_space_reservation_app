@@ -1,18 +1,25 @@
 package org.example.coworking.loader;
 
 import org.example.coworking.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
+@Component
+@PropertySource("classpath:application.properties")
 public class UserLoader extends AbstractLoaderImpl<User> {
 
-        private final String filePath;
+    private final String filePath;
 
-        public UserLoader(String filePath) {
-            super();
-            this.filePath = filePath;
-        }
-
-        @Override
-        protected String getFilepath() {
-            return filePath;
-        }
+    @Autowired
+    public UserLoader(@Value("${user.path}") String filePath) {
+        super();
+        this.filePath = filePath;
     }
+
+    @Override
+    protected String getFilepath() {
+        return filePath;
+    }
+}

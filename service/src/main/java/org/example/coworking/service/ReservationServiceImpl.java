@@ -2,23 +2,31 @@ package org.example.coworking.service;
 
 import org.example.coworking.dao.ReservationDao;
 import org.example.coworking.dao.exception.EntityNotFoundException;
-import org.example.coworking.model.*;
+import org.example.coworking.model.Admin;
+import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.model.Customer;
+import org.example.coworking.model.Reservation;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 import org.example.coworking.service.validator.OccupationTimeValidator;
 import org.example.coworking.service.validator.TimeLogicValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationDao reservationDao;
     private final CoworkingService coworkingService;
     private final TimeLogicValidator timeLogicValidator;
 
-    public ReservationServiceImpl(ReservationDao reservationDao, CoworkingService coworkingService, TimeLogicValidator timeLogicValidator) {
+    @Autowired
+    public ReservationServiceImpl(@Qualifier("jpaReservationDao") ReservationDao reservationDao, CoworkingService coworkingService, TimeLogicValidator timeLogicValidator) {
         this.reservationDao = reservationDao;
         this.coworkingService = coworkingService;
         this.timeLogicValidator = timeLogicValidator;

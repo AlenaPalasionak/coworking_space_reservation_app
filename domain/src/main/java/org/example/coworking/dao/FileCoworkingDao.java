@@ -1,9 +1,13 @@
 package org.example.coworking.dao;
 
+import jakarta.annotation.PreDestroy;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.CoworkingSpace;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -11,13 +15,15 @@ import java.util.stream.Collectors;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+@Repository("fileCoworkingDao")
 public class FileCoworkingDao implements CoworkingDao {
     private static List<CoworkingSpace> coworkingSpacesCache;
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
     private final ReservationDao reservationDao;
 
-    public FileCoworkingDao(Loader<CoworkingSpace> coworkingSpaceLoader, ReservationDao reservationDao) {
+    @Autowired
+    public FileCoworkingDao(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationDao") ReservationDao reservationDao) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
         this.reservationDao = reservationDao;
         loadFromJson();
@@ -72,6 +78,7 @@ public class FileCoworkingDao implements CoworkingDao {
      * any in-memory reservations to disk. The data will be available for
      * loading when the application restarts.
      */
+    @PreDestroy
     public void shutdown() {
         coworkingSpaceLoader.save(coworkingSpacesCache);
     }

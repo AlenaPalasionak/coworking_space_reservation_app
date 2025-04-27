@@ -1,21 +1,27 @@
 package org.example.coworking.dao;
 
-import jakarta.persistence.*;
-import org.example.coworking.config.JpaConfig;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.CoworkingSpace;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+@Repository("jpaCoworkingDao")
 public class JpaCoworkingDao implements CoworkingDao {
     private final EntityManagerFactory entityManagerFactory;
 
-    public JpaCoworkingDao() {
-        this.entityManagerFactory = JpaConfig.getEntityManagerFactory();
+    @Autowired
+    public JpaCoworkingDao(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override

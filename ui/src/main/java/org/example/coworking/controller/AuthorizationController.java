@@ -6,6 +6,8 @@ import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
 import org.example.coworking.service.AuthorizationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 
@@ -17,11 +19,13 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * It validates the user's input for name and password, and then attempts to authenticate the user.
  * If authentication fails, the user is prompted to enter the credentials again.
  */
+@Component
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
     private static final String USER_NAME_PATTERN = "^[a-zA-Zа-яА-Я0-9]{1,20}$";
     private static final String USER_PASSWORD_PATTERN = "^[a-zA-Zа-яА-Я0-9]{1,20}$";
 
+    @Autowired
     public AuthorizationController(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
     }
@@ -54,7 +58,6 @@ public class AuthorizationController {
                 T user = authorizationService.authenticate(nameInput, passwordInput, role);
                 USER_OUTPUT_LOGGER.info("You have successfully logged in.");
                 return user;
-
             } catch (EntityNotFoundException e) {
                 USER_OUTPUT_LOGGER.warn(e.getErrorCode());
                 TECHNICAL_LOGGER.warn(e.getMessage());

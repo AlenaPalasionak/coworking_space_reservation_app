@@ -5,6 +5,7 @@ import org.example.coworking.model.exception.FacilityTypeIndexException;
 import org.example.coworking.model.exception.EnumErrorCode;
 import org.example.coworking.model.CoworkingType;
 import org.example.coworking.model.Facility;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
  * The CoworkingMapper class is responsible for converting input data (such as strings) into
  * corresponding values of various enumerations and data types related to coworking spaces.
  */
+@Component
 public class CoworkingMapper {
 
     /**

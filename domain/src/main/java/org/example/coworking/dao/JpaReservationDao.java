@@ -1,11 +1,15 @@
 package org.example.coworking.dao;
 
-import jakarta.persistence.*;
-import org.example.coworking.config.JpaConfig;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 import org.example.coworking.dao.exception.DaoErrorCode;
 import org.example.coworking.dao.exception.DataExcessException;
 import org.example.coworking.dao.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
@@ -13,11 +17,13 @@ import java.util.TreeSet;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
+@Repository("jpaReservationDao")
 public class JpaReservationDao implements ReservationDao {
     private final EntityManagerFactory entityManagerFactory;
 
-    public JpaReservationDao() {
-        this.entityManagerFactory = JpaConfig.getEntityManagerFactory();
+    @Autowired
+    public JpaReservationDao(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override

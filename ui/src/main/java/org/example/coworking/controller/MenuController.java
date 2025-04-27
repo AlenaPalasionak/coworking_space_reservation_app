@@ -1,10 +1,10 @@
 package org.example.coworking.controller;
 
 import org.example.coworking.dao.exception.MenuNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.Customer;
 import org.example.coworking.model.Menu;
 import org.example.coworking.service.MenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,25 +18,15 @@ import static org.example.coworking.logger.Log.USER_OUTPUT_LOGGER;
  * to display menus, process user choices, and perform actions like adding, deleting coworking spaces,
  * making reservations, and logging out.
  */
+@Component
 public class MenuController {
     private final MenuService menuService;
-    private static final String LOG_OUT = "2";
-    private static final String ADD_COWORKING_SPACE = "1";
-    private static final String DELETE_COWORKING_SPACE = "2";
-    private static final String GET_ALL_RESERVATIONS = "3";
-    private static final String GET_AVAILABLE_COWORKING_SPACES = "1";
-    private static final String ADD_RESERVATION = "2";
-    private static final String GET_RESERVATIONS = "3";
-    private static final String DELETE_RESERVATION = "4";
-    private static final String ADMIN_MENU_KEY = "Admin Menu";
-    private static final String CUSTOMER_MENU_KEY = "Customer Menu";
-    private static final String NEXT_STEP_MENU_KEY = "Next Step Menu";
 
     /**
-     * Constructs a {@code MenuController} with the given {@code MenuService}.
-     *
-     * @param menuService The service used to retrieve and manage menu data.
+     * Constructs a {@code MenuController} with required controllers and menu service.
+     * @param menuService provides menu data
      */
+    @Autowired
     public MenuController(MenuService menuService) {
         this.menuService = menuService;
     }
@@ -73,13 +63,6 @@ public class MenuController {
     }
 
     /**
-     * Loads the menus from storage.
-     */
-    public void getMenusFromStorage() {
-        menuService.getMenusFromStorage();
-    }
-
-    /**
      * Retrieves a menu by its name.
      *
      * @param name The name of the menu to retrieve.
@@ -94,80 +77,5 @@ public class MenuController {
             TECHNICAL_LOGGER.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    /**
-     * Handles the flow for the admin user, allowing them to perform actions like adding and deleting coworking spaces,
-     * and viewing reservations.
-     *
-     * @param authorizationController The controller used for user authentication.
-     * @param menuController          The controller used to handle menus.
-     * @param coworkingController     The controller used to manage coworking spaces.
-     * @param reservationController   The controller used to manage reservations.
-     * @param reader                  The {@code BufferedReader} used to read user input.
-     * @throws IOException If an I/O error occurs during user interaction.
-     */
-    public void handleAdminFlow(AuthorizationController authorizationController, MenuController menuController,
-                                CoworkingController coworkingController, ReservationController reservationController,
-                                BufferedReader reader) throws IOException {
-        Admin admin = authorizationController.authenticate(reader, Admin.class);
-        boolean logOut = false;
-        while (!logOut) {
-            Menu adminMenu = menuController.getMenuByName(ADMIN_MENU_KEY);
-            menuController.showMenu(adminMenu.getMenuName());
-            String adminOptionChoice = menuController.getUserChoice(reader, adminMenu);
-            switch (adminOptionChoice) {
-                case ADD_COWORKING_SPACE -> coworkingController.add(reader, admin);
-                case DELETE_COWORKING_SPACE -> coworkingController.delete(reader, admin);
-                case GET_ALL_RESERVATIONS -> reservationController.getAllReservationsByAdmin(admin);
-            }
-            logOut = shouldLogOut(menuController, reader);
-        }
-    }
-
-    /**
-     * Handles the flow for the customer user, allowing them to perform actions like viewing available coworking spaces,
-     * adding and managing reservations.
-     *
-     * @param authorizationController The controller used for user authentication.
-     * @param menuController          The controller used to handle menus.
-     * @param coworkingController     The controller used to manage coworking spaces.
-     * @param reservationController   The controller used to manage reservations.
-     * @param reader                  The {@code BufferedReader} used to read customer input.
-     * @throws IOException If an I/O error occurs during user interaction.
-     */
-    public void handleCustomerFlow(AuthorizationController authorizationController, MenuController menuController,
-                                   CoworkingController coworkingController, ReservationController reservationController,
-                                   BufferedReader reader) throws IOException {
-        Customer customer = authorizationController.authenticate(reader, Customer.class);
-        boolean logOut = false;
-        while (!logOut) {
-            Menu customerMenu = menuController.getMenuByName(CUSTOMER_MENU_KEY);
-            menuController.showMenu(customerMenu.getMenuName());
-            String customerOptionChoice = menuController.getUserChoice(reader, customerMenu);
-            switch (customerOptionChoice) {
-                case GET_AVAILABLE_COWORKING_SPACES -> coworkingController.getAllSpaces();
-                case ADD_RESERVATION -> reservationController.add(reader, customer);
-                case GET_RESERVATIONS -> reservationController.getAllReservationsByCustomer(customer);
-                case DELETE_RESERVATION -> reservationController.delete(reader, customer);
-            }
-            logOut = shouldLogOut(menuController, reader);
-        }
-    }
-
-    /**
-     * Prompts the user with the next step options (log out or stay) and returns a boolean indicating whether the user
-     * should log out.
-     *
-     * @param menuController The controller used to handle menus.
-     * @param reader         The {@code BufferedReader} used to read user input.
-     * @return {@code true} if the user chose to log out, {@code false} otherwise.
-     * @throws IOException If an I/O error occurs during user interaction.
-     */
-    private boolean shouldLogOut(MenuController menuController, BufferedReader reader) throws IOException {
-        Menu nextStepMenu = menuController.getMenuByName(NEXT_STEP_MENU_KEY);
-        menuController.showMenu(nextStepMenu.getMenuName());
-        String nextStep = menuController.getUserChoice(reader, nextStepMenu);
-        return nextStep.equals(LOG_OUT);
     }
 }

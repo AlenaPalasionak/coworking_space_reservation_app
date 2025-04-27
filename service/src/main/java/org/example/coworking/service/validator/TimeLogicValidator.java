@@ -2,10 +2,12 @@ package org.example.coworking.service.validator;
 
 import org.example.coworking.service.exception.ReservationTimeException;
 import org.example.coworking.service.exception.ServiceErrorCode;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Component
 public class TimeLogicValidator {
     private static final long MIN_HOURS_DURATION = 1;
 

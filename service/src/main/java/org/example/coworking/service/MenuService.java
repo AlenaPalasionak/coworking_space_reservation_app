@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
-import org.example.coworking.model.Menu;
 import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.model.Menu;
 
 import java.util.List;
 
@@ -11,13 +11,6 @@ import java.util.List;
  * and find menus by their name.
  */
 public interface MenuService {
-
-    /**
-     * Retrieves all menus stored in the system.
-     *
-     * @return a list of {@link Menu} objects representing all the menus in storage
-     */
-    List<Menu> getMenusFromStorage();
 
     /**
      * Retrieves the text representation of a menu based on its name.
@@ -44,4 +37,5 @@ public interface MenuService {
      * @throws MenuNotFoundException if no menu with the given name is found
      */
     Menu getMenuByName(String name) throws MenuNotFoundException;
+    List<Menu> getMenus();
 }
