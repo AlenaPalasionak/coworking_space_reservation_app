@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackages = {
         "org.example.coworking.config",
         "org.example.coworking.repository",
-        "org.example.coworking.loader",
 })
-public class DaoConfig {
+public class ReservationConfig {
 }

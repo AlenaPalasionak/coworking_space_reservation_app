@@ -1,10 +1,7 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.ReservationDto;
-import org.example.coworking.entity.Admin;
-import org.example.coworking.entity.CoworkingSpace;
-import org.example.coworking.entity.Customer;
-import org.example.coworking.entity.Reservation;
+import org.example.coworking.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -19,10 +16,10 @@ public class ReservationMapper {
         reservation.setStartTime(dto.getStartTime());
         reservation.setEndTime(dto.getEndTime());
 
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(dto.getAdminId());
 
-        Customer customer = new Customer();
+        User customer = new User();
         customer.setId(dto.getCustomerId());
         reservation.setCustomer(customer);
 

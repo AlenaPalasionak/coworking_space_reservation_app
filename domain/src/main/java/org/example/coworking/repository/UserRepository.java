@@ -1,24 +1,10 @@
 package org.example.coworking.repository;
 
-import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- * This interface defines the data access operations for the {@link User} model.
- * It provides a method for loading a list of users from the data storage.
- */
-public interface UserRepository {
+import java.util.Optional;
 
-    /**
-     * Finds a user by name, password, and role.
-     *
-     * @param name     the username
-     * @param password the password
-     * @param role     the user role class
-     * @return the found {@link User}
-     * @throws EntityNotFoundException if no user matches the criteria
-     */
-    <T extends User> T getUserByNamePasswordAndRole(String name, String password, Class<T> role) throws EntityNotFoundException;
-
-    User getUserById(Long id) throws EntityNotFoundException;
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByName(String name);
 }

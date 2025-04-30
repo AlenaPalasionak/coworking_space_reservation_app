@@ -14,5 +14,4 @@ public enum CoworkingType {
     public int getCode() {
         return code;
     }
-
 }

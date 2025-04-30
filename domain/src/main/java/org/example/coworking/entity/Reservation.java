@@ -21,7 +21,7 @@ public class Reservation implements Comparable<Reservation> {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private User customer;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "start_time")
     private LocalDateTime startTime;
@@ -32,14 +32,14 @@ public class Reservation implements Comparable<Reservation> {
     @JoinColumn(name = "coworking_space_id", nullable = false)
     private CoworkingSpace coworkingSpace;
 
-    public Reservation(Customer customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
+    public Reservation(User customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
         this.customer = customer;
         this.startTime = startTime;
         this.endTime = endTime;
         this.coworkingSpace = coworkingSpace;
     }
 
-    public Reservation(Long id, Customer customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
+    public Reservation(Long id, User customer, LocalDateTime startTime, LocalDateTime endTime, CoworkingSpace coworkingSpace) {
         this.id = id;
         this.customer = customer;
         this.startTime = startTime;

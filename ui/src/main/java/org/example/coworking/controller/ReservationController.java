@@ -2,11 +2,10 @@ package org.example.coworking.controller;
 
 import jakarta.validation.Valid;
 import org.example.coworking.dto.ReservationDto;
+import org.example.coworking.entity.Reservation;
+import org.example.coworking.entity.User;
 import org.example.coworking.mapper.ReservationMapper;
 import org.example.coworking.mapper.UserMapper;
-import org.example.coworking.entity.Admin;
-import org.example.coworking.entity.Customer;
-import org.example.coworking.entity.Reservation;
 import org.example.coworking.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,31 +28,31 @@ public class ReservationController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping("/reservations")
+    @PostMapping("/reservations")//only for CUSTOMER
     public ResponseEntity<Void> add(@Valid @RequestBody ReservationDto reservationDto) {
         Reservation reservation = reservationMapper.reservationDtoToEntity(reservationDto);
         reservationService.add(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("reservations/{id}")
+    @DeleteMapping("reservations/{id}")//only for CUSTOMER
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id, @Valid @RequestParam Long customerId) {
-        Customer customer = userMapper.getCustomerEntity(customerId);
+        User customer = userMapper.getUserEntity(customerId);
         reservationService.delete(customer, id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/reservations/admin")
+    @GetMapping("/reservations/admin")//only for ADMIN
     public ResponseEntity<List<ReservationDto>> getAllReservationsByAdmin(@RequestParam Long adminId) {
-        Admin admin = userMapper.getAdminEntity(adminId);
+        User admin = userMapper.getUserEntity(adminId);
         List<Reservation> reservations = reservationService.getAllReservationsByAdmin(admin);
         List<ReservationDto> reservationDtoList = reservationMapper.reservationEntitiesToDtoList(reservations);
         return ResponseEntity.ok(reservationDtoList);
     }
 
-    @GetMapping("/reservations/customer")
+    @GetMapping("/reservations/customer")//only for CUSTOMER
     public ResponseEntity<List<ReservationDto>> getAllReservationsByCustomer(@RequestParam Long customerId) {
-        Customer customer = userMapper.getCustomerEntity(customerId);
+        User customer = userMapper.getUserEntity(customerId);
         List<Reservation> reservations = reservationService.getAllReservationsByCustomer(customer);
         List<ReservationDto> reservationDtoList = reservationMapper.reservationEntitiesToDtoList(reservations);
         return ResponseEntity.ok(reservationDtoList);

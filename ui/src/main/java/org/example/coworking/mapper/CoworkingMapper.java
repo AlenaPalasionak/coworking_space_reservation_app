@@ -1,8 +1,8 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.CoworkingSpaceDto;
-import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class CoworkingMapper {
 
     public CoworkingSpace coworkingSpaceDtoToEntity(CoworkingSpaceDto dto) {
         CoworkingSpace coworkingSpace = new CoworkingSpace();
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(dto.getAdminId());
         coworkingSpace.setAdmin(admin);
         coworkingSpace.setPrice(dto.getPrice());

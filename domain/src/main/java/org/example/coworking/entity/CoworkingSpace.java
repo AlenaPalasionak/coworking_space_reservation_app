@@ -20,7 +20,7 @@ public class CoworkingSpace {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin;
+    private User admin;
     @Column(nullable = false)
     private double price;
     @Enumerated(EnumType.STRING)
@@ -35,7 +35,7 @@ public class CoworkingSpace {
     @Enumerated(EnumType.STRING)
     private Set<Facility> facilities;
 
-    public CoworkingSpace(Admin admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
+    public CoworkingSpace(User admin, double price, CoworkingType coworkingType, Set<Facility> facilities) {
         this.admin = admin;
         this.price = price;
         this.coworkingType = coworkingType;

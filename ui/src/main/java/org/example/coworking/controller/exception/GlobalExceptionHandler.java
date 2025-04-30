@@ -1,7 +1,7 @@
 package org.example.coworking.controller.exception;
 
 import jakarta.validation.ValidationException;
-import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.CustomDataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
@@ -42,8 +42,8 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body("Entity not found: " + exception.getMessage());
     }
-    @ExceptionHandler(DataExcessException.class)
-    public ResponseEntity<String> handleDataExcessException(DataExcessException exception) {
+    @ExceptionHandler(CustomDataExcessException.class)
+    public ResponseEntity<String> handleDataExcessException(CustomDataExcessException exception) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Data excess error: " + exception.getMessage());

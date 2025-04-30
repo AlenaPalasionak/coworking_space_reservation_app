@@ -1,9 +1,8 @@
 package org.example.coworking.service;
 
-import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.entity.Admin;
-import org.example.coworking.entity.Customer;
 import org.example.coworking.entity.Reservation;
+import org.example.coworking.entity.User;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
 
@@ -32,7 +31,7 @@ public interface ReservationService {
      * @throws ForbiddenActionException if the user is not allowed to delete the reservation
      * @throws EntityNotFoundException  if the reservation with the given ID is not found
      */
-    void delete(Customer customer, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
+    void delete(User customer, Long reservationId) throws ForbiddenActionException, EntityNotFoundException;
 
     /**
      * Retrieves a reservation by its ID.
@@ -41,7 +40,7 @@ public interface ReservationService {
      * @return the {@link Reservation} object associated with the given ID
      * @throws EntityNotFoundException if no reservation with the given ID is found
      */
-    Reservation getById(Long reservationId) throws EntityNotFoundException;
+    Reservation findById(Long reservationId) throws EntityNotFoundException;
 
     /**
      * Retrieves all reservations associated with the specified user.
@@ -49,7 +48,7 @@ public interface ReservationService {
      * @param customer the user whose reservations are to be retrieved
      * @return a list of {@link Reservation} objects associated with the user
      */
-    List<Reservation> getAllReservationsByCustomer(Customer customer);
+    List<Reservation> getAllReservationsByCustomer(User customer);
 
     /**
      * Retrieves all reservations associated with the specified user.
@@ -58,7 +57,7 @@ public interface ReservationService {
      * @return a list of {@link Reservation} objects associated with the user
      */
 
-    List<Reservation> getAllReservationsByAdmin(Admin admin);
+    List<Reservation> getAllReservationsByAdmin(User admin);
 
     /**
      * Retrieves all reservation periods for a specific coworking space.

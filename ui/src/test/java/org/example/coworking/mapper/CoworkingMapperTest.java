@@ -1,10 +1,10 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.CoworkingSpaceDto;
-import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
 import org.example.coworking.entity.CoworkingType;
 import org.example.coworking.entity.Facility;
+import org.example.coworking.entity.User;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class CoworkingMapperTest {
 
     @Test
     public void testEntityToDto() {
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(99L);
 
         CoworkingSpace space = new CoworkingSpace();
@@ -53,7 +53,7 @@ public class CoworkingMapperTest {
 
     @Test
     public void testListConversion() {
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(1L);
 
         CoworkingSpace space1 = new CoworkingSpace();

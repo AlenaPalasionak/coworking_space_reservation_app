@@ -1,10 +1,9 @@
 package org.example.coworking.mapper;
 
 import org.example.coworking.dto.ReservationDto;
-import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
-import org.example.coworking.entity.Customer;
 import org.example.coworking.entity.Reservation;
+import org.example.coworking.entity.User;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -34,10 +33,10 @@ public class ReservationMapperTest {
 
     @Test
     public void testReservationEntityToDto() {
-        Customer customer = new Customer();
+        User customer = new User();
         customer.setId(5L);
 
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(10L);
 
         CoworkingSpace space = new CoworkingSpace();
@@ -64,10 +63,10 @@ public class ReservationMapperTest {
 
     @Test
     public void testReservationEntitiesToDtoList() {
-        Customer customer = new Customer();
+        User customer = new User();
         customer.setId(3L);
 
-        Admin admin = new Admin();
+        User admin = new User();
         admin.setId(5L);
 
         CoworkingSpace space = new CoworkingSpace();

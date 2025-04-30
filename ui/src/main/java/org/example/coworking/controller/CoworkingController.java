@@ -2,8 +2,8 @@ package org.example.coworking.controller;
 
 import jakarta.validation.Valid;
 import org.example.coworking.dto.CoworkingSpaceDto;
-import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.entity.User;
 import org.example.coworking.mapper.CoworkingMapper;
 import org.example.coworking.mapper.UserMapper;
 import org.example.coworking.service.CoworkingService;
@@ -28,23 +28,23 @@ public class CoworkingController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping("/coworking-spaces")
+    @PostMapping("/coworking-spaces")//only for ADMIN
     public ResponseEntity<Void> add(@Valid @RequestBody CoworkingSpaceDto coworkingSpaceDto) {
         CoworkingSpace coworkingSpace = coworkingMapper.coworkingSpaceDtoToEntity(coworkingSpaceDto);
-        coworkingService.add(coworkingSpace);
+        coworkingService.save(coworkingSpace);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/coworking-spaces/{id}")
+    @DeleteMapping("/coworking-spaces/{id}")//only for ADMIN
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id, @RequestParam Long adminId) {
-        Admin admin = userMapper.getAdminEntity(adminId);
+        User admin = userMapper.getUserEntity(adminId);
         coworkingService.delete(admin, id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/coworking-spaces")
-    public ResponseEntity<List<CoworkingSpaceDto>> getAllSpaces() {
-        List<CoworkingSpace> coworkingSpaces = coworkingService.getAll();
+    public ResponseEntity<List<CoworkingSpaceDto>> getAllSpaces() {//FOR ALL
+        List<CoworkingSpace> coworkingSpaces = coworkingService.findAll();
         List<CoworkingSpaceDto> coworkingSpaceDtoList = coworkingMapper.coworkingSpacesToDtoList(coworkingSpaces);
         return ResponseEntity.ok(coworkingSpaceDtoList);
     }
