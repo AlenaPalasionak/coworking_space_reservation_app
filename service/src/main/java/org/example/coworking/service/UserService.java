@@ -1,20 +1,28 @@
 package org.example.coworking.service;
 
-import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.User;
+import org.example.coworking.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-/**
- * This interface defines the operations for managing users in the system.
- * It provides a method to load users from a data source.
- */
-public interface UserService {
+@Service
+public class UserService implements UserDetailsService {
 
-    /**
-     * Retrieves a user by their id.
+    private final UserRepository userRepository;
 
-     * @return the authenticated {@code User} instance
-     * @throws EntityNotFoundException if the user is not found or credentials are incorrect
-     */
-    User findUserById(Long id) throws EntityNotFoundException;
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        return new SecurityUserDetails(user);
+    }
+}
 

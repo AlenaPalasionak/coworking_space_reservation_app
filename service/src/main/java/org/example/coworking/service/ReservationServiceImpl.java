@@ -39,7 +39,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void add(Reservation reservation) throws ReservationTimeException, EntityNotFoundException {
-
         LocalDateTime startTime = reservation.getStartTime();
         LocalDateTime endTime = reservation.getEndTime();
         Long coworkingSpaceId = reservation.getCoworkingSpace().getId();
@@ -53,6 +52,8 @@ public class ReservationServiceImpl implements ReservationService {
             reservationRepository.save(reservation);
         } catch (DataAccessException e) {
             TECHNICAL_LOGGER.error("Database error occurred while creating a new Reservation: {}", reservation, e);
+            throw new CustomDataExcessException(String.format("Database error while creating a new Reservation:: %s",
+                    reservation), e);
         }
     }
 
@@ -68,17 +69,21 @@ public class ReservationServiceImpl implements ReservationService {
             } catch (DataAccessException e) {
                 TECHNICAL_LOGGER.error("Database error occurred while deleting Reservation with ID: {}.",
                         reservationId, e);
+                throw new CustomDataExcessException(String.format("Database error occurred while deleting Reservation with ID: %d.",
+                        reservationId), e);
             }
         }
     }
 
     @Override
     public Reservation findById(Long reservationId) throws EntityNotFoundException {
-        Optional<Reservation> possibleReservation = Optional.empty();
+        Optional<Reservation> possibleReservation;
         try {
             possibleReservation = reservationRepository.findById(reservationId);
         } catch (DataAccessException e) {
             TECHNICAL_LOGGER.error("Database error while getting Reservation by ID: {}", reservationId, e);
+            throw new CustomDataExcessException(String.format("Database error while getting Reservation by ID: %d",
+                    reservationId), e);
         }
         if (possibleReservation.isEmpty()) {
             throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
