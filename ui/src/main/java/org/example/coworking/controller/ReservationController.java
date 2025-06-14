@@ -2,7 +2,7 @@ package org.example.coworking.controller;
 
 import org.example.coworking.controller.exception.InvalidInputException;
 import org.example.coworking.controller.validator.InputValidator;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.mapper.ReservationMapper;
 import org.example.coworking.model.*;
 import org.example.coworking.service.CoworkingService;

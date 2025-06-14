@@ -1,8 +1,8 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -16,12 +16,12 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Coworking object
  */
-@Repository("jdbcCoworkingDao")
-public class JdbcCoworkingDao implements CoworkingDao {
+@Repository("jdbcCoworkingRepository")
+public class JdbcCoworkingRepository implements CoworkingRepository {
     private final DataSource dataSource;
 
     @Autowired
-    public JdbcCoworkingDao(DataSource dataSource) {
+    public JdbcCoworkingRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -113,7 +113,7 @@ public class JdbcCoworkingDao implements CoworkingDao {
             try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
                 if (!coworkingResultSet.next()) {
                     throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d"
-                            , coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                            , coworkingId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
                 }
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
                 Long adminId;

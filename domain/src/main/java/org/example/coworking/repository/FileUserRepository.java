@@ -1,7 +1,7 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +13,12 @@ import java.util.Optional;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("fileUserDao")
-public class FileUserDao implements UserDao {
+@Repository("fileUserRepository")
+public class FileUserRepository implements UserRepository {
     private final Loader<User> userLoader;
     private static List<User> userCache;
     @Autowired
-    public FileUserDao(Loader<User> userLoader) {
+    public FileUserRepository(Loader<User> userLoader) {
         this.userLoader = userLoader;
         loadFromJson();
     }
@@ -31,7 +31,7 @@ public class FileUserDao implements UserDao {
                         user.getClass().equals(role))
                 .findFirst();
         if (possibleUser.isEmpty()) {
-            throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException("Failure to find user with the name: " + name, RepositoryErrorCode.USER_IS_NOT_FOUND);
         } else {
             return role.cast(possibleUser.get());
         }

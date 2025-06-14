@@ -15,11 +15,11 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class JdbcConfig {
-    @Value("${database.url}")
+    @Value("${datasource.url}")
     String url;
-    @Value("${database.username}")
+    @Value("${datasource.username}")
     String username;
-    @Value("${database.password}")
+    @Value("${datasource.password}")
     String password;
     @Value("${hikari.maximumPoolSize}")
     int maximumPoolSize;

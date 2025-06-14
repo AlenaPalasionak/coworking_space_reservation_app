@@ -1,6 +1,6 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Interface for managing menus.
  * Provides methods to retrieve menus from storage.
  */
-public interface MenuDao {
+public interface MenuRepository {
 
     /**
      * Retrieves a menu by its name.

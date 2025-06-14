@@ -1,8 +1,8 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.MenuDao;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.repository.MenuRepository;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MenuServiceImplTest {
     @Mock
-    private MenuDao menuDao;
+    private MenuRepository menuRepository;
     @InjectMocks
     private MenuServiceImpl menuService;
 
@@ -28,18 +28,18 @@ class MenuServiceImplTest {
                 new Menu("Welcome Menu", "Main menu text", new String[]{"1", "2"}),
                 new Menu("Admin Menu", "Admin Menu text", new String[]{"A", "B"})
         );
-        when(menuDao.getMenus()).thenReturn(expectedMenus);
+        when(menuRepository.getMenus()).thenReturn(expectedMenus);
 
         List<Menu> actualMenus = menuService.getMenus();
 
         assertEquals(expectedMenus, actualMenus);
-        verify(menuDao, times(1)).getMenus();
+        verify(menuRepository, times(1)).getMenus();
     }
 
     @Test
     void testGetMenuTextByMenuNameReturnsCorrectText() {
         Menu menu = new Menu("Welcome Menu", "Welcome menu text", new String[]{"1", "2"});
-        when(menuDao.getMenus()).thenReturn(List.of(menu));
+        when(menuRepository.getMenus()).thenReturn(List.of(menu));
 
         String menuText = menuService.getMenuTextByMenuName("Welcome Menu");
 
@@ -48,7 +48,7 @@ class MenuServiceImplTest {
 
     @Test
     void testGetMenuTextByMenuNameReturnsNotFoundMessage() {
-        when(menuDao.getMenus()).thenReturn(List.of());
+        when(menuRepository.getMenus()).thenReturn(List.of());
 
         String menuText = menuService.getMenuTextByMenuName("Non Existing Menu");
 
@@ -74,7 +74,7 @@ class MenuServiceImplTest {
     @Test
     void testGetMenuByNameReturnsMenu() throws MenuNotFoundException {
         Menu expectedMenu = new Menu("Welcome menu", "Welcome menu text", new String[]{"1", "2"});
-        when(menuDao.getMenuByName("Welcome menu")).thenReturn(expectedMenu);
+        when(menuRepository.getMenuByName("Welcome menu")).thenReturn(expectedMenu);
 
         Menu actualMenu = menuService.getMenuByName("Welcome menu");
 
@@ -83,12 +83,12 @@ class MenuServiceImplTest {
 
     @Test
     void testGetMenuByNameThrowsExceptionWhenMenuNotFound() throws MenuNotFoundException {
-        when(menuDao.getMenuByName("Non Existing Menu"))
+        when(menuRepository.getMenuByName("Non Existing Menu"))
                 .thenThrow(new MenuNotFoundException("Failure to find menu with the name: Non Existing Menu"
-                        , DaoErrorCode.MENU_IS_NOT_FOUND));
+                        , RepositoryErrorCode.MENU_IS_NOT_FOUND));
 
         assertThrows(MenuNotFoundException.class, () -> menuService.getMenuByName("Non Existing Menu"));
 
-        verify(menuDao, times(1)).getMenuByName("Non Existing Menu");
+        verify(menuRepository, times(1)).getMenuByName("Non Existing Menu");
     }
 }

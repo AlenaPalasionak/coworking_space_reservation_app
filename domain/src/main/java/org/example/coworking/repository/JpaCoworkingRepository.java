@@ -1,12 +1,12 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.CoworkingSpace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,12 +15,12 @@ import java.util.List;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("jpaCoworkingDao")
-public class JpaCoworkingDao implements CoworkingDao {
+@Repository("jpaCoworkingRepository")
+public class JpaCoworkingRepository implements CoworkingRepository {
     private final EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public JpaCoworkingDao(EntityManagerFactory entityManagerFactory) {
+    public JpaCoworkingRepository(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
 
@@ -81,7 +81,7 @@ public class JpaCoworkingDao implements CoworkingDao {
             CoworkingSpace coworkingSpace = entityManager.find(CoworkingSpace.class, coworkingId);
             if (coworkingSpace == null) {
                 throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d",
-                        coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                        coworkingId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
             }
             return coworkingSpace;
         } catch (PersistenceException e) {

@@ -1,6 +1,6 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 
 import java.util.List;

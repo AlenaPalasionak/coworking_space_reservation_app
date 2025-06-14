@@ -47,6 +47,7 @@
                                         <include>log4j2.xml</include>
                                         <include>schema.sql</include>
                                         <include>application.properties</include>
+                                        <include>persistence.xml</include>
                                     </includes>
                                 </resource>
                             </resources>

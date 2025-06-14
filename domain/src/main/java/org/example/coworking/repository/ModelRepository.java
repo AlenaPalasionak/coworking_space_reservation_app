@@ -1,6 +1,6 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @param <T> the type of the model object to be managed by the DAO
  */
-public interface ModelDao<T> {
+public interface ModelRepository<T> {
 
     /**
      * Creates a new model object in the data source.

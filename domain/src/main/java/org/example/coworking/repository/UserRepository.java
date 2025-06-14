@@ -1,13 +1,13 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
 
 /**
  * This interface defines the data access operations for the {@link User} model.
  * It provides a method for loading a list of users from the data storage.
  */
-public interface UserDao {
+public interface UserRepository {
 
     /**
      * Finds a user by name, password, and role.

@@ -1,12 +1,12 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -17,12 +17,12 @@ import java.util.TreeSet;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("jpaReservationDao")
-public class JpaReservationDao implements ReservationDao {
+@Repository("jpaReservationRepository")
+public class JpaReservationRepository implements ReservationRepository {
     private final EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public JpaReservationDao(EntityManagerFactory entityManagerFactory) {
+    public JpaReservationRepository(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
 
@@ -83,7 +83,7 @@ public class JpaReservationDao implements ReservationDao {
             Reservation reservation = entityManager.find(Reservation.class, reservationId);
             if (reservation.equals(null)) {
                 throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
-                        reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                        reservationId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
             }
             return reservation;
         } catch (PersistenceException e) {

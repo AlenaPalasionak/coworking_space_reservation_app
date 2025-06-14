@@ -1,4 +1,4 @@
-package org.example.coworking.dao.exception;
+package org.example.coworking.repository.exception;
 
 /**
  * Exception thrown when excessive or unexpected data is encountered during a database operation.

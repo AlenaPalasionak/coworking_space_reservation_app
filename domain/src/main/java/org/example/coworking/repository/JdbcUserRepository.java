@@ -1,8 +1,8 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.Admin;
 import org.example.coworking.model.Customer;
 import org.example.coworking.model.User;
@@ -18,15 +18,15 @@ import java.sql.SQLException;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 /**
- * Implementation of {@link UserDao} that interacts with the database
+ * Implementation of {@link UserRepository} that interacts with the database
  * to manage user retrieval operations.
  */
-@Repository("jdbcUserDao")
-public class JdbcUserDao implements UserDao {
+@Repository("jdbcUserRepository")
+public class JdbcUserRepository implements UserRepository {
     private final DataSource dataSource;
 
     @Autowired
-    public JdbcUserDao(DataSource dataSource) {
+    public JdbcUserRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -46,7 +46,7 @@ public class JdbcUserDao implements UserDao {
 
             try (ResultSet selectUserResultSet = selectUserStatement.executeQuery()) {
                 if (!selectUserResultSet.next()) {
-                    throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
+                    throw new EntityNotFoundException("Failure to find user with the name: " + name, RepositoryErrorCode.USER_IS_NOT_FOUND);
                 }
 
                 Long id = selectUserResultSet.getLong("id");

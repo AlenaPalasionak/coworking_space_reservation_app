@@ -1,7 +1,7 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +14,20 @@ import java.util.Optional;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 /**
- * Implementation of {@link MenuDao} for managing menu data storage and retrieval.
+ * Implementation of {@link MenuRepository} for managing menu data storage and retrieval.
  */
 @Repository
-public class MenuDaoImpl implements MenuDao {
+public class MenuRepositoryImpl implements MenuRepository {
     private final Loader<Menu> menuLoader;
     private static List<Menu> menus;
 
     /**
-     * Constructs a new {@code MenuDaoImpl} with the specified menu loader.
+     * Constructs a new {@code MenuRepositoryImpl} with the specified menu loader.
      *
      * @param menuLoader the loader used to retrieve menu data
      */
     @Autowired
-    public MenuDaoImpl(Loader<Menu> menuLoader) {
+    public MenuRepositoryImpl(Loader<Menu> menuLoader) {
         this.menuLoader = menuLoader;
         loadMenusFromStorage();
     }
@@ -42,7 +42,7 @@ public class MenuDaoImpl implements MenuDao {
                 .filter(m -> m.getMenuName().equals(name))
                 .findFirst();
         if (possibleMenu.isEmpty()) {
-            throw new MenuNotFoundException(String.format("Failure to find menu with the name: %s", name), DaoErrorCode.MENU_IS_NOT_FOUND);
+            throw new MenuNotFoundException(String.format("Failure to find menu with the name: %s", name), RepositoryErrorCode.MENU_IS_NOT_FOUND);
         } else {
             return possibleMenu.get();
         }

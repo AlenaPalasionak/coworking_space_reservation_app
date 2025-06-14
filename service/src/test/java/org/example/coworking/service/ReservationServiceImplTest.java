@@ -1,8 +1,8 @@
 package org.example.coworking.service;
 
-import org.example.coworking.dao.ReservationDao;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.ReservationRepository;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ReservationTimeException;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplTest {
     @Mock
-    private ReservationDao reservationDao;
+    private ReservationRepository reservationRepository;
     @Mock
     private CoworkingService coworkingService;
     @Mock
@@ -45,13 +45,13 @@ class ReservationServiceImplTest {
 
         when(coworkingService.getById(coworkingSpaceId)).thenReturn(coworkingSpace);
         doNothing().when(timeLogicValidator).validateReservation(startTime, endTime);
-        when(reservationDao.getAllReservationsByCoworking(coworkingSpaceId))
+        when(reservationRepository.getAllReservationsByCoworking(coworkingSpaceId))
                 .thenReturn(new TreeSet<>());
 
         reservationService.add(customer, startTime, endTime, coworkingSpaceId);
 
         ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
-        verify(reservationDao).create(reservationCaptor.capture());
+        verify(reservationRepository).create(reservationCaptor.capture());
 
         Reservation capturedReservation = reservationCaptor.getValue();
         assertThat(capturedReservation.getCustomer()).isEqualTo(customer);
@@ -68,11 +68,11 @@ class ReservationServiceImplTest {
         LocalDateTime endTime = LocalDateTime.now().plusHours(2);
 
         when(coworkingService.getById(coworkingSpaceId))
-                .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingSpaceId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
+                .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingSpaceId + " is not found", RepositoryErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> reservationService.add(customer, startTime, endTime, coworkingSpaceId))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(reservationDao, never()).create(any());
+        verify(reservationRepository, never()).create(any());
     }
 
     @Test
@@ -81,12 +81,12 @@ class ReservationServiceImplTest {
         Long reservationId = 10L;
 
         Reservation reservation = Mockito.mock(Reservation.class);
-        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+        when(reservationRepository.getById(reservationId)).thenReturn(reservation);
         when(reservation.getCustomer()).thenReturn(customer);
 
         reservationService.delete(customer, reservationId);
 
-        verify(reservationDao, times(1)).delete(reservation);
+        verify(reservationRepository, times(1)).delete(reservation);
     }
 
     @Test
@@ -96,12 +96,12 @@ class ReservationServiceImplTest {
         Long reservationId = 10L;
 
         Reservation reservation = Mockito.mock(Reservation.class);
-        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+        when(reservationRepository.getById(reservationId)).thenReturn(reservation);
         when(reservation.getCustomer()).thenReturn(customer);
 
         assertThatThrownBy(() -> reservationService.delete(anotherCustomer, reservationId))
                 .isInstanceOf(ForbiddenActionException.class);
-        verify(reservationDao, never()).delete(any());
+        verify(reservationRepository, never()).delete(any());
     }
 
 
@@ -109,7 +109,7 @@ class ReservationServiceImplTest {
     void testGetByIdReturnsReservationWhenExists() throws EntityNotFoundException {
         Long reservationId = 10L;
         Reservation reservation = Mockito.mock(Reservation.class);
-        when(reservationDao.getById(reservationId)).thenReturn(reservation);
+        when(reservationRepository.getById(reservationId)).thenReturn(reservation);
 
         Reservation actualReservation = reservationService.getById(reservationId);
 
@@ -119,8 +119,8 @@ class ReservationServiceImplTest {
     @Test
     void testGetByIdThrowsExceptionWhenNotFound() throws EntityNotFoundException {
         Long reservationId = 99L;
-        when(reservationDao.getById(reservationId))
-                .thenThrow(new EntityNotFoundException("Reservation with id: " + reservationId + " is not found.", DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+        when(reservationRepository.getById(reservationId))
+                .thenThrow(new EntityNotFoundException("Reservation with id: " + reservationId + " is not found.", RepositoryErrorCode.RESERVATION_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> reservationService.getById(reservationId))
                 .isInstanceOf(EntityNotFoundException.class);
@@ -131,7 +131,7 @@ class ReservationServiceImplTest {
         Customer customer = new Customer(1L, "Alice", "123");
         List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
 
-        when(reservationDao.getAllReservationsByCustomer(customer.getId())).thenReturn(expectedReservations);
+        when(reservationRepository.getAllReservationsByCustomer(customer.getId())).thenReturn(expectedReservations);
 
         List<Reservation> actualReservations = reservationService.getAllReservationsByCustomer(customer);
 
@@ -145,7 +145,7 @@ class ReservationServiceImplTest {
         Admin admin = new Admin(1L, "Admin", "admin123");
         List<Reservation> expectedReservations = List.of(Mockito.mock(Reservation.class));
 
-        when(reservationDao.getAllReservationsByAdmin(admin.getId())).thenReturn(expectedReservations);
+        when(reservationRepository.getAllReservationsByAdmin(admin.getId())).thenReturn(expectedReservations);
 
         List<Reservation> actualReservations = reservationService.getAllReservationsByAdmin(admin);
 
@@ -157,7 +157,7 @@ class ReservationServiceImplTest {
         Long coworkingId = 123L;
         Set<Reservation> expectedReservations = Set.of(Mockito.mock(Reservation.class));
 
-        when(reservationDao.getAllReservationsByCoworking(coworkingId)).thenReturn(expectedReservations);
+        when(reservationRepository.getAllReservationsByCoworking(coworkingId)).thenReturn(expectedReservations);
 
         Set<Reservation> actualReservations = reservationService.getAllReservationsByCoworking(coworkingId);
 

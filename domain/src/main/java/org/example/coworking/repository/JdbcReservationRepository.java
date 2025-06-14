@@ -1,8 +1,8 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,12 +20,12 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 /**
  * Class provides functionality for interaction with database and processing Reservation object
  */
-@Repository("jdbcReservationDao")
-public class JdbcReservationDao implements ReservationDao {
+@Repository("jdbcReservationRepository")
+public class JdbcReservationRepository implements ReservationRepository {
     private final DataSource dataSource;
 
     @Autowired
-    public JdbcReservationDao(DataSource dataSource) {
+    public JdbcReservationRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -105,7 +105,7 @@ public class JdbcReservationDao implements ReservationDao {
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
                     throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d.",
-                            reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                            reservationId), RepositoryErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 User customer = new Customer();

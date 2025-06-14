@@ -1,4 +1,4 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import org.example.coworking.model.Reservation;
 
@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Data Access Object (DAO) interface for managing {@link Reservation} entities.
  */
-public interface ReservationDao extends ModelDao<Reservation> {
+public interface ReservationRepository extends ModelRepository<Reservation> {
 
     /**
      * Retrieves all reservation periods for a given coworking space.

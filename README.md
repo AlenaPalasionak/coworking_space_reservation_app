@@ -1,110 +1,142 @@
-# 🧾 Coworking Space Reservation
+# Coworking Space Reservation
 
-A Java-based application for managing coworking space reservations with three interchangeable DAO implementations:
+🧾 A modular Java-based application for managing coworking space reservations with three interchangeable Repository
+implementations:
 
 - **File-based (Jackson)**
 - **JDBC**
 - **JPA (Hibernate)**
 
-To switch between implementations change Qualifiers in service layer 
-in CoworkingServiceImpl, ReservationServiceImpl, UserServiceImpl in constructors.
+### Technologies:
 
-- **File-based (Jackson)**
+#### Programming Language: Java
 
-```sh
-@Qualifier("fileUserDao")
-```
-```sh
-@Qualifier("fileReservationDao")
-```
-```sh
-@Qualifier("fileCoworkingDao")
-```
+#### Build Tool: Maven
 
-- **JDBC** 
-```sh
-@Qualifier("jdbcUserDao")
-```
-```sh
-@Qualifier("jdbcReservationDao")
-```
-```sh
-@Qualifier("jdbcCoworkingDao")
-```
+#### Frameworks & Libraries: Spring (Core, Context, ORM, Annotations), Hibernate, JPA, Lombok, Jackson, Log4j
 
-- **JPA (Hibernate)**
-```sh
-@Qualifier("jpaUserDao")
-```
-```sh
-@Qualifier("jpaReservationDao")
- ```
-```sh
-@Qualifier("jpaCoworkingDao")
- ```
----
+#### Testing: JUnit, Mockito, AssertJ
 
-## 📁 DAO Implementations & Setup Instructions
+#### Security & Authentication: JBCrypt
+
+#### RDBMS: PostgreSQL
+
+#### Data Formats: JSON (for serialization/deserialization), XML (log4j.xml configuration)
+
+## Repository Implementations & Setup Instructions
+
 ### 1️⃣ File-based (Jackson)
+
 **Configuration Steps:**
-1. Create `application.properties` in `domain/resources` with the following content:
+
+1. To switch between implementations change Qualifiers (in constructors) in service layer for CoworkingServiceImpl,
+   ReservationServiceImpl, UserServiceImpl:
+
+```
+@Qualifier("fileUserRepository")
+```
+
+```
+@Qualifier("fileReservationRepository")
+```
+
+```
+@Qualifier("fileCoworkingRepository")
+```
+
+2. Create `application.properties` in `domain/resources` with the following content (replace `***` with actual values):
+
 ```properties
+# === DB Credentials ===
+datasource.url=***
+datasource.username=***
+datasource.password=***
+# === File ===
 menu.path=menu.json
 user.path=users.json
 coworking.places.path=coworking_places.json
 reservation.path=reservations.json
-```
-2. Build the project:
-```sh
-mvn clean install
-```
-3. Navigate to the target directory:
-```sh
-cd ui/target
-```
-4. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
+# === JDBC ===
+datasource.driver-class-name=org.postgresql.Driver
+# === Hibernate ===
+jpa.hibernate.ddl-auto=validate
+jpa.show-sql=true
+# === HikariCP ===
+hikari.minimumIdle=1
+hikari.maximumPoolSize=10
+hikari.idleTimeout=10000
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
 ```
 
 ### 2️⃣ JDBC
+
 Configuration Steps:
-1. Create a PostgreSQL database named:
-```sh
-coworking_reservation_app
-```
-2. Add application.properties to domain/resources (same content as above).
-3. Run the schema.sql script located in domain/resources to create the required tables in the database.
-4. Build the project:
- ```sh
-mvn clean install
-```
-5. Navigate to the target directory:
-```sh
-cd ui/target
-```
-6. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
+
+1. To switch between implementations change Qualifiers (in constructors) in service layer for CoworkingServiceImpl,
+   ReservationServiceImpl, UserServiceImpl:
 
 ```
+@Qualifier("jdbcUserRepository")
+```
+
+```
+@Qualifier("jdbcReservationRepository")
+```
+
+```
+@Qualifier("jdbcCoworkingRepository")
+```
+
+2. Create a PostgreSQL database named:
+
+```
+coworking_reservation_app
+```
+
+3. Add application.properties to domain/resources (same content as above).
+4. Run the schema.sql script located in domain/resources to create the required tables in the database.
 
 ### 3️⃣ JPA (Hibernate)
+
 Configuration Steps:
-1. Create a PostgreSQL database named:
-```sh
+
+1. To switch between implementations change Qualifiers (in constructors) in service layer for CoworkingServiceImpl,
+   ReservationServiceImpl, UserServiceImpl:
+
+```
+@Qualifier("jpaUserRepository")
+```
+
+```
+@Qualifier("jpaReservationRepository")
+ ```
+
+```
+@Qualifier("jpaCoworkingRepository")
+ ```
+
+2. Create a PostgreSQL database named:
+
+```
 coworking_reservation_app
 ```
-2. Inside domain/resources, add a META-INF directory:
-```sh
+
+3. Inside domain/resources, add a META-INF directory:
+
+```
 META-INF
 ```
-3. Create a persistence.xml file in META-INF with the following content (replace with your DB credentials):
-```sh
+
+4. Create a persistence.xml file in META-INF with the following content (replace with your DB credentials):
+
+```
 persistence.xml
 ```
-content of persistence.xml (replace `***` with actual values):
-```sh
+
+contents of persistence.xml (replace `***` with actual values):
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -132,16 +164,29 @@ https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
 </persistence-unit>
 </persistence>
 ```
+
 4. Run the schema.sql file from domain/resources to initialize database tables.
-5. Build the project:
- ```sh
+
+## Build and run the application
+
+1. Build the project:
+
+```sh
 mvn clean install
 ```
-6. Navigate to the target directory:
+
+2. You can run the app using development environment or terminal.
+
+- Development environment: edit configurations -> set working directory: ui.target -> run Main.
+- Terminal: navigate to the target directory:
+
 ```sh
 cd ui/target
 ```
-7. Run the application:
+
+run the application:
+
 ```sh
 java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
 ```
+

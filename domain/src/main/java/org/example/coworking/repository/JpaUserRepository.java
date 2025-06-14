@@ -1,13 +1,13 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.criteria.*;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.DataExcessException;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.DataExcessException;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Repository;
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 
-@Repository("jpaUserDao")
-public class JpaUserDao implements UserDao {
+@Repository("jpaUserRepository")
+public class JpaUserRepository implements UserRepository {
     private final EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public JpaUserDao(EntityManagerFactory entityManagerFactory) {
+    public JpaUserRepository(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
 
@@ -47,7 +47,7 @@ public class JpaUserDao implements UserDao {
             return entityManager.createQuery(cq).getSingleResult();
 
         } catch (NoResultException e) {
-            throw new EntityNotFoundException("Failure to find user with the name: " + name, DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException("Failure to find user with the name: " + name, RepositoryErrorCode.USER_IS_NOT_FOUND);
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);

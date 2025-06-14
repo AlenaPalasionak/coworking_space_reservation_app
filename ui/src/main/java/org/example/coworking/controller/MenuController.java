@@ -1,6 +1,6 @@
 package org.example.coworking.controller;
 
-import org.example.coworking.dao.exception.MenuNotFoundException;
+import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.model.Menu;
 import org.example.coworking.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;

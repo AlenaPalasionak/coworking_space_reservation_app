@@ -1,8 +1,8 @@
-package org.example.coworking.dao;
+package org.example.coworking.repository;
 
 import jakarta.annotation.PreDestroy;
-import org.example.coworking.dao.exception.DaoErrorCode;
-import org.example.coworking.dao.exception.EntityNotFoundException;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
+import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.model.CoworkingSpace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 
 import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
-@Repository("fileCoworkingDao")
-public class FileCoworkingDao implements CoworkingDao {
+@Repository("fileCoworkingRepository")
+public class FileCoworkingRepository implements CoworkingRepository {
     private static List<CoworkingSpace> coworkingSpacesCache;
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
-    private final ReservationDao reservationDao;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public FileCoworkingDao(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationDao") ReservationDao reservationDao) {
+    public FileCoworkingRepository(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationRepository") ReservationRepository reservationRepository) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
-        this.reservationDao = reservationDao;
+        this.reservationRepository = reservationRepository;
         loadFromJson();
     }
 
@@ -48,7 +48,7 @@ public class FileCoworkingDao implements CoworkingDao {
     @Override
     public void delete(CoworkingSpace coworkingSpace) {
         coworkingSpacesCache.removeIf(c -> c.getId().equals(coworkingSpace.getId()));
-        reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
+        reservationRepository.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FileCoworkingDao implements CoworkingDao {
                 .filter(c -> c.getId().equals(coworkingId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to find Coworking with id: %d", coworkingId),
-                        DaoErrorCode.COWORKING_IS_NOT_FOUND));
+                        RepositoryErrorCode.COWORKING_IS_NOT_FOUND));
     }
 
     @Override

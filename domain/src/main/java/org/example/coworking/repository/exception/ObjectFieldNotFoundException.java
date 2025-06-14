@@ -1,4 +1,4 @@
-package org.example.coworking.dao.exception;
+package org.example.coworking.repository.exception;
 
 /**
  * Exception thrown when a required field of an Object is not found.
