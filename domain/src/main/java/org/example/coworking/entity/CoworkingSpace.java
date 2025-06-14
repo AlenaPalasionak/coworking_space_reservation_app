@@ -1,6 +1,7 @@
 package org.example.coworking.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class CoworkingSpace {
     @JoinColumn(name = "admin_id", nullable = false)
     private User admin;
     @Column(nullable = false)
+    @DecimalMin(value = "0.1", message = "Price must be at least 0.1")
     private double price;
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
