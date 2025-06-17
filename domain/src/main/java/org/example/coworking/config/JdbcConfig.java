@@ -15,11 +15,11 @@ import javax.sql.DataSource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class JdbcConfig {
-    @Value("${database.url}")
+    @Value("${datasource.url}")
     private String url;
-    @Value("${database.username}")
+    @Value("${datasource.username}")
     private String username;
-    @Value("${database.password}")
+    @Value("${datasource.password}")
     private String password;
     @Value("${hikari.maximumPoolSize}")
     private int maximumPoolSize;
@@ -27,7 +27,7 @@ public class JdbcConfig {
     private int minimumIdle;
     @Value("${hikari.idleTimeout}")
     private int idleTimeout;
-    @Value("${database.driver}")
+    @Value("${datasource.driver-class-name}")
     private String driver;
 
 

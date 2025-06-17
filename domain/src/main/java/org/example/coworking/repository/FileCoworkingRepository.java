@@ -1,7 +1,8 @@
 package org.example.coworking.repository;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.entity.CoworkingSpace;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,16 +19,15 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 @Repository("fileCoworkingRepository")
 public class FileCoworkingRepository implements CoworkingRepository {
-    private static List<CoworkingSpace> coworkingSpacesCache;
+    private static List<CoworkingSpace> coworkingSpacesCache = new ArrayList<>();
     private final Loader<CoworkingSpace> coworkingSpaceLoader;
 
-    private final ReservationRepository reservationDao;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public FileCoworkingRepository(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationRepository") ReservationRepository reservationDao) {
+    public FileCoworkingRepository(Loader<CoworkingSpace> coworkingSpaceLoader, @Qualifier("fileReservationRepository") ReservationRepository reservationRepository) {
         this.coworkingSpaceLoader = coworkingSpaceLoader;
-        this.reservationDao = reservationDao;
-        loadFromJson();
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class FileCoworkingRepository implements CoworkingRepository {
     @Override
     public void delete(CoworkingSpace coworkingSpace) {
         coworkingSpacesCache.removeIf(c -> c.getId().equals(coworkingSpace.getId()));
-        reservationDao.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
+        reservationRepository.getAll().removeIf(reservation -> reservation.getCoworkingSpace().getId().equals(coworkingSpace.getId()));
     }
 
     @Override
@@ -57,7 +58,7 @@ public class FileCoworkingRepository implements CoworkingRepository {
                 .filter(c -> c.getId().equals(coworkingId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to find Coworking with id: %d", coworkingId),
-                        DaoErrorCode.COWORKING_IS_NOT_FOUND));
+                        RepositoryErrorCode.COWORKING_IS_NOT_FOUND));
     }
 
     @Override
@@ -65,11 +66,15 @@ public class FileCoworkingRepository implements CoworkingRepository {
         return coworkingSpacesCache;
     }
 
-
     @Override
     public List<CoworkingSpace> getAllCoworkingSpacesByAdmin(Long adminId) {
         return coworkingSpacesCache.stream().filter(coworkingSpace -> coworkingSpace.getAdmin().getId().equals(adminId))
                 .collect(Collectors.toList());
+    }
+
+    @PostConstruct
+    public void initFiles() {
+        loadFromJson();
     }
 
     /**
@@ -92,13 +97,11 @@ public class FileCoworkingRepository implements CoworkingRepository {
      *                          with technical details before being rethrown.
      */
     private void loadFromJson() {
-        if (coworkingSpacesCache == null) {
             try {
                 coworkingSpacesCache = coworkingSpaceLoader.load(CoworkingSpace.class);
             } catch (FileNotFoundException e) {
                 TECHNICAL_LOGGER.error("Failure to load Coworking Space List", e);
                 throw new RuntimeException("Failure to load Coworking Space List", e);
             }
-        }
     }
 }

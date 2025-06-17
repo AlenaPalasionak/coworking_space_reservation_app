@@ -1,6 +1,7 @@
 package org.example.coworking.repository;
 
-import org.example.coworking.repository.exception.DaoErrorCode;
+import jakarta.annotation.PostConstruct;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.entity.User;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,11 +18,14 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 @Repository("fileUserRepository")
 public class FileUserRepository implements UserRepository {
     private final Loader<User> userLoader;
-    private static List<User> userCache;
+    private static List<User> userCache = new ArrayList<>();
 
     @Autowired
     public FileUserRepository(Loader<User> userLoader) {
         this.userLoader = userLoader;
+    }
+    @PostConstruct
+    public void initFiles() {
         loadFromJson();
     }
 
@@ -32,7 +37,7 @@ public class FileUserRepository implements UserRepository {
                         user.getClass().equals(role))
                 .findFirst();
         if (possibleUser.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), RepositoryErrorCode.USER_IS_NOT_FOUND);
         } else {
             return role.cast(possibleUser.get());
         }
@@ -44,7 +49,7 @@ public class FileUserRepository implements UserRepository {
                 .filter(user -> user.getId().equals(id))
                 .findFirst();
         if (possibleUser.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Failure to find user with the ID %d: " + id), DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to find user with the ID %d: " + id), RepositoryErrorCode.USER_IS_NOT_FOUND);
         }
         return possibleUser.get();
     }

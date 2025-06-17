@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.repository.UserRepository;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.Admin;
 import org.example.coworking.entity.Customer;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
-    private UserRepository userDao;
+    private UserRepository userRepository;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -32,12 +32,12 @@ class UserServiceImplTest {
         mockAdmin.setName(name);
         mockAdmin.setPassword(password);
 
-        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenReturn(mockAdmin);
+        when(userRepository.getUserByNamePasswordAndRole(name, password, roleClass)).thenReturn(mockAdmin);
 
         User actualUser = userService.getUserByNamePasswordAndAndRole(name, password, roleClass);
 
         assertEquals(mockAdmin, actualUser);
-        verify(userDao, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
+        verify(userRepository, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
     }
 
     @Test
@@ -46,12 +46,12 @@ class UserServiceImplTest {
         String password = "wrongPass";
         Class<? extends User> roleClass = Customer.class;
 
-        when(userDao.getUserByNamePasswordAndRole(name, password, roleClass)).thenThrow(new EntityNotFoundException
-                ("User is not found", DaoErrorCode.USER_IS_NOT_FOUND));
+        when(userRepository.getUserByNamePasswordAndRole(name, password, roleClass)).thenThrow(new EntityNotFoundException
+                ("User is not found", RepositoryErrorCode.USER_IS_NOT_FOUND));
 
         assertThrows(EntityNotFoundException.class, () ->
                 userService.getUserByNamePasswordAndAndRole(name, password, roleClass));
 
-        verify(userDao, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
+        verify(userRepository, times(1)).getUserByNamePasswordAndRole(name, password, roleClass);
     }
 }

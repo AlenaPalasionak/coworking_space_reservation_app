@@ -6,7 +6,7 @@ import lombok.Getter;
  * Enum representing various DAO (Data Access Object) error codes.
  */
 @Getter
-public enum DaoErrorCode {
+public enum RepositoryErrorCode {
     /**
      * Error when coworking space is not found.
      */
@@ -25,11 +25,11 @@ public enum DaoErrorCode {
     private final String errorCode;
 
     /**
-     * Constructor for DaoErrorCode.
+     * Constructor for RepositoryErrorCode.
      *
      * @param errorCode The error message associated with the error code.
      */
-    DaoErrorCode(String errorCode) {
+    RepositoryErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
 

@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.Reservation;
@@ -82,7 +82,7 @@ public class JpaReservationRepository implements ReservationRepository {
             Reservation reservation = entityManager.find(Reservation.class, reservationId);
             if (reservation == null) {
                 throw new EntityNotFoundException(String.format("Failure to get Reservation with ID: %d",
-                        reservationId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                        reservationId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
             }
             return reservation;
         } catch (PersistenceException e) {

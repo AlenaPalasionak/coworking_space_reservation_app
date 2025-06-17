@@ -1,7 +1,8 @@
 package org.example.coworking.repository;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
 import org.example.coworking.entity.Reservation;
@@ -18,13 +19,12 @@ import static org.example.coworking.logger.Log.TECHNICAL_LOGGER;
 
 @Repository("fileReservationRepository")
 public class FileReservationRepository implements ReservationRepository {
-    private static List<Reservation> reservationsCache;
+    private static List<Reservation> reservationsCache = new ArrayList<>();
     private final Loader<Reservation> reservationLoader;
 
     @Autowired
     public FileReservationRepository(Loader<Reservation> reservationLoader) {
         this.reservationLoader = reservationLoader;
-        loadFromJson();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class FileReservationRepository implements ReservationRepository {
                 .filter(r -> r.getId().equals(reservationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Failure to get Reservation with id: %d",
-                        reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND));
+                        reservationId), RepositoryErrorCode.RESERVATION_IS_NOT_FOUND));
     }
 
     @Override
@@ -85,6 +85,10 @@ public class FileReservationRepository implements ReservationRepository {
                     .filter(reservation -> reservation.getCoworkingSpace().getAdmin().getId().equals(adminId))
                     .collect(Collectors.toList());
         }
+    }
+    @PostConstruct
+    public void initFiles() {
+        loadFromJson();
     }
 
     /**

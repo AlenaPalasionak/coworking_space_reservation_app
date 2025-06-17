@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.CoworkingSpace;
@@ -81,7 +81,7 @@ public class JpaCoworkingRepository implements CoworkingRepository {
             CoworkingSpace coworkingSpace = entityManager.find(CoworkingSpace.class, coworkingId);
             if (coworkingSpace == null) {
                 throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d",
-                        coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                        coworkingId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
             }
             return coworkingSpace;
         } catch (PersistenceException e) {

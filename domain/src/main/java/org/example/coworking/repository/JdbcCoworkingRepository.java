@@ -1,6 +1,6 @@
 package org.example.coworking.repository;
 
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.*;
@@ -113,7 +113,7 @@ public class JdbcCoworkingRepository implements CoworkingRepository {
             try (ResultSet coworkingResultSet = selectCoworkingStatement.executeQuery()) {
                 if (!coworkingResultSet.next()) {
                     throw new EntityNotFoundException(String.format("Failure to get Coworking space with ID: %d"
-                            , coworkingId), DaoErrorCode.COWORKING_IS_NOT_FOUND);
+                            , coworkingId), RepositoryErrorCode.COWORKING_IS_NOT_FOUND);
                 }
                 CoworkingSpace coworkingSpace = new CoworkingSpace();
                 Long adminId;

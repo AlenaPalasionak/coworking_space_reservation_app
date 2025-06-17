@@ -1,6 +1,6 @@
 package org.example.coworking.repository;
 
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.*;
@@ -104,7 +104,7 @@ public class JdbcReservationRepository implements ReservationRepository {
             try (ResultSet reservationResultSet = selectReservationStatement.executeQuery()) {
                 if (!reservationResultSet.next()) {
                     throw new EntityNotFoundException(String.format("Failure to get Reservation by ID: %d.",
-                            reservationId), DaoErrorCode.RESERVATION_IS_NOT_FOUND);
+                            reservationId), RepositoryErrorCode.RESERVATION_IS_NOT_FOUND);
                 }
 
                 Customer customer = new Customer();

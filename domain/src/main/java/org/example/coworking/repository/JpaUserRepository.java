@@ -5,7 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.criteria.*;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.User;
@@ -45,7 +45,7 @@ public class JpaUserRepository implements UserRepository {
         try {
             return entityManager.createQuery(cq).getSingleResult();
         } catch (NoResultException e) {
-            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), DaoErrorCode.USER_IS_NOT_FOUND);
+            throw new EntityNotFoundException(String.format("Failure to find user with the name: %s", name), RepositoryErrorCode.USER_IS_NOT_FOUND);
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the name: {}.", name, e);
             throw new DataExcessException(String.format("Database error occurred while fetching user with the name: %s.", name), e);
@@ -70,7 +70,7 @@ public class JpaUserRepository implements UserRepository {
         } catch (NoResultException e) {
             throw new EntityNotFoundException(
                     String.format("Failure to find User with the ID: %d ", id),
-                    DaoErrorCode.USER_IS_NOT_FOUND
+                    RepositoryErrorCode.USER_IS_NOT_FOUND
             );
         } catch (PersistenceException e) {
             TECHNICAL_LOGGER.error("Database error occurred while fetching user with the ID: {}.", id, e);

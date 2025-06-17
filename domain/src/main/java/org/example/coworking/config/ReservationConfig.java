@@ -9,5 +9,5 @@ import org.springframework.context.annotation.Configuration;
         "org.example.coworking.repository",
         "org.example.coworking.loader",
 })
-public class DaoConfig {
+public class ReservationConfig {
 }

@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.repository.CoworkingRepository;
-import org.example.coworking.repository.exception.DaoErrorCode;
+import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.entity.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
@@ -89,7 +89,7 @@ class CoworkingServiceImplTest {
         Admin admin = new Admin(1L, "Aden", "123");
 
         when(coworkingRepository.getById(coworkingId))
-                .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
+                .thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", RepositoryErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> coworkingService.delete(admin, coworkingId))
                 .isInstanceOf(EntityNotFoundException.class);
@@ -112,7 +112,7 @@ class CoworkingServiceImplTest {
     @Test
     void testGetByIdThrowsEntityNotFoundExceptionWhenNotFound() throws EntityNotFoundException {
         Long coworkingId = 999L;
-        when(coworkingRepository.getById(coworkingId)).thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", DaoErrorCode.COWORKING_IS_NOT_FOUND));
+        when(coworkingRepository.getById(coworkingId)).thenThrow(new EntityNotFoundException("Coworking with id: " + coworkingId + " is not found", RepositoryErrorCode.COWORKING_IS_NOT_FOUND));
 
         assertThatThrownBy(() -> coworkingService.getById(coworkingId))
                 .isInstanceOf(EntityNotFoundException.class);

@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>coworking_space_reservation</artifactId>
-    <version>1</version>
+    <version>1.0.0</version>
 
     <packaging>war</packaging>
 
     <parent>
         <groupId>org.example</groupId>
-        <artifactId>coworking_space_reservation_app</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>parent</artifactId>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>service</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
@@ -52,7 +52,6 @@
                 <version>3.2.0</version>
                 <executions>
 
-                    <!-- Первая задача: скопировать *.json в target/ -->
                     <execution>
                         <id>copy-json-resources</id>
                         <phase>package</phase>
@@ -66,26 +65,6 @@
                                     <directory>${project.basedir}/../domain/src/main/resources</directory>
                                     <includes>
                                         <include>*.json</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-
-                    <!-- Вторая задача: скопировать log4j2.xml в classes/ -->
-                    <execution>
-                        <id>copy-log4j-config</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/../domain/src/main/resources</directory>
-                                    <includes>
-                                        <include>log4j2.xml</include>
                                     </includes>
                                 </resource>
                             </resources>
