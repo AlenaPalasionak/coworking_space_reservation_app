@@ -44,31 +44,6 @@ implementations:
 @Qualifier("fileCoworkingRepository")
 ```
 
-2. Create `application.properties` in `domain/resources` with the following content (replace `***` with actual values):
-
-```properties
-# === DB Credentials ===
-datasource.url=***
-datasource.username=***
-datasource.password=***
-# === File ===
-menu.path=menu.json
-user.path=users.json
-coworking.places.path=coworking_places.json
-reservation.path=reservations.json
-# === JDBC ===
-datasource.driver-class-name=org.postgresql.Driver
-# === Hibernate ===
-jpa.hibernate.ddl-auto=validate
-jpa.show-sql=true
-# === HikariCP ===
-hikari.minimumIdle=1
-hikari.maximumPoolSize=10
-hikari.idleTimeout=10000
-management.endpoints.web.exposure.include=*
-management.endpoint.health.show-details=always
-```
-
 ### 2️⃣ JDBC
 
 Configuration Steps:
@@ -94,9 +69,6 @@ Configuration Steps:
 coworking_reservation_app
 ```
 
-3. Add application.properties to domain/resources (same content as above).
-4. Run the schema.sql script located in domain/resources to create the required tables in the database.
-
 ### 3️⃣ JPA (Hibernate)
 
 Configuration Steps:
@@ -115,6 +87,33 @@ Configuration Steps:
 ```
 @Qualifier("jpaCoworkingRepository")
  ```
+
+### Common Configuration Steps and Running the application
+
+1. Create `application.properties` in `domain/resources` with the following content (replace `***` with actual values):
+
+```properties
+# === DB Credentials ===
+datasource.url=***
+datasource.username=***
+datasource.password=***
+# === File ===
+menu.path=menu.json
+user.path=users.json
+coworking.places.path=coworking_places.json
+reservation.path=reservations.json
+# === JDBC ===
+datasource.driver-class-name=org.postgresql.Driver
+# === Hibernate ===
+jpa.hibernate.ddl-auto=validate
+jpa.show-sql=true
+# === HikariCP ===
+hikari.minimumIdle=1
+hikari.maximumPoolSize=10
+hikari.idleTimeout=10000
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
+```
 
 2. Create a PostgreSQL database named:
 
@@ -139,33 +138,34 @@ contents of persistence.xml (replace `***` with actual values):
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-<persistence-unit name="coworking-space-reservation_db">
-<class>org.example.coworking.model.User</class>
-<class>org.example.coworking.model.Admin</class>
-<class>org.example.coworking.model.Customer</class>
-<class>org.example.coworking.model.CoworkingSpace</class>
-<class>org.example.coworking.model.Facility</class>
-<class>org.example.coworking.model.Reservation</class>
-<properties>
-<property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-<property name="jakarta.persistence.jdbc.url" value="***"/>
-<property name="jakarta.persistence.jdbc.user" value="***"/>
-<property name="jakarta.persistence.jdbc.password" value="***"/>
-<property name="hibernate.format_sql" value="true"/>
-<property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
-<property name="hibernate.hikari.minimumIdle" value="2"/>
-<property name="hibernate.hikari.maximumPoolSize" value="5"/>
-<property name="hibernate.hikari.idleTimeout" value="10000"/>
-<property name="hibernate.hbm2ddl.auto" value="validate"/>
-</properties>
-</persistence-unit>
+    <persistence-unit name="coworking-space-reservation_db">
+        <class>org.example.coworking.model.User</class>
+        <class>org.example.coworking.model.Admin</class>
+        <class>org.example.coworking.model.Customer</class>
+        <class>org.example.coworking.model.CoworkingSpace</class>
+        <class>org.example.coworking.model.Facility</class>
+        <class>org.example.coworking.model.Reservation</class>
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="***"/>
+            <property name="jakarta.persistence.jdbc.user" value="***"/>
+            <property name="jakarta.persistence.jdbc.password" value="***"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.connection.provider_class"
+                      value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
+            <property name="hibernate.hikari.minimumIdle" value="2"/>
+            <property name="hibernate.hikari.maximumPoolSize" value="5"/>
+            <property name="hibernate.hikari.idleTimeout" value="10000"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+        </properties>
+    </persistence-unit>
 </persistence>
 ```
 
-4. Run the schema.sql file from domain/resources to initialize database tables.
+5. Run the schema.sql file from domain/resources to initialize database tables.
 
 ## Build and run the application
 
