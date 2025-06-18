@@ -1,6 +1,6 @@
 # Coworking Space Reservation
 
-🧾 A modular Java-based application for managing coworking space reservations with three interchangeable Repository
+🧾 A modular Java-based rest application for managing coworking space reservations with three interchangeable Repository
 implementations:
 
 - **File-based (Jackson)**
