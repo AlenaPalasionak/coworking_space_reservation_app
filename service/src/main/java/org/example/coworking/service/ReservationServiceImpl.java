@@ -26,7 +26,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final TimeLogicValidator timeLogicValidator;
 
     @Autowired
-    public ReservationServiceImpl(@Qualifier("jpaReservationRepository") ReservationRepository reservationRepository, CoworkingService coworkingService, TimeLogicValidator timeLogicValidator) {
+    public ReservationServiceImpl(@Qualifier("jdbcReservationRepository") ReservationRepository reservationRepository, CoworkingService coworkingService, TimeLogicValidator timeLogicValidator) {
         this.reservationRepository = reservationRepository;
         this.coworkingService = coworkingService;
         this.timeLogicValidator = timeLogicValidator;

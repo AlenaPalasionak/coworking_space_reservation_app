@@ -12,7 +12,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("jpaUserRepository") UserRepository userRepository) {
+    public UserServiceImpl(@Qualifier("jdbcUserRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

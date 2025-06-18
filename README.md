@@ -180,13 +180,13 @@ mvn clean install
 - Development environment: edit configurations -> set working directory: ui.target -> run Main.
 - Terminal: navigate to the target directory:
 
-```sh
+```
 cd ui/target
 ```
 
 run the application:
 
-```sh
+```
 java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
 ```
 
