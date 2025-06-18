@@ -6,12 +6,12 @@
 
 
     <artifactId>domain</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>org.example</groupId>
-        <artifactId>coworking_space_reservation_app</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>parent</artifactId>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

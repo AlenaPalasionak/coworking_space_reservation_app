@@ -2,7 +2,7 @@
 
 A Java-based application for managing coworking space reservations with three interchangeable DAO implementations:
 
-Add application.properties to ui\src\main\resources:
+Add credentials in the file application.properties located in ui\src\main\resources:
 (replace * with your data)
  ```sh
 # === DB Credentials ===
@@ -20,7 +20,7 @@ management.endpoint.health.show-details=always
 
 ### List of endpoints:
 
-🏢 GET all Coworkings -
+🏢 GET all Coworking Spaces
 http://localhost:8080/api/coworking-spaces
 
 📭 POST add a Coworking
