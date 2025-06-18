@@ -3,7 +3,7 @@ package org.example.coworking.service;
 import org.example.coworking.repository.MenuRepository;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.MenuNotFoundException;
-import org.example.coworking.model.Menu;
+import org.example.coworking.entity.Menu;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

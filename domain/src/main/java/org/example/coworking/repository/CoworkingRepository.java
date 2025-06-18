@@ -1,7 +1,7 @@
 package org.example.coworking.repository;
 
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.entity.CoworkingSpace;
 
 import java.util.List;
 

@@ -142,12 +142,12 @@ contents of persistence.xml (replace `***` with actual values):
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
     <persistence-unit name="coworking-space-reservation_db">
-        <class>org.example.coworking.model.User</class>
-        <class>org.example.coworking.model.Admin</class>
-        <class>org.example.coworking.model.Customer</class>
-        <class>org.example.coworking.model.CoworkingSpace</class>
-        <class>org.example.coworking.model.Facility</class>
-        <class>org.example.coworking.model.Reservation</class>
+        <class>org.example.coworking.entity.User</class>
+        <class>org.example.coworking.entity.Admin</class>
+        <class>org.example.coworking.entity.Customer</class>
+        <class>org.example.coworking.entity.CoworkingSpace</class>
+        <class>org.example.coworking.entity.Facility</class>
+        <class>org.example.coworking.entity.Reservation</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="***"/>

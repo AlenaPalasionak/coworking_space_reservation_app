@@ -1,8 +1,8 @@
-package org.example.coworking.model;
+package org.example.coworking.entity;
 
 import lombok.NoArgsConstructor;
-import org.example.coworking.model.exception.CoworkingTypeIndexException;
-import org.example.coworking.model.exception.EnumErrorCode;
+import org.example.coworking.entity.exception.CoworkingTypeIndexException;
+import org.example.coworking.entity.exception.EnumErrorCode;
 
 @NoArgsConstructor(force = true)
 public enum CoworkingType {

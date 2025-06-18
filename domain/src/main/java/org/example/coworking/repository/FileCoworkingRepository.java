@@ -4,7 +4,7 @@ import jakarta.annotation.PreDestroy;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
-import org.example.coworking.model.CoworkingSpace;
+import org.example.coworking.entity.CoworkingSpace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;

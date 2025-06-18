@@ -1,7 +1,7 @@
 package org.example.coworking.service;
 
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.*;
+import org.example.coworking.entity.*;
 import org.example.coworking.service.exception.ForbiddenActionException;
 
 import java.util.List;

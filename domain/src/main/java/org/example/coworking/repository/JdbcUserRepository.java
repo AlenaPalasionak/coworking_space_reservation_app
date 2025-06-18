@@ -3,9 +3,9 @@ package org.example.coworking.repository;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.Customer;
-import org.example.coworking.model.User;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.Customer;
+import org.example.coworking.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

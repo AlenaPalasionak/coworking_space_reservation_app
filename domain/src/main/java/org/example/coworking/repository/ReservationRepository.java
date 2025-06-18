@@ -1,6 +1,6 @@
 package org.example.coworking.repository;
 
-import org.example.coworking.model.Reservation;
+import org.example.coworking.entity.Reservation;
 
 import java.util.List;
 import java.util.Set;

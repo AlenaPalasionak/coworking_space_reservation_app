@@ -1,7 +1,7 @@
 package org.example.coworking.repository;
 
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.User;
+import org.example.coworking.entity.User;
 
 /**
  * This interface defines the data access operations for the {@link User} model.

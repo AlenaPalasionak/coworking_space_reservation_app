@@ -1,8 +1,8 @@
 package org.example.coworking.controller;
 
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.Customer;
-import org.example.coworking.model.Menu;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.Customer;
+import org.example.coworking.entity.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

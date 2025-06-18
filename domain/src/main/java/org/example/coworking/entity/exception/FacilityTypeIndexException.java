@@ -1,4 +1,4 @@
-package org.example.coworking.model.exception;
+package org.example.coworking.entity.exception;
 
 import lombok.Getter;
 

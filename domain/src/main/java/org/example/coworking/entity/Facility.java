@@ -1,7 +1,7 @@
-package org.example.coworking.model;
+package org.example.coworking.entity;
 
-import org.example.coworking.model.exception.EnumErrorCode;
-import org.example.coworking.model.exception.FacilityTypeIndexException;
+import org.example.coworking.entity.exception.EnumErrorCode;
+import org.example.coworking.entity.exception.FacilityTypeIndexException;
 
 public enum Facility {
     PARKING(0),

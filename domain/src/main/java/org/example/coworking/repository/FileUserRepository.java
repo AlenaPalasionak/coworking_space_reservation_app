@@ -3,7 +3,7 @@ package org.example.coworking.repository;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.EntityNotFoundException;
 import org.example.coworking.loader.Loader;
-import org.example.coworking.model.User;
+import org.example.coworking.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

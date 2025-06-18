@@ -3,7 +3,7 @@ package org.example.coworking.repository;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.MenuNotFoundException;
 import org.example.coworking.loader.Loader;
-import org.example.coworking.model.Menu;
+import org.example.coworking.entity.Menu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

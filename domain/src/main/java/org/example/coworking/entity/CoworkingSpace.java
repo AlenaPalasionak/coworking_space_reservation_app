@@ -1,4 +1,4 @@
-package org.example.coworking.model;
+package org.example.coworking.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;

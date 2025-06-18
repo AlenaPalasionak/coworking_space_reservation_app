@@ -1,4 +1,4 @@
-package org.example.coworking.model;
+package org.example.coworking.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

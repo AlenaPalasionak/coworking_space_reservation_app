@@ -1,10 +1,10 @@
 package org.example.coworking.mapper;
 
-import org.example.coworking.model.exception.CoworkingTypeIndexException;
-import org.example.coworking.model.exception.FacilityTypeIndexException;
-import org.example.coworking.model.exception.EnumErrorCode;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
+import org.example.coworking.entity.exception.CoworkingTypeIndexException;
+import org.example.coworking.entity.exception.FacilityTypeIndexException;
+import org.example.coworking.entity.exception.EnumErrorCode;
+import org.example.coworking.entity.CoworkingType;
+import org.example.coworking.entity.Facility;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

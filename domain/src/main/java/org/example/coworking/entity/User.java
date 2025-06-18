@@ -1,4 +1,4 @@
-package org.example.coworking.model;
+package org.example.coworking.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

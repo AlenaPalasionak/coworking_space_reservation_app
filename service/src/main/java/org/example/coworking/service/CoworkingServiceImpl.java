@@ -2,10 +2,10 @@ package org.example.coworking.service;
 
 import org.example.coworking.repository.CoworkingRepository;
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.Admin;
-import org.example.coworking.model.CoworkingSpace;
-import org.example.coworking.model.CoworkingType;
-import org.example.coworking.model.Facility;
+import org.example.coworking.entity.Admin;
+import org.example.coworking.entity.CoworkingSpace;
+import org.example.coworking.entity.CoworkingType;
+import org.example.coworking.entity.Facility;
 import org.example.coworking.service.exception.ForbiddenActionException;
 import org.example.coworking.service.exception.ServiceErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;

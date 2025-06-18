@@ -7,7 +7,7 @@ import jakarta.persistence.PersistenceException;
 import org.example.coworking.repository.exception.RepositoryErrorCode;
 import org.example.coworking.repository.exception.DataExcessException;
 import org.example.coworking.repository.exception.EntityNotFoundException;
-import org.example.coworking.model.Reservation;
+import org.example.coworking.entity.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
