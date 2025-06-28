@@ -1,6 +1,6 @@
 package org.example.coworking.service.validator;
 
-import org.example.coworking.model.Reservation;
+import org.example.coworking.entity.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

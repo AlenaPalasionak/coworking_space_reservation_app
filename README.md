@@ -1,147 +1,114 @@
-# 🧾 Coworking Space Reservation
+# Coworking Space Reservation
 
-A Java-based application for managing coworking space reservations with three interchangeable DAO implementations:
+🧾 A modular Java-based Spring Boot REST application for managing coworking space reservations:
 
-- **File-based (Jackson)**
-- **JDBC**
-- **JPA (Hibernate)**
+### Technologies:
 
-To switch between implementations change Qualifiers in service layer 
-in CoworkingServiceImpl, ReservationServiceImpl, UserServiceImpl in constructors.
+#### Programming Language: Java
 
-- **File-based (Jackson)**
+#### Build Tool: Maven
 
-```sh
-@Qualifier("fileUserDao")
-```
-```sh
-@Qualifier("fileReservationDao")
-```
-```sh
-@Qualifier("fileCoworkingDao")
-```
+#### Frameworks & Libraries: Spring Boot, Hibernate, JPA, Lombok
 
-- **JDBC** 
-```sh
-@Qualifier("jdbcUserDao")
-```
-```sh
-@Qualifier("jdbcReservationDao")
-```
-```sh
-@Qualifier("jdbcCoworkingDao")
-```
+#### Security & Authentication: Spring Security
 
-- **JPA (Hibernate)**
-```sh
-@Qualifier("jpaUserDao")
-```
-```sh
-@Qualifier("jpaReservationDao")
+#### RDBMS: PostgreSQL
+
+### Setup Instructions
+
+Add credentials in the file application.properties located in ui\src\main\resources:
+(replace * with your data)
+
+ ```properties
+# === DB Credentials ===
+spring.datasource.url=*
+spring.datasource.username=*
+spring.datasource.password=*
+# === JDBC ===
+spring.datasource.driver-class-name=org.postgresql.Driver
+# === Hibernate ===
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
  ```
-```sh
-@Qualifier("jpaCoworkingDao")
+
+### List of endpoints:
+
+🏢 GET all Coworking Spaces
+http://localhost:8080/api/coworking-spaces
+
+📭 POST add a Coworking
+http://localhost:8080/api/coworking-spaces
+
+##### body:
+
+ ```json
+{
+  "adminId": 1,
+  "price": 44.0,
+  "coworkingType": "CO_LIVING",
+  "facilities": [
+    "PRINTER",
+    "CONDITIONING"
+  ]
+}
  ```
----
 
-## 📁 DAO Implementations & Setup Instructions
-### 1️⃣ File-based (Jackson)
-**Configuration Steps:**
-1. Create `application.properties` in `domain/resources` with the following content:
-```properties
-menu.path=menu.json
-user.path=users.json
-coworking.places.path=coworking_places.json
-reservation.path=reservations.json
-```
-2. Build the project:
-```sh
-mvn clean install
-```
-3. Navigate to the target directory:
-```sh
-cd ui/target
-```
-4. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
+❌ DELETE a Coworking
+http://localhost:8080/api/coworking-spaces/*?adminId=1
+
+ ```
+ instead of * - coworking id
+ instead of 1 - admin id
+  ```
+
+✅ POST authorization
+http://localhost:8080/auth/login
+
+##### body:
+
+```json
+{
+  "username": "c",
+  "password": "3",
+  "role": "CUSTOMER"
+}
 ```
 
-### 2️⃣ JDBC
-Configuration Steps:
-1. Create a PostgreSQL database named:
-```sh
-coworking_reservation_app
-```
-2. Add application.properties to domain/resources (same content as above).
-3. Run the schema.sql script located in domain/resources to create the required tables in the database.
-4. Build the project:
- ```sh
-mvn clean install
-```
-5. Navigate to the target directory:
-```sh
-cd ui/target
-```
-6. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
+📎 POST Reservation
+http://localhost:8080/api/reservations
 
+##### body:
+
+```json
+{
+  "customerId": 2,
+  "adminId": 1,
+  "startTime": "2029-12-01 01:01",
+  "endTime": "2031-12-02 01:01",
+  "coworkingSpaceId": 26
+}
 ```
 
-### 3️⃣ JPA (Hibernate)
-Configuration Steps:
-1. Create a PostgreSQL database named:
-```sh
-coworking_reservation_app
+❌ DELETE Reservation
+http://localhost:8080/api/reservations/*?customerId=2
+
 ```
-2. Inside domain/resources, add a META-INF directory:
-```sh
-META-INF
+ instead of * - reservation id
+ instead of 2 - customer id
+  ```
+
+🗒 GET Reservations by adminId
+http://localhost:8080/api/reservations/admin?adminId=1
+
 ```
-3. Create a persistence.xml file in META-INF with the following content (replace with your DB credentials):
-```sh
-persistence.xml
+ instead of 1 - admin id
+  ```
+
+📙 GET Reservations by customerId
+http://localhost:8080/api/reservations/customer?customerId=2
+
 ```
-content of persistence.xml (replace `***` with actual values):
-```sh
-<?xml version="1.0" encoding="UTF-8"?>
-<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
-https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-<persistence-unit name="coworking-space-reservation_db">
-<class>org.example.coworking.model.User</class>
-<class>org.example.coworking.model.Admin</class>
-<class>org.example.coworking.model.Customer</class>
-<class>org.example.coworking.model.CoworkingSpace</class>
-<class>org.example.coworking.model.Facility</class>
-<class>org.example.coworking.model.Reservation</class>
-<properties>
-<property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-<property name="jakarta.persistence.jdbc.url" value="***"/>
-<property name="jakarta.persistence.jdbc.user" value="***"/>
-<property name="jakarta.persistence.jdbc.password" value="***"/>
-<property name="hibernate.format_sql" value="true"/>
-<property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
-<property name="hibernate.hikari.minimumIdle" value="2"/>
-<property name="hibernate.hikari.maximumPoolSize" value="5"/>
-<property name="hibernate.hikari.idleTimeout" value="10000"/>
-<property name="hibernate.hbm2ddl.auto" value="validate"/>
-</properties>
-</persistence-unit>
-</persistence>
-```
-4. Run the schema.sql file from domain/resources to initialize database tables.
-5. Build the project:
- ```sh
-mvn clean install
-```
-6. Navigate to the target directory:
-```sh
-cd ui/target
-```
-7. Run the application:
-```sh
-java -"Djson.coworking="coworking_places.json,reservations.json"" -"Dlog4j.configurationFile=log4j2.xml" -jar ui-1.0-SNAPSHOT.jar
-```
+ instead of 2 - customer id
+  ```
