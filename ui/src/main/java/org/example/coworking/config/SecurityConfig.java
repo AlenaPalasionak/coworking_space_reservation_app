@@ -43,6 +43,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/register").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/coworking-spaces").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/coworking-spaces/**").hasRole("ADMIN")

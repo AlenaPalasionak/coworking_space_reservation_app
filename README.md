@@ -14,23 +14,29 @@
 
 #### RDBMS: PostgreSQL
 
+#### Containerization: Docker
+
 ### Setup Instructions
 
-Add credentials in the file application.properties located in ui\src\main\resources:
+Add credentials in the file docker-compose.yml located in root directory:
 (replace * with your data)
 
- ```properties
+ ```yml
 # === DB Credentials ===
-spring.datasource.url=*
-spring.datasource.username=*
-spring.datasource.password=*
-# === JDBC ===
-spring.datasource.driver-class-name=org.postgresql.Driver
-# === Hibernate ===
-spring.jpa.hibernate.ddl-auto=validate
-spring.jpa.show-sql=true
-management.endpoints.web.exposure.include=*
-management.endpoint.health.show-details=always
+SPRING_DATASOURCE_USERNAME: *
+SPRING_DATASOURCE_PASSWORD: *
+ ```
+
+### Build the project
+
+```
+ mvn clean package
+ ```
+
+### Run with docker
+
+ ```
+ docker-compose up --build
  ```
 
 ### List of endpoints:
@@ -63,8 +69,8 @@ http://localhost:8080/api/coworking-spaces/*?adminId=1
  instead of 1 - admin id
   ```
 
-✅ POST authorization
-http://localhost:8080/auth/login
+✅ POST User Registration
+http://localhost:8080/api/auth/register
 
 ##### body:
 

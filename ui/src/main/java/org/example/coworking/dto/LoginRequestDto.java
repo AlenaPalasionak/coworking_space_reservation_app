@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class LoginRequestDto {
     @NotBlank(message = "Username cannot be empty.")
     @Pattern(regexp = "^[a-zA-Z0-9]{1,10}$", message = "Username must be alphanumeric and between 1 and 10 characters.")
     private String username;
