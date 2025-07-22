@@ -1,0 +1,41 @@
+name: Java CI/CD for coworking_space_reservation
+
+on:
+  push:
+    branches: [ "feature-branch-13" ]
+  pull_request:
+    branches: [ "feature-branch-13" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 19
+        uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'temurin'
+
+      - name: Build all Maven modules
+        run: mvn -B clean package --file pom.xml
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Build backend Docker image
+        run: docker build -t coworking-backend -f coworking_space_reservation/Dockerfile .
+
+      - name: Build UI Docker image
+        run: docker build -t coworking-ui ./ui
+
+      - name: Upload UI .jar artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ui-jar
+          path: ui/target/*.jar
+
+
