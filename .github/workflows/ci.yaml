@@ -2,40 +2,36 @@ name: Java CI/CD for coworking_space_reservation
 
 on:
   push:
-    branches: [ "feature-branch-13" ]
+    branches: [ "feature-branch-13" ]     # 🔹 Запуск workflow при любом пуше в ветку "feature-branch-13"
   pull_request:
-    branches: [ "feature-branch-13" ]
+    branches: [ "feature-branch-13" ]     # 🔹 Запуск workflow при создании или обновлении pull request в ветку "feature-branch-13"
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+jobs:                                     # 🔸 Определение всех заданий (jobs) в workflow
+  build:                                  # 🔹 Название задания (можно любое)
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    runs-on: ubuntu-latest                # 🔹 GitHub Actions будет использовать виртуальную машину с Ubuntu последней версии
 
-      - name: Set up JDK 19
-        uses: actions/setup-java@v4
+    steps:                                # 🔹 Последовательность шагов, которые выполняются внутри job
+      - name: Checkout code               # 🟩 Шаг 1: Клонирование репозитория на виртуальную машину
+        uses: actions/checkout@v3         # ➡️ Используется готовое действие `checkout` версии 3
+
+      - name: Setup Java 19               # 🟩 Шаг 2: Установка Java 19
+        uses: actions/setup-java@v3       # ➡️ Используется готовое действие `setup-java` версии 3
         with:
-          java-version: '19'
-          distribution: 'temurin'
+          distribution: temurin           # 🔸 Выбор дистрибутива JDK — Temurin (ранее AdoptOpenJDK)
+          java-version: 19                # 🔸 Версия Java — 19
 
-      - name: Build all Maven modules
-        run: mvn -B clean package --file pom.xml
+      - name: Build with Maven            # 🟩 Шаг 3: Сборка проекта с помощью Maven
+        run: mvn clean package -B         # ➡️ Запуск команды `mvn clean package`, `-B` — "batch mode", отключает интерактивные запросы
 
-      - name: Run tests
-        run: mvn test
-
-      - name: Build backend Docker image
-        run: docker build -t coworking-backend -f coworking_space_reservation/Dockerfile .
-
-      - name: Build UI Docker image
-        run: docker build -t coworking-ui ./ui
-
-      - name: Upload UI .jar artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload UI jar artifact      # 🟩 Шаг 4: Загрузка .jar файла как артефакта (результата сборки)
+        uses: actions/upload-artifact@v4  # ➡️ Используется действие для загрузки файлов артефактов (v4 — актуальная версия)
         with:
-          name: ui-jar
-          path: ui/target/*.jar
+          name: ui-jar                    # 🔸 Название артефакта (можешь назвать как угодно)
+          path: ui/target/*.jar           # 🔸 Путь к .jar файлу, собранному из модуля `ui`
 
+      - name: Build UI Docker image       # 🟩 Шаг 5: Сборка Docker-образа
+        run: docker build -t coworking-ui ./ui   # ➡️ Выполняется команда Docker build в папке `ui`, с тегом `coworking-ui`
 
+      # - name: Run docker-compose        # 🟨 Шаг 6 (опционально): запуск docker-compose, если хочешь поднять контейнеры после сборки
+      #   run: docker-compose up -d       # ➡️ Эта строка пока закомментирована; можно раскомментировать при необходимости
