@@ -9,17 +9,17 @@ services:
       - coworking_reservation_app_db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://coworking_reservation_app_db:5432/coworking_reservation_app
-      SPRING_DATASOURCE_USERNAME: *
-      SPRING_DATASOURCE_PASSWORD: *
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_PASSWORD}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SERVER_PORT: 8080
 
   coworking_reservation_app_db:
     image: postgres:17.4
     container_name: coworking_reservation_app_db_container
     environment:
-      POSTGRES_DB: coworking_reservation_app
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:

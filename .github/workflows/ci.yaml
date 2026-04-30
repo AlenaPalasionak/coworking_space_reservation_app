@@ -20,6 +20,11 @@ jobs:                                     # 🔸 Определение всех
         with:
           distribution: temurin           # 🔸 Выбор дистрибутива JDK — Temurin (ранее AdoptOpenJDK)
           java-version: 19                # 🔸 Версия Java — 19
+      - name: Create .env file
+        run: |
+             echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+             echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
 
       - name: Build with Maven            # 🟩 Шаг 3: Сборка проекта с помощью Maven
         run: mvn clean package -B         # ➡️ Запуск команды `mvn clean package`, `-B` — "batch mode", отключает интерактивные запросы
