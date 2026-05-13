@@ -1,10 +1,10 @@
 # Coworking Space Reservation
 
-🧾 A modular Java-based Spring Boot REST application for managing coworking space reservations:
+A modular Java-based Spring Boot REST application for managing coworking space reservations:
 
 ### Technologies:
 
-#### Programming Language: Java
+#### Programming Language: Java 19
 
 #### Build Tool: Maven
 
@@ -16,35 +16,44 @@
 
 #### Containerization: Docker
 
-### Setup Instructions
+#### CI: GitHub Actions
 
-Add credentials in the file docker-compose.yml located in root directory:
-(replace * with your data)
+### Project Architecture
 
- ```yml
-# === DB Credentials ===
-SPRING_DATASOURCE_USERNAME: *
-SPRING_DATASOURCE_PASSWORD: *
- ```
+The project runs fully in Docker:
 
-### Build the project
+#### Spring Boot application container
+
+#### PostgreSQL database container
+
+### How to Run the Project
+
+#### 1. Clone repository
 
 ```
- mvn clean package
- ```
+git clone
+```
 
-### Run with docker
+#### 2. Create an .env environment file with the following data (You can also copy it from .env.example in the project root):
+
+```
+POSTGRES_DB=coworking_reservation_app
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+```
+
+#### 3. Run application
 
  ```
  docker-compose up --build
  ```
 
-### List of endpoints:
+### API Endpoints:
 
-🏢 GET all Coworking Spaces
+GET all Coworking Spaces
 http://localhost:8080/api/coworking-spaces
 
-📭 POST add a Coworking
+POST add a Coworking
 http://localhost:8080/api/coworking-spaces
 
 ##### body:
@@ -61,7 +70,7 @@ http://localhost:8080/api/coworking-spaces
 }
  ```
 
-❌ DELETE a Coworking
+DELETE a Coworking
 http://localhost:8080/api/coworking-spaces/*?adminId=1
 
  ```
@@ -69,7 +78,7 @@ http://localhost:8080/api/coworking-spaces/*?adminId=1
  instead of 1 - admin id
   ```
 
-✅ POST User Registration
+POST User Registration
 http://localhost:8080/api/auth/register
 
 ##### body:
@@ -82,7 +91,7 @@ http://localhost:8080/api/auth/register
 }
 ```
 
-📎 POST Reservation
+POST Reservation
 http://localhost:8080/api/reservations
 
 ##### body:
@@ -97,7 +106,7 @@ http://localhost:8080/api/reservations
 }
 ```
 
-❌ DELETE Reservation
+DELETE Reservation
 http://localhost:8080/api/reservations/*?customerId=2
 
 ```
@@ -105,14 +114,14 @@ http://localhost:8080/api/reservations/*?customerId=2
  instead of 2 - customer id
   ```
 
-🗒 GET Reservations by adminId
+GET Reservations by adminId
 http://localhost:8080/api/reservations/admin?adminId=1
 
 ```
  instead of 1 - admin id
   ```
 
-📙 GET Reservations by customerId
+GET Reservations by customerId
 http://localhost:8080/api/reservations/customer?customerId=2
 
 ```
